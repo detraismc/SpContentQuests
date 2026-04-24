@@ -93,7 +93,7 @@ public class Dust_Extractor extends AContainer implements RecipeDisplayItem {
                             type == Material.BLACKSTONE || type == Material.COBBLED_DEEPSLATE) {
 
                         ItemStack output = null;
-                        int randos = plugin.mtk.getRandomNumber(1, 9);
+                        int randos = plugin.mtk.getRandomNumber(1, 10);
 
                         if (randos == 1) {
                             output = SlimefunItems.COPPER_DUST;
@@ -111,6 +111,8 @@ public class Dust_Extractor extends AContainer implements RecipeDisplayItem {
                             output = SlimefunItems.MAGNESIUM_DUST;
                         } else if (randos == 8) {
                             output = SlimefunItems.IRON_DUST;
+                        } else if (randos == 9) {
+                            output = SlimefunItems.GOLD_DUST;
                         } else {
                             output = SlimefunItems.GOLD_DUST;
                         }
