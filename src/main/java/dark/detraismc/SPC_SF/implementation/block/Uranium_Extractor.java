@@ -41,7 +41,7 @@ public class Uranium_Extractor extends AContainer implements RecipeDisplayItem {
         for (Material inputType : validInputs) {
 
             // Register the functional recipe (Requires 8 of the block, outputs Uranium, takes 8 ticks/processing time)
-            this.registerRecipe(8, new ItemStack[]{new ItemStack(inputType, 8)}, new ItemStack[]{SlimefunItems.URANIUM});
+            this.registerRecipe(6, new ItemStack[]{new ItemStack(inputType, 8)}, new ItemStack[]{SlimefunItems.URANIUM});
 
             // Add the items to the visual Slimefun Guide display list
             this.recipeList.add(new ItemStack(inputType, 8));

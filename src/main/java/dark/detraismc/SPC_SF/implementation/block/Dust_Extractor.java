@@ -116,7 +116,7 @@ public class Dust_Extractor extends AContainer implements RecipeDisplayItem {
                         }
 
                         // 3. Dynamically set the recipe's input to the specific material type that was found
-                        MachineRecipe recipe = new MachineRecipe(2 / this.getSpeed(), new ItemStack[]{new ItemStack(type)}, new ItemStack[]{output});
+                        MachineRecipe recipe = new MachineRecipe(1 / this.getSpeed(), new ItemStack[]{new ItemStack(type)}, new ItemStack[]{output});
 
                         if (output.getType() != Material.AIR && menu.fits(output, this.getOutputSlots())) {
                             menu.consumeItem(slot);
