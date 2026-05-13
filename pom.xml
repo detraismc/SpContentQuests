@@ -5,11 +5,11 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>dark.detraismc</groupId>
-    <artifactId>SPCAddonReborn</artifactId>
-    <version>1.1</version>
+    <artifactId>DetraisEquipment</artifactId>
+    <version>1.0</version>
     <packaging>jar</packaging>
 
-    <name>SPCAddonReborn</name>
+    <name>DetraisEquipment</name>
 
     <properties>
         <java.version>21</java.version>
@@ -72,12 +72,6 @@
             <groupId>com.github.slimefun</groupId>
             <artifactId>Slimefun4</artifactId>
             <version>RC-27</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.github.Slimefun-Addon-Community</groupId>
-            <artifactId>ExoticGarden</artifactId>
-            <version>-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
 

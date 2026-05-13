@@ -1,7 +1,7 @@
-name: SPCAddonReborn
+name: DetraisEquipment
 author: DetraisMC
-description: SPC SMP Slimefun Addon
+description: More Equipment Slimefun Addon
 version: '1.0-SNAPSHOT'
-main: dark.detraismc.SPC_SF.SPCAddon
+main: dark.detraismc.detraisequipment.DetraisEquipment
 api-version: '1.21'
-depend: [Slimefun, ExoticGarden]
+depend: [Slimefun]
