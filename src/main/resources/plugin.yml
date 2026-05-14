@@ -2,6 +2,6 @@ name: DetraisEquipment
 author: DetraisMC
 description: More Equipment Slimefun Addon
 version: '1.0-SNAPSHOT'
-main: dark.detraismc.detraisequipment.DetraisEquipment
+main: dark.detraismc.skyfunutils.SkyfunUtils
 api-version: '1.21'
 depend: [Slimefun]

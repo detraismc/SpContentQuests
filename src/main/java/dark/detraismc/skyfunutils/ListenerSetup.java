@@ -1,6 +1,5 @@
-package dark.detraismc.detraisequipment;
+package dark.detraismc.skyfunutils;
 
-import dark.detraismc.detraisequipment.listener.DurabilityListener;
 import org.bukkit.Bukkit;
 
 final class ListenerSetup {
@@ -13,7 +12,7 @@ final class ListenerSetup {
    public void init() {
       if (!this.initialised) {
          this.initialised = true;
-         Bukkit.getPluginManager().registerEvents(new DurabilityListener(), DetraisEquipment.getInstance());
+         Bukkit.getPluginManager().registerEvents(new DurabilityListener(), SkyfunUtils.getInstance());
       }
    }
 }

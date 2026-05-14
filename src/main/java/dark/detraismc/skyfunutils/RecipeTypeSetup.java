@@ -1,4 +1,4 @@
-package dark.detraismc.detraisequipment;
+package dark.detraismc.skyfunutils;
 
 final class RecipeTypeSetup {
    static final RecipeTypeSetup INSTANCE = new RecipeTypeSetup();
