@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/DetraisEquipment.iml" filepath="$PROJECT_DIR$/DetraisEquipment.iml" />
+      <module fileurl="file://$PROJECT_DIR$/SkyfunUtils.iml" filepath="$PROJECT_DIR$/SkyfunUtils.iml" />
     </modules>
   </component>
 </project>

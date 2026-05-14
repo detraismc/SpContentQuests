@@ -2,7 +2,7 @@
   <artifact type="jar" name="SPCAddonReborn:jar">
     <output-path>$PROJECT_DIR$/out/artifacts/SPCAddonReborn_jar</output-path>
     <root id="archive" name="SPCAddonReborn.jar">
-      <element id="module-output" name="DetraisEquipment" />
+      <element id="module-output" name="SkyfunUtils" />
       <element id="extracted-dir" path="$PROJECT_DIR$/../../JarDependency/slimefun-united-4.10-alpha+22c38f5.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$PROJECT_DIR$/../../JarDependency/Paper1.21.10.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$PROJECT_DIR$/../../JarDependency/ExoticGarden - DEV 78 (git 7f9a5).jar" path-in-jar="/" />
