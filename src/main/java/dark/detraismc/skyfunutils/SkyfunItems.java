@@ -72,8 +72,8 @@ public final class SkyfunItems {
                 "",
                 "&7Spamming your sneak key (&fShift&7)",
                 "&7near any growing vanilla sapling",
-                "&7gives a &a15% chance &7per shift",
-                "&7to act like bonemeal!",
+                "&7gives a chance &7per shift to act",
+                "&7like bonemeal!",
                 "",
                 "&eVisual indicator: &aGreen particles"
         );
