@@ -1,6 +1,8 @@
 # SkyfunUtils
 
-A feature-packed, performance-optimized Skyblock utility addon for **Slimefun 4**. This addon introduces custom tiered tools, automated resource-generating machinery, interactive blocks, and classic Skyblock quality-of-life mechanics to enhance your survival experience.
+A feature-packed, performance-optimized utility addon for **Slimefun 4**. The primary goal of this addon is to make "finite world" survival genres—such as **Skyblock, AcidIsland, and CaveBlock**—much more playable, engaging, and progression-friendly by filling resource gaps and adding interactive mechanics.
+
+This addon introduces custom tiered tools, automated resource-generating machinery, interactive blocks, and classic quality-of-life mechanics to enhance your survival experience when resources are scarce.
 
 ---
 
