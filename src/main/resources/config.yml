@@ -1,0 +1,14 @@
+# SkyfunUtils by DetraisMC
+update-checker: true
+
+mechanics:
+  twerk-for-trees:
+    enabled: true
+    radius: 3
+    grow-chance: 15
+
+tools:
+  friction-pickaxe:
+    redstone-chance: 10
+  crook:
+    silkworm-chance: 10

@@ -1,14 +1,18 @@
-package dark.detraismc.skyfunutils.implementation;
+package dark.detraismc.skyfunutils.setup;
 
 import dark.detraismc.skyfunutils.DetraisRecipeType;
 import dark.detraismc.skyfunutils.SkyfunItems;
 import dark.detraismc.skyfunutils.SkyfunUtils;
+import dark.detraismc.skyfunutils.implementation.*;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItem;
 import io.github.thebusybiscuit.slimefun4.api.recipes.RecipeType;
-import io.github.thebusybiscuit.slimefun4.implementation.Slimefun;
 import io.github.thebusybiscuit.slimefun4.implementation.SlimefunItems;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
+import org.bukkit.inventory.FurnaceRecipe;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.RecipeChoice;
 
 public final class ToolsSetup {
     public static final ToolsSetup INSTANCE = new ToolsSetup();
@@ -112,38 +116,41 @@ public final class ToolsSetup {
                     null, new ItemStack(Material.STICK), null
             }).register(plugin);
 
-            // --- Grass Seeds ---
-            new SlimefunItem(SkyfunItems.category_materials, SkyfunItems.SKYFUN_GRASS_SEEDS, RecipeType.ENHANCED_CRAFTING_TABLE,
-                    new ItemStack[] { /* Your 8 Saplings + 1 Wheat Seed recipe */ })
-                    .addItemHandler(new ItemUseHandler() {
-                        @Override
-                        public void onRightClick(PlayerRightClickEvent e) {
-                            e.getClickedBlock().ifPresent(b -> {
-                                if (b.getType() == Material.DIRT) {
-                                    b.setType(Material.GRASS_BLOCK);
-                                    // Consume 1 seed
-                                    e.getItem().setAmount(e.getItem().getAmount() - 1);
-                                    b.getWorld().playEffect(b.getLocation(), Effect.STEP_SOUND, Material.GRASS_BLOCK);
-                                }
-                            });
-                        }
+
+            new GrassSeeds(SkyfunItems.category_tools, SkyfunItems.SKYFUN_GRASS_SEEDS, RecipeType.ENHANCED_CRAFTING_TABLE, new ItemStack[] {
+                    new ItemStack(Material.OAK_SAPLING), new ItemStack(Material.OAK_SAPLING), new ItemStack(Material.OAK_SAPLING),
+                    new ItemStack(Material.OAK_SAPLING), new ItemStack(Material.BONE_MEAL), new ItemStack(Material.OAK_SAPLING),
+                    new ItemStack(Material.OAK_SAPLING), new ItemStack(Material.OAK_SAPLING), new ItemStack(Material.OAK_SAPLING)
+            }).register(plugin);
+
+            new Silkworm(
+                    SkyfunItems.category_tools,
+                    SkyfunItems.SKYFUN_SILKWORM,
+                    DetraisRecipeType.CROOK_BREAKING,
+                    new ItemStack[] {
+                            null, new ItemStack(Material.OAK_LEAVES), null,
+                            null, null, null,
+                            null, null, null }
+            ).register(plugin);
+
+            RecipeType.SMELTERY.register(new ItemStack[] {
+                    SkyfunItems.SKYFUN_CLAY_BUCKET, null, null,
+                    null, null, null,
+                    null, null, null
+            }, new ItemStack(Material.BUCKET));
+
+            new SlimefunItem(SkyfunItems.category_tools, SkyfunItems.SKYFUN_CLAY_BUCKET, RecipeType.ENHANCED_CRAFTING_TABLE, new ItemStack[] {
+                    null,                               null,                               null,
+                    new ItemStack(Material.CLAY_BALL),  null,                               new ItemStack(Material.CLAY_BALL),
+                    null,                               new ItemStack(Material.CLAY_BALL),  null
                     }).register(plugin);
 
-            // --- Silkworm (Usage) ---
-            // Note: We register the "Recipe" as the CROOK_BREAKING type so it shows up in the guide!
-            new SlimefunItem(SkyfunItems.category_materials, SkyfunItems.SKYFUN_SILKWORM, DetraisRecipeType.CROOK_BREAKING,
-                    new ItemStack[] { null, new ItemStack(Material.OAK_LEAVES), null, null, null, null, null, null, null })
-                    .addItemHandler(new ItemUseHandler() {
-                        @Override
-                        public void onRightClick(PlayerRightClickEvent e) {
-                            e.getClickedBlock().ifPresent(b -> {
-                                if (Tag.LEAVES.isTagged(b.getType())) {
-                                    b.setType(Material.COBWEB);
-                                    e.getItem().setAmount(e.getItem().getAmount() - 1);
-                                }
-                            });
-                        }
-                    }).register(plugin);
+            NamespacedKey key = new NamespacedKey(plugin, "clay_bucket_smelting");
+            FurnaceRecipe recipe = new FurnaceRecipe(key, new ItemStack(Material.BUCKET),
+                    new RecipeChoice.ExactChoice(SkyfunItems.SKYFUN_CLAY_BUCKET), 0.35f, 200);
+
+            Bukkit.addRecipe(recipe);
+
 
         }
     }

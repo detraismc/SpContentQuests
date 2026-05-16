@@ -1,5 +1,6 @@
 package dark.detraismc.skyfunutils;
 
+import dark.detraismc.skyfunutils.listener.TreeTwerker;
 import org.bukkit.Bukkit;
 
 final class ListenerSetup {
@@ -12,7 +13,7 @@ final class ListenerSetup {
    public void init() {
       if (!this.initialised) {
          this.initialised = true;
-         Bukkit.getPluginManager().registerEvents(new DurabilityListener(), SkyfunUtils.getInstance());
+         Bukkit.getPluginManager().registerEvents(new TreeTwerker(), SkyfunUtils.getInstance());
       }
    }
 }

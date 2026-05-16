@@ -1,7 +1,7 @@
-name: DetraisEquipment
+name: SkyfunUtils
 author: DetraisMC
-description: More Equipment Slimefun Addon
-version: '1.0-SNAPSHOT'
+description: Slimefun Addon to help finite resource gamemode like skyblock, acid island, caveblock, etc
+version: '1.0.0'
 main: dark.detraismc.skyfunutils.SkyfunUtils
 api-version: '1.21'
 depend: [Slimefun]

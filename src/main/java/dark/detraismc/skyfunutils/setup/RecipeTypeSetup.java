@@ -1,7 +1,7 @@
-package dark.detraismc.skyfunutils;
+package dark.detraismc.skyfunutils.setup;
 
-final class RecipeTypeSetup {
-   static final RecipeTypeSetup INSTANCE = new RecipeTypeSetup();
+public final class RecipeTypeSetup {
+   public static final RecipeTypeSetup INSTANCE = new RecipeTypeSetup();
    private boolean initialised;
 
    private RecipeTypeSetup() {
