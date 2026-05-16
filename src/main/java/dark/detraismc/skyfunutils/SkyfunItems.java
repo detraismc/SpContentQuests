@@ -26,11 +26,12 @@ public final class SkyfunItems {
     public static final SlimefunItemStack SKYFUN_IRON_HAMMER;
     public static final SlimefunItemStack SKYFUN_GOLDEN_HAMMER;
     public static final SlimefunItemStack SKYFUN_DIAMOND_HAMMER;
-    public static final SlimefunItemStack SKYFUN_FRICTION_PICKAXE;
 
-    public static final SlimefunItemStack SKYFUN_SILKWORM; // Added Silkworm declaration
+    public static final SlimefunItemStack SKYFUN_SILKWORM;
     public static final SlimefunItemStack SKYFUN_CLAY_BUCKET;
+    public static final SlimefunItemStack SKYFUN_WITHER_SKELETON_SKULL;
     public static final SlimefunItemStack SKYFUN_GRASS_SEEDS;
+
     public static final SlimefunItemStack SKYFUN_SAND_SIEVE;
     public static final SlimefunItemStack SKYFUN_AUTO_COMPOSTER;
     public static final SlimefunItemStack SKYFUN_AUTO_COMPOSTER_2;
@@ -147,14 +148,6 @@ public final class SkyfunItems {
                 "&9Crushes Gravel into Sand"
         );
 
-        SKYFUN_FRICTION_PICKAXE = new SlimefunItemStack(
-                "SKYFUN_FRICTION_PICKAXE",
-                Material.STONE_PICKAXE,
-                "&cFriction Pickaxe",
-                "",
-                "&9Creates friction when mining Cobblestone",
-                "&9Has a chance to drop Redstone Dust"
-        );
 
         SKYFUN_SAND_SIEVE = new SlimefunItemStack(
                 "SKYFUN_SAND_SIEVE",
@@ -163,7 +156,7 @@ public final class SkyfunItems {
                 "",
                 "&7Used to manually sieve sand",
                 "&7Drops: Iron, Bone Meal, Gunpowder,",
-                "&7Redstone, Lapis, Diamond Nuggets"
+                "&7Redstone, Lapis, Diamond"
         );
 
 
@@ -184,6 +177,12 @@ public final class SkyfunItems {
                 "",
                 "&9Smelt this in a furnace or smeltery",
                 "&9to get a real Bucket"
+        );
+
+        SKYFUN_WITHER_SKELETON_SKULL = new SlimefunItemStack(
+                "SKYFUN_WITHER_SKELETON_SKULL",
+                Material.WITHER_SKELETON_SKULL,
+                "&bWither Skeleton Skull"
         );
 
         SKYFUN_GRASS_SEEDS = new SlimefunItemStack(
