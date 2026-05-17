@@ -82,7 +82,12 @@ public class AutoSieve extends AContainer implements RecipeDisplayItem {
                 if (rolledIndex >= 0 && rolledIndex < officialRecipes.size()) {
                     MachineRecipe rolledRecipe = officialRecipes.get(rolledIndex);
 
+                    // If the output fits in the output slots...
                     if (menu.fits(rolledRecipe.getOutput()[0], getOutputSlots())) {
+
+                        // FIX: Consume exactly 1 item from the input slot!
+                        menu.consumeItem(slot, 1);
+
                         return rolledRecipe;
                     }
                 }
