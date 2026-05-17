@@ -6,6 +6,7 @@ import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItem;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItemStack;
 import io.github.thebusybiscuit.slimefun4.api.recipes.RecipeType;
 import io.github.thebusybiscuit.slimefun4.core.handlers.ItemUseHandler;
+import me.mrCookieSlime.Slimefun.api.BlockStorage;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -47,6 +48,10 @@ public class Silkworm extends SlimefunItem implements Listener {
 
                 // Check if it's leaves AND make sure it's not already being infested
                 if (Tag.LEAVES.isTagged(b.getType()) && !INFESTING_LEAVES.contains(loc)) {
+
+                    if (BlockStorage.hasBlockInfo(b)) {
+                        return;
+                    }
 
                     // 1. Transform into White Stained Glass immediately
                     b.setType(Material.WHITE_STAINED_GLASS);

@@ -6,6 +6,7 @@ import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItemStack;
 import io.github.thebusybiscuit.slimefun4.api.recipes.RecipeType;
 import io.github.thebusybiscuit.slimefun4.core.handlers.ItemUseHandler;
 import io.github.thebusybiscuit.slimefun4.api.events.PlayerRightClickEvent;
+import me.mrCookieSlime.Slimefun.api.BlockStorage;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.inventory.ItemStack;
@@ -31,6 +32,9 @@ public class GrassSeeds extends SlimefunItem {
                 Block b = e.getClickedBlock().get();
 
                 if (b.getType() == Material.DIRT) {
+                    if (BlockStorage.hasBlockInfo(b)) {
+                        return;
+                    }
                     // Change Dirt to Grass
                     b.setType(Material.GRASS_BLOCK);
 

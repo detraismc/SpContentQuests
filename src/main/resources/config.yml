@@ -12,3 +12,44 @@ tools:
     redstone-chance: 10
   crook:
     silkworm-chance: 10
+
+# ==========================================
+# SkyfunUtils Sifting Configurations
+# Adjust numerical weights to change rates.
+# Total values do not need to equal 100%!
+# ==========================================
+sifting:
+  sand:
+    DIAMOND: 1
+    LAPIS_LAZULI: 20
+    REDSTONE: 20
+    IRON_NUGGET: 15
+    GUNPOWDER: 15
+    BONE_MEAL: 29
+  gravel:
+    FLINT: 40
+    SIFTED_ORE: 35
+    CLAY_BALL: 20
+    IRON_NUGGET: 5
+  soul_sand:
+    QUARTZ: 50
+    GOLD_NUGGET: 25
+    NETHER_WART: 10
+    BLAZE_POWDER: 8
+    GLOWSTONE_DUST: 5
+    GHAST_TEAR: 2
+  soul_soil:
+    QUARTZ: 50
+    GOLD_NUGGET: 25
+    NETHER_WART: 10
+    BLAZE_POWDER: 8
+    GLOWSTONE_DUST: 5
+    GHAST_TEAR: 2
+  dirt:
+    WHEAT_SEEDS: 25
+    PUMPKIN_SEEDS: 20
+    MELON_SEEDS: 20
+    BEETROOT_SEEDS: 15
+    SKYFUN_GRASS_SEEDS: 10
+    CARROT: 5
+    POTATO: 5

@@ -11,8 +11,9 @@ public final class DetraisRecipeType {
 
    public static final RecipeType CROOK_BREAKING;
     public static final RecipeType MECHANIC_INFO;
-    public static final RecipeType SKYFUN_HEATED_PRESSURE_CHAMBER;
+    public static final RecipeType SKYFUN_SMELTERY;
     public static final RecipeType SKYFUN_CRAFTING_TABLE;
+    public static final RecipeType SKYFUN_FURNACE;
 
    static {
        CROOK_BREAKING = new RecipeType(
@@ -28,12 +29,11 @@ public final class DetraisRecipeType {
                        "&7Feature from this addon"
                });
 
-       SKYFUN_HEATED_PRESSURE_CHAMBER = new RecipeType(
-               new NamespacedKey(SkyfunUtils.getInstance(), "skyfun_heated_pressure_chamber"),
-               SlimefunItems.HEATED_PRESSURE_CHAMBER,
-               "&bHeated Pressure Chamber",
-               "&bCraft this Item as shown",
-               "&busing a Heated Pressure Chamber"
+       SKYFUN_SMELTERY = new RecipeType(
+               new NamespacedKey(SkyfunUtils.getInstance(), "skyfun_smeltery"),
+               SlimefunItems.SMELTERY,
+               "&7Craft this Item as shown",
+               "&7using a Smeltery"
        );
 
        SKYFUN_CRAFTING_TABLE = new RecipeType(
@@ -43,6 +43,14 @@ public final class DetraisRecipeType {
                "&7Craft this Item shown",
                "&7in a Normal or Enhanced Crafting",
                "&7Table."});
+
+       SKYFUN_FURNACE = new RecipeType(
+               new NamespacedKey(SkyfunUtils.getInstance(), "skyfun_furnace"),
+               new SlimefunItemStack("SKYFUN_FURNACE", Material.FURNACE,
+                       "&bFurnace Recipe", new String[0]), new String[]{
+               "&7Smelt this item in a Furnace",
+               "&7to craft your desired item"
+               });
    }
 
    private DetraisRecipeType() {

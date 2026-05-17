@@ -18,6 +18,10 @@ public final class SkyfunItems {
 
     public static final SlimefunItemStack INFO_TWERK_FOR_TREES;
 
+    public static final SlimefunItemStack INFO_ANY_PLANKS;
+    public static final SlimefunItemStack INFO_ANY_PLANK_SLABS;
+    public static final SlimefunItemStack INFO_ANY_COBBLESTONE;
+
     public static final SlimefunItemStack SKYFUN_CROOK;
     public static final SlimefunItemStack SKYFUN_BONE_CROOK;
 
@@ -29,10 +33,15 @@ public final class SkyfunItems {
 
     public static final SlimefunItemStack SKYFUN_SILKWORM;
     public static final SlimefunItemStack SKYFUN_CLAY_BUCKET;
+    public static final SlimefunItemStack SKYFUN_BUCKET;
+    public static final SlimefunItemStack SKYFUN_CLAY_CRUCIBLE;
+    public static final SlimefunItemStack SKYFUN_CRUCIBLE;
+    public static final SlimefunItemStack SKYFUN_COMPOSTER;
     public static final SlimefunItemStack SKYFUN_WITHER_SKELETON_SKULL;
     public static final SlimefunItemStack SKYFUN_GRASS_SEEDS;
+    public static final SlimefunItemStack SKYFUN_FLINT_SHEARS;
 
-    public static final SlimefunItemStack SKYFUN_SAND_SIEVE;
+    public static final SlimefunItemStack SKYFUN_SIEVE;
     public static final SlimefunItemStack SKYFUN_AUTO_COMPOSTER;
     public static final SlimefunItemStack SKYFUN_AUTO_COMPOSTER_2;
     public static final SlimefunItemStack SKYFUN_AUTO_COMPOSTER_3;
@@ -77,6 +86,36 @@ public final class SkyfunItems {
                 "&7like bonemeal!",
                 "",
                 "&eVisual indicator: &aGreen particles"
+        );
+
+        // --- Informational Display Stack ---
+        INFO_ANY_PLANKS = new SlimefunItemStack(
+                "INFO_ANY_PLANKS",
+                Material.OAK_PLANKS,
+                "&6Any Planks",
+                "&7You can use any planks",
+                "&7but you can only use 1 type",
+                "&7in 1 crafting grid"
+        );
+        INFO_ANY_PLANK_SLABS = new SlimefunItemStack(
+                "INFO_ANY_PLANK_SLABS",
+                Material.OAK_SLAB,
+                "&6Any Plank Slab",
+                "&7You can use any plank",
+                "&7slab but you can only use 1",
+                "&7type in 1 crafting grid"
+        );
+
+        // --- Informational Display Stack ---
+        INFO_ANY_COBBLESTONE = new SlimefunItemStack(
+                "INFO_ANY_COBBLESTONE",
+                Material.COBBLESTONE,
+                "&6Any Cobbled Stone",
+                "&7You can use Cobblestone,",
+                "&7Cobbled Deepslate, and",
+                "&7Blackstone.",
+                "&7But you can only use 1 type",
+                "&7in 1 crafting grid"
         );
 
 
@@ -148,15 +187,26 @@ public final class SkyfunItems {
                 "&9Crushes Gravel into Sand"
         );
 
-
-        SKYFUN_SAND_SIEVE = new SlimefunItemStack(
-                "SKYFUN_SAND_SIEVE",
-                Material.LOOM,
-                "&eSand Sieve",
+        SKYFUN_FLINT_SHEARS = new SlimefunItemStack(
+                "SKYFUN_FLINT_SHEARS",
+                Material.SHEARS,
+                "&fFlint Shears",
                 "",
-                "&7Used to manually sieve sand",
-                "&7Drops: Iron, Bone Meal, Gunpowder,",
-                "&7Redstone, Lapis, Diamond"
+                "&9Additional -1 Durability when",
+                "&9breaking blocks."
+        );
+
+
+        SKYFUN_SIEVE = new SlimefunItemStack(
+                "SKYFUN_SIEVE",
+                Material.LOOM,
+                "&eSieve",
+                "",
+                "&7Used to manually sift resources.",
+                "&7Supports: &eSand&7, &8Gravel&7, &6Dirt&7, &cSoul Sand/Soil",
+                "",
+                "&eRight-Click &7with a block in hand to use.",
+                "&7Automatically outputs into adjacent side chests!"
         );
 
 
@@ -172,17 +222,51 @@ public final class SkyfunItems {
 
         SKYFUN_CLAY_BUCKET = new SlimefunItemStack(
                 "SKYFUN_CLAY_BUCKET",
-                Material.CLAY_BALL,
+                Material.BOWL,
                 "&fUnfired Clay Bucket",
                 "",
-                "&9Smelt this in a furnace or smeltery",
+                "&9Smelt this in a furnace",
                 "&9to get a real Bucket"
+        );
+
+        SKYFUN_CLAY_CRUCIBLE = new SlimefunItemStack(
+                "SKYFUN_CLAY_CRUCIBLE",
+                Material.BOWL,
+                "&fUnfired Clay Crucible",
+                "",
+                "&9Smelt this in a furnace",
+                "&9to get a real Crucible"
         );
 
         SKYFUN_WITHER_SKELETON_SKULL = new SlimefunItemStack(
                 "SKYFUN_WITHER_SKELETON_SKULL",
                 Material.WITHER_SKELETON_SKULL,
                 "&bWither Skeleton Skull"
+        );
+        SKYFUN_BUCKET = new SlimefunItemStack(
+                "SKYFUN_BUCKET",
+                Material.BUCKET,
+                "&fBucket"
+        );
+        SKYFUN_CRUCIBLE = new SlimefunItemStack(
+                "SKYFUN_CRUCIBLE",
+                Material.CAULDRON,
+                "&cCrucible &e(Alternative)",
+                "",
+                "&aUsed to turn items into liquids",
+                "",
+                "&6Note: This is an alternative",
+                "&6way to craft Slimefun Crucible"
+        );
+        SKYFUN_COMPOSTER = new SlimefunItemStack(
+                "SKYFUN_COMPOSTER",
+                Material.CAULDRON,
+                "&aComposter &e(Alternative)",
+                "",
+                "&aConverts various materials over time...",
+                "",
+                "&6Note: This is an alternative",
+                "&6way to craft Slimefun Composter"
         );
 
         SKYFUN_GRASS_SEEDS = new SlimefunItemStack(

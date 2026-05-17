@@ -1,10 +1,11 @@
-package dark.detraismc.skyfunutils;
+package dark.detraismc.skyfunutils.setup;
 
+import dark.detraismc.skyfunutils.SkyfunUtils;
 import dark.detraismc.skyfunutils.listener.TreeTwerker;
 import org.bukkit.Bukkit;
 
-final class ListenerSetup {
-   static final ListenerSetup INSTANCE = new ListenerSetup();
+public class ListenerSetup {
+   public static final ListenerSetup INSTANCE = new ListenerSetup();
    private boolean initialised;
 
    private ListenerSetup() {

@@ -1,10 +1,12 @@
 package dark.detraismc.skyfunutils.implementation;
 
+import dark.detraismc.skyfunutils.SkyfunUtils;
 import io.github.thebusybiscuit.slimefun4.api.items.ItemGroup;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItemStack;
 import io.github.thebusybiscuit.slimefun4.api.recipes.RecipeType;
 import io.github.thebusybiscuit.slimefun4.core.handlers.ToolUseHandler;
 import io.github.thebusybiscuit.slimefun4.implementation.items.SimpleSlimefunItem;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.inventory.ItemStack;
@@ -26,11 +28,11 @@ public class Hammer extends SimpleSlimefunItem<ToolUseHandler> {
 
             // If the block broken has a custom drop in our list...
             if (customDrop != null) {
+                e.setDropItems(false);
                 // Drop our custom item
                 b.getWorld().dropItemNaturally(b.getLocation(), customDrop);
 
                 // Prevent the vanilla block from dropping!
-                e.setDropItems(false);
             }
         };
     }
