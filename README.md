@@ -1,6 +1,6 @@
 # SkyfunUtils
 
-A feature-packed, performance-optimized utility addon for **Slimefun 4**. The primary goal of this addon is to make "finite world" survival genres—such as **Skyblock, AcidIsland, and CaveBlock**—much more playable, engaging, and progression-friendly by filling resource gaps and adding interactive mechanics.
+A feature-packed, performance-optimized utility addon for **Slimefun 4**. Heavily inspired by classic skyblock mods like **Ex Nihilo**, the primary goal of this addon is to make "finite world" survival genres—such as **Skyblock, AcidIsland, and CaveBlock**—much more playable, engaging, and progression-friendly by filling resource gaps and adding interactive mechanics.
 
 This addon introduces custom tiered tools, automated resource-generating machinery, interactive blocks, and classic quality-of-life mechanics to enhance your survival experience when resources are scarce.
 
@@ -16,7 +16,7 @@ The addon seamlessly introduces three dedicated subcategories into your Slimefun
 
 ---
 
-### 📜 Unique Mechanics
+### ✨ Unique Mechanics
 * **Twerk For Trees:** A server-wide behavior allowing players to spam their sneak/crouch key (`Shift`) near any vanilla sapling. Doing so creates green visual particles and grants a percentage-based chance to act like bonemeal, accelerating tree growth natively.
 * **Vanilla Crafting Integration:** Select early-game items bypass Slimefun's strict crafting engine, allowing players to craft custom items seamlessly inside standard Vanilla Crafting Tables.
 * **Alternative Skyblock Recipes:** Injects cheaper, iron-free crafting recipes directly into Slimefun's native guide for essential early-game blocks (e.g., craft a Crucible from Bricks, or a Composter using wooden slabs and a vanilla composter).
