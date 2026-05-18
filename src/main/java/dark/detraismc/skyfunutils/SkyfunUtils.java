@@ -35,7 +35,7 @@ public class SkyfunUtils extends JavaPlugin implements SlimefunAddon {
    }
 
    public void onDisable() {
-
+       DeleteVanillaCraftingSetup.INSTANCE.init();
    }
 
    public String getBugTrackerURL() {
