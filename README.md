@@ -63,8 +63,4 @@ To run this addon successfully, your server must have the following dependencies
 4. Restart your Minecraft server.
 5. Open the in-game Slimefun guide (`/sf guide`) to view your brand new items!
 
----
 
-## 🛰️ Automatic Update Checking
-
-This plugin features a built-in, asynchronous GitHub Update Checker. Upon server initialization, it safely queries the GitHub Releases API in the background (preventing server thread lag) to inform the console and administrators if a newer version of the addon is available for download.
