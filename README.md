@@ -1,66 +1,66 @@
-# SkyfunUtils
+# 🔥 EzFurnace
 
-A feature-packed, performance-optimized utility addon for **Slimefun 4**. Heavily inspired by classic skyblock mods like **Ex Nihilo**, the primary goal of this addon is to make "finite world" survival genres—such as **Skyblock, AcidIsland, and CaveBlock**—much more playable, engaging, and progression-friendly by filling resource gaps and adding interactive mechanics.
+[![Slimefun4 Addon](https://img.shields.io/badge/Slimefun4-Addon-brightgreen.svg)](https://github.com/Slimefun/Slimefun4)
+[![Minecraft Version](https://img.shields.io/badge/Minecraft-1.16+-blue.svg)]()
 
-This addon introduces custom tiered tools, automated resource-generating machinery, interactive blocks, and classic quality-of-life mechanics to enhance your survival experience when resources are scarce.
+**EzFurnace** is a lightweight Slimefun4 addon that expands exclusively upon the **Enhanced Furnace**. Designed for an early-game friendly experience, it introduces a tiered progression of easy-to-craft furnaces without the need for complex Slimefun machinery. Skip the complicated setups and get straight to faster smelting!
 
----
+## ✨ Features
 
-## 🚀 Features & Content
+* **Early-Game Compatible**: Designed to be accessible and easy to craft right from the start of your survival journey.
+* **8 Tiered Furnaces**: Upgrade your smelting setup through 8 simple progression tiers:
+  * 🟠 **Copper Furnace**
+  * ⚪ **Iron Furnace**
+  * 🟡 **Golden Furnace**
+  * 🔵 **Lapis Furnace**
+  * 🔴 **Redstone Furnace**
+  * 💎 **Diamond Furnace**
+  * ❇️ **Emerald Furnace**
+  * 🖤 **Netherite Furnace**
+* **Increased Efficiency**: Higher tier furnaces provide significantly faster smelting speeds and better fuel rates.
+* **Easy Vanilla Crafting**: Craft these custom Slimefun furnaces directly in a standard Vanilla Crafting Table using intuitive recipes. (This feature is completely optional and can be toggled in the config).
 
-### 📂 Slimefun Guide Categories
-The addon seamlessly introduces three dedicated subcategories into your Slimefun guide under the core **Skyfun Utils** umbrella:
-* 🛠️ **Tools:** Specialized hand tools for block processing, silkworm farming, and extraction.
-* ⚡ **Machines:** Custom manual and automated power-consuming machinery.
-* 📜 **Server Info:** In-game guide entries explaining unique server mechanics.
+## 🛠️ Crafting Recipes
 
----
+If vanilla crafting is enabled, you can upgrade your furnaces using the previous tier's furnace, surrounded by ingots (or dust/gems) and a block of the respective material at the bottom.
 
-### ✨ Unique Mechanics
-* **Twerk For Trees:** A server-wide behavior allowing players to spam their sneak/crouch key (`Shift`) near any vanilla sapling. Doing so creates green visual particles and grants a percentage-based chance to act like bonemeal, accelerating tree growth natively.
-* **Vanilla Crafting Integration:** Select early-game items bypass Slimefun's strict crafting engine, allowing players to craft custom items seamlessly inside standard Vanilla Crafting Tables.
-* **Alternative Skyblock Recipes:** Injects cheaper, iron-free crafting recipes directly into Slimefun's native guide for essential early-game blocks (e.g., craft a Crucible from Bricks, or a Composter using wooden slabs and a vanilla composter).
-* **Fully Configurable Loot Tables:** Server administrators have total control over sifting rewards for **both the Manual and Auto Sieves**. Drop tables use a dynamic weighted registry in the `config.yml`, allowing you to easily add custom items, change drop rates, or remove defaults without touching the code.
+**Example: Iron Furnace**
+```text
+[ Iron Ingot ] [ Iron Ingot ] [ Iron Ingot ]
+[ Iron Ingot ] [Copper Furnace] [ Iron Ingot ]
+[ Iron Ingot ] [ Iron Block ] [ Iron Ingot ]
+```
+*(You can also craft them using the traditional Slimefun Magic Workbench / Enhanced Crafting Table depending on your setup!)*
 
----
+## 📦 Installation
 
-### 🛠️ Custom Tools
-* **Crooks (Standard & Bone):** Used on leaf blocks to significantly boost sapling, stick, and apple drop rates, with a random chance to extract precious Silkworms.
-* **Hammers (Wood, Stone, Iron, Gold, Diamond):** Efficiently processes blocks by smashing them down a tier. Crushes Cobblestone/Stone variants into Gravel, and Gravel into Sand.
-* **Flint Shears:** An early-game alternative to iron shears craftable in a vanilla crafting table. Fragile by nature, taking double durability damage when used to break blocks!
+1. Make sure you have the latest version of [Slimefun4](https://github.com/Slimefun/Slimefun4) installed on your server.
+2. Download the latest `EzFurnace.jar` from the [Releases](../../releases) page.
+3. Drop the `.jar` file into your server's `plugins/` folder.
+4. Restart your server.
 
----
+## ⚙️ Configuration
 
-### ⚡ Automation & Machinery
-* **Manual Sieve:** An interactive station allowing players to right-click materials to instantly sift them for resources. 
-  * **Fully Configurable:** All drops and percentages are pulled dynamically from your `config.yml`!
-  * **Supported Blocks:** Sand, Gravel, Dirt, Soul Sand, and Soul Soil.
-* **Auto Sieve (Tier I - III):** Automatically feeds siftable blocks into an electronic filtration system to harvest ore components, seeds, and dust completely hands-free. Features an adaptive dynamic recipe matrix perfectly balanced across energy/speed tiers and linked directly to your custom config rates.
-* **Auto Composter (Tier I - III):** Automatically processes compostable organic materials into dirt/fertilizers, operating progressively faster across higher tiers with dedicated energy buffers.
+A `config.yml` file will be generated on your first startup. 
 
----
+```yaml
+update-checker: true
 
-### 🏺 Materials & Items
-* **Silkworm:** Obtained from leaves via Crooks; can be deployed onto live foliage to slowly turn leaf blocks into Cobwebs over time.
-* **Unfired Clay Bucket:** A cheap alternative bucket blueprint made from clay balls that can be fired inside a conventional furnace or Slimefun Smeltery to produce functional water/lava containers.
-* **Grass Seeds:** Sifted from Dirt; right-click on bare Dirt blocks to instantly cover them in lush vanilla Grass.
+# Enable or disable the ability to craft Enhanced Furnaces in a Vanilla Crafting Table
+allow-vanilla-craft: true
+```
 
----
+## 🔨 Building from Source
 
-## 🛠️ Requirements
+To build this project yourself, you will need Git and Maven installed.
 
-To run this addon successfully, your server must have the following dependencies installed:
-* **Spigot** or **Paper** (1.20+)
-* **Slimefun 4** (Latest Build)
+```bash
+git clone [https://github.com/YourUsername/EzFurnace.git](https://github.com/YourUsername/EzFurnace.git)
+cd EzFurnace
+mvn clean package
+```
+The compiled jar will be located in the `target/` directory.
 
----
+## 📜 License
 
-## 💾 Installation
-
-1. Make sure your server meets the minimum requirements listed above.
-2. Download the latest compiled `SkyfunUtils.jar` file.
-3. Drop the `.jar` file directly into your server's `/plugins/` directory.
-4. Restart your Minecraft server.
-5. Open the in-game Slimefun guide (`/sf guide`) to view your brand new items!
-
-
+This project is open-source. Feel free to contribute, fork, or modify it!
