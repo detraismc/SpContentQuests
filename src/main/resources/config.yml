@@ -2,4 +2,5 @@
 
 update-checker: true
 
+# Enable or disable the ability to craft Enhanced Furnaces in a Vanilla Crafting Table
 allow-vanilla-craft: true
