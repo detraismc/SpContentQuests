@@ -3,11 +3,12 @@
 [![Slimefun4 Addon](https://img.shields.io/badge/Slimefun4-Addon-brightgreen.svg)](https://github.com/Slimefun/Slimefun4)
 [![Minecraft Version](https://img.shields.io/badge/Minecraft-1.16+-blue.svg)]()
 
-**EzFurnace** is a Slimefun4 addon that introduces a tiered progression of Enhanced Furnaces with **easy vanilla crafting support**. Skip the complex Slimefun machinery just to get a faster furnace, and craft them directly in a standard Vanilla Crafting Table!
+**EzFurnace** is a lightweight Slimefun4 addon that expands exclusively upon the **Enhanced Furnace**. Designed for an early-game friendly experience, it introduces a tiered progression of easy-to-craft furnaces without the need for complex Slimefun machinery. Skip the complicated setups and get straight to faster smelting!
 
 ## ✨ Features
 
-* **8 Tiered Furnaces**: Upgrade your smelting setup with progression tiers:
+* **Early-Game Compatible**: Designed to be accessible and easy to craft right from the start of your survival journey.
+* **8 Tiered Furnaces**: Upgrade your smelting setup through 8 simple progression tiers:
   * 🟠 **Copper Furnace**
   * ⚪ **Iron Furnace**
   * 🟡 **Golden Furnace**
@@ -17,11 +18,11 @@
   * ❇️ **Emerald Furnace**
   * 🖤 **Netherite Furnace**
 * **Increased Efficiency**: Higher tier furnaces provide significantly faster smelting speeds and better fuel rates.
-* **Easy Vanilla Crafting**: Craft these custom Slimefun items directly in a Vanilla Crafting Table using intuitive recipes. (This feature is completely optional and can be toggled in the config).
+* **Easy Vanilla Crafting**: Craft these custom Slimefun furnaces directly in a standard Vanilla Crafting Table using intuitive recipes. (This feature is completely optional and can be toggled in the config).
 
 ## 🛠️ Crafting Recipes
 
-If vanilla crafting is enabled, you can upgrade your furnaces using the previous tier, surrounded by ingots and a block of the respective material at the bottom.
+If vanilla crafting is enabled, you can upgrade your furnaces using the previous tier's furnace, surrounded by ingots (or dust/gems) and a block of the respective material at the bottom.
 
 **Example: Iron Furnace**
 ```text
