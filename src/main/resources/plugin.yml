@@ -1,7 +1,7 @@
-name: SkyfunUtils
+name: EzFurnace
 author: DetraisMC
-description: Slimefun Addon to help finite resource gamemode like skyblock, acid island, caveblock, etc
-version: 1.0.0
-main: dark.detraismc.skyfunutils.SkyfunUtils
+description: Slimefun Addon that add Easy Crafting Enchanced Furnace
+version: 1.0
+main: dark.detraismc.ezfurnace.EzFurnace
 api-version: 1.21
 depend: [Slimefun]
