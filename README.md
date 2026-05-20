@@ -43,6 +43,8 @@ If vanilla crafting is enabled, you can upgrade your furnaces using the previous
 A `config.yml` file will be generated on your first startup. 
 
 ```yaml
+update-checker: true
+
 # Enable or disable the ability to craft Enhanced Furnaces in a Vanilla Crafting Table
 allow-vanilla-craft: true
 ```
