@@ -1,7 +1,7 @@
 # 🔥 EzFurnace
 
 [![Slimefun4 Addon](https://img.shields.io/badge/Slimefun4-Addon-brightgreen.svg)](https://github.com/Slimefun/Slimefun4)
-[![Minecraft Version](https://img.shields.io/badge/Minecraft-1.16+-blue.svg)]()
+[![Minecraft Version](https://img.shields.io/badge/Minecraft-1.20+-blue.svg)]()
 
 **EzFurnace** is a lightweight Slimefun4 addon that expands exclusively upon the **Enhanced Furnace**. Designed for an early-game friendly experience, it introduces a tiered progression of easy-to-craft furnaces without the need for complex Slimefun machinery. Skip the complicated setups and get straight to faster smelting!
 
