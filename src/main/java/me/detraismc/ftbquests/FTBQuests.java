@@ -20,14 +20,12 @@ public class FTBQuests extends JavaPlugin {
 
    }
 
-   public void onDisable() {
+   //public void onDisable() {
+   //}
 
-
-   }
-
-   public String getBugTrackerURL() {
-      return null;
-   }
+   //public String getBugTrackerURL() {
+   //   return null;
+   //}
 
    public JavaPlugin getJavaPlugin() {
       return this;
