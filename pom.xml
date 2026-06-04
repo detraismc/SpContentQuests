@@ -38,6 +38,18 @@
                         <goals>
                             <goal>shade</goal>
                         </goals>
+                        <configuration>
+                            <relocations>
+                                <relocation>
+                                    <pattern>com.zaxxer.hikari</pattern>
+                                    <shadedPattern>me.detraismc.ftbquests.libs.hikari</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>org.slf4j</pattern>
+                                    <shadedPattern>me.detraismc.ftbquests.libs.slf4j</shadedPattern>
+                                </relocation>
+                            </relocations>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
@@ -68,6 +80,10 @@
             <version>1.21.10-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
-
+        <dependency>
+            <groupId>com.zaxxer</groupId>
+            <artifactId>HikariCP</artifactId>
+            <version>5.1.0</version>
+        </dependency>
     </dependencies>
 </project>
