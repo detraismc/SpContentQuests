@@ -3,6 +3,7 @@ package me.detraismc.ftbquests.listener;
 import me.detraismc.ftbquests.FTBQuests;
 import me.detraismc.ftbquests.menus.QuestMenu;
 import me.detraismc.ftbquests.models.Category;
+import me.detraismc.ftbquests.models.PlayerQuestData;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -84,15 +85,15 @@ public class MenuListener implements Listener {
                 var quests = plugin.getQuestManager().getQuestsInCategory(category.getId());
                 if (questIndex < quests.size()) {
                     var quest = new java.util.ArrayList<>(quests).get(questIndex);
-                    me.detraismc.ftbquests.models.PlayerQuestData data = menu.getQuestData().getOrDefault(quest.getId(), new me.detraismc.ftbquests.models.PlayerQuestData(quest.getId(), 0, false, false));
+                    PlayerQuestData data = menu.getQuestData().getOrDefault(quest.getId(), new PlayerQuestData(quest.getId(), 0, false, false));
                     
                     boolean isComplete = data.isCompleted() || data.getPoints() >= quest.getObjectiveAmount();
 
                     if (data.isClaimed()) {
-                        player.sendMessage("§cYou have already claimed this reward!");
+                        player.sendMessage(plugin.msg("already-claimed"));
                     } else if (isComplete) {
                         // Claim reward
-                        player.sendMessage("§aClaimed reward for " + quest.getId() + "!");
+                        player.sendMessage(plugin.msg("reward-claimed", "{quest}", quest.getId()));
                         if (quest.getRewardCommand() != null) {
                             for (String cmd : quest.getRewardCommand()) {
                                 cmd = cmd.replace("%player%", player.getName());
@@ -105,7 +106,7 @@ public class MenuListener implements Listener {
                         }
                         
                         // Update cache and refresh GUI
-                        me.detraismc.ftbquests.models.PlayerQuestData cacheData = plugin.getPlayerDataManager().getOrCreateQuestData(player.getUniqueId(), quest.getId());
+                         PlayerQuestData cacheData = plugin.getPlayerDataManager().getOrCreateQuestData(player.getUniqueId(), quest.getId());
                         cacheData.setClaimed(true);
                         plugin.getMenuManager().openCategory(player, category, menu.getPage());
                         

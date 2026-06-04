@@ -10,7 +10,7 @@ mysql-settings:
 
   # Enable MySQL
   # If false, SQLite will be used instead
-  enabled: true
+  enabled: false
 
   hostname: 0.0.0.0
   port: 0
@@ -22,3 +22,22 @@ mysql-settings:
   use-ssl: false
 
   connection-pool-size: 3
+
+messages:
+  usage: '&cUsage: /ftbquests help'
+  category-not-found: '&cCategory {category} not found.'
+  player-not-found: '&cPlayer not found.'
+  no-permission: '&cNo permission.'
+  invalid-amount: '&cInvalid amount.'
+  quest-not-found: '&cQuest not found.'
+  quest-completed: '&aQuest Completed: &e{quest}'
+  points-added: '&aAdded {amount} points to {player} for quest {quest}'
+  points-subtracted: '&aSubtracted {amount} points from {player} for quest {quest}'
+  points-set: '&aSet {amount} points for {player} on quest {quest}'
+  quest-reset: '&aReset quest {quest} for {player}'
+  quest-set-completed: '&aMarked quest {quest} as completed for {player}'
+  quest-set-claimed: '&aMarked quest {quest} as claimed for {player}'
+  config-reloaded: '&aConfiguration and quests reloaded.'
+  help-header: '&6&lFTB Quests Commands:'
+  already-claimed: '&cYou have already claimed this reward!'
+  reward-claimed: '&aClaimed reward for {quest}!'

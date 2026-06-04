@@ -2,6 +2,7 @@ package me.detraismc.ftbquests.listener;
 
 import me.detraismc.ftbquests.FTBQuests;
 import me.detraismc.ftbquests.models.Category;
+import me.detraismc.ftbquests.models.PlayerQuestData;
 import me.detraismc.ftbquests.models.Quest;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Item;
@@ -47,7 +48,7 @@ public class ObjectiveListener implements Listener {
     }
 
     private void incrementPoints(Player player, Quest quest, int amount) {
-        me.detraismc.ftbquests.models.PlayerQuestData data = plugin.getPlayerDataManager()
+        PlayerQuestData data = plugin.getPlayerDataManager()
                 .getOrCreateQuestData(player.getUniqueId(), quest.getId());
 
         if (data.isCompleted())
@@ -58,8 +59,7 @@ public class ObjectiveListener implements Listener {
 
         if (newPoints >= quest.getObjectiveAmount()) {
             data.setCompleted(true);
-            player.sendMessage("§aQuest Completed: §e"
-                    + quest.getConfig().getString("icon.display", quest.getId()).replace("&", "§"));
+            player.sendMessage(plugin.msg("quest-completed", "{quest}", quest.getConfig().getString("icon.display", quest.getId()).replace("&", "§")));
         }
     }
 
@@ -76,9 +76,25 @@ public class ObjectiveListener implements Listener {
     @EventHandler(ignoreCancelled = true)
     public void onCraft(CraftItemEvent event) {
         if (event.getWhoClicked() instanceof Player) {
+            Player player = (Player) event.getWhoClicked();
             ItemStack result = event.getRecipe().getResult();
-            // A simplified way to count crafted amounts
-            addProgress((Player) event.getWhoClicked(), "CRAFT", result.getType().name(), result.getAmount());
+            int amount = result.getAmount();
+
+            if (event.isShiftClick()) {
+                int count = 0;
+                for (ItemStack item : player.getInventory().getStorageContents()) {
+                    if (item != null && item.isSimilar(result)) {
+                        count += item.getAmount();
+                    }
+                }
+                ItemStack resultSlot = event.getInventory().getResult();
+                if (resultSlot != null && !resultSlot.getType().isAir() && resultSlot.isSimilar(result)) {
+                    count += resultSlot.getAmount();
+                }
+                amount = Math.max(count, result.getAmount());
+            }
+
+            addProgress(player, "CRAFT", result.getType().name(), amount);
         }
     }
 

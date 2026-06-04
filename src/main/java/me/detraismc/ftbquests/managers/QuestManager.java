@@ -75,6 +75,10 @@ public class QuestManager {
         return quests.values();
     }
 
+    public Collection<Category> getAllCategories() {
+        return categories.values();
+    }
+
     public Collection<Quest> getQuestsInCategory(String categoryId) {
         return quests.values().stream()
                 .filter(q -> q.getCategoryId().equals(categoryId))

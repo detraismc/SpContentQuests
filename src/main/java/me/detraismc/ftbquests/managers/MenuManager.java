@@ -3,6 +3,7 @@ package me.detraismc.ftbquests.managers;
 import me.detraismc.ftbquests.FTBQuests;
 import me.detraismc.ftbquests.menus.QuestMenu;
 import me.detraismc.ftbquests.models.Category;
+import me.detraismc.ftbquests.models.PlayerQuestData;
 import me.detraismc.ftbquests.models.Quest;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
@@ -39,7 +40,7 @@ public class MenuManager {
     }
 
     public void openCategory(Player player, Category category, int page) {
-        Map<String, me.detraismc.ftbquests.models.PlayerQuestData> questData = plugin.getPlayerDataManager().getQuestData(player.getUniqueId());
+        Map<String, PlayerQuestData> questData = plugin.getPlayerDataManager().getQuestData(player.getUniqueId());
 
         QuestMenu holder = new QuestMenu(category, page, questData);
         Inventory inv = Bukkit.createInventory(holder, category.getGuiRows() * 9, format(category.getGuiName()));
@@ -66,20 +67,27 @@ public class MenuManager {
             }
         }
 
+        // Load Quests
+        List<Quest> quests = new ArrayList<>(plugin.getQuestManager().getQuestsInCategory(category.getId()));
+
         // Load Pagination Items
         ConfigurationSection pageItems = category.getConfig().getConfigurationSection("item-page");
         if (pageItems != null) {
-            ConfigurationSection next = pageItems.getConfigurationSection("next");
-            if (next != null) inv.setItem(next.getInt("slot"), buildItem(next));
-            
-            ConfigurationSection prev = pageItems.getConfigurationSection("prev");
-            if (prev != null) inv.setItem(prev.getInt("slot"), buildItem(prev));
-        }
+            int questsPerPage = category.getQuestsSlots().size();
+            int totalPages = (int) Math.ceil((double) quests.size() / questsPerPage);
 
-        // Load Quests
-        List<Quest> quests = new ArrayList<>(plugin.getQuestManager().getQuestsInCategory(category.getId()));
+            if (page < totalPages) {
+                ConfigurationSection next = pageItems.getConfigurationSection("next");
+                if (next != null) inv.setItem(next.getInt("slot"), buildItem(next));
+            }
+
+            if (page > 1) {
+                ConfigurationSection prev = pageItems.getConfigurationSection("prev");
+                if (prev != null) inv.setItem(prev.getInt("slot"), buildItem(prev));
+            }
+        }
         List<Integer> questSlots = category.getQuestsSlots();
-        
+
         int questsPerPage = questSlots.size();
         int startIndex = (page - 1) * questsPerPage;
         
@@ -89,7 +97,7 @@ public class MenuManager {
             
             Quest quest = quests.get(questIndex);
             
-            me.detraismc.ftbquests.models.PlayerQuestData data = questData.getOrDefault(quest.getId(), new me.detraismc.ftbquests.models.PlayerQuestData(quest.getId(), 0, false, false));
+            PlayerQuestData data = questData.getOrDefault(quest.getId(), new PlayerQuestData(quest.getId(), 0, false, false));
             String state = data.isClaimed() ? "claimed" : (data.isCompleted() || data.getPoints() >= quest.getObjectiveAmount() ? "complete" : "ongoing");
 
             ConfigurationSection questDisplay = category.getConfig().getConfigurationSection("quests-item." + state);

@@ -8,3 +8,8 @@ commands:
   ftbquests:
     description: FTB Quests main command
     usage: /<command>
+
+permissions:
+  ftbquests.admin:
+    description: Allows use of admin commands
+    default: op
