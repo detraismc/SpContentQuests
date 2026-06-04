@@ -1,4 +1,4 @@
-package dark.detraismc.ezfurnace.utils;
+package me.detraismc.ftbquests.utils;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;

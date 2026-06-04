@@ -1,0 +1,134 @@
+gui-name: '&nQuests&8 -> Overworld'
+gui-rows: 6
+
+quests-slots: [2, 3, 4, 5, 6, 7, 8, 11, 12, 13, 14, 15, 16, 17, 20, 21, 22, 23, 24, 25, 26, 29, 30, 31, 32, 33, 34, 35, 38, 39, 40, 41, 42, 43, 44]
+
+item-page:
+  next:
+    slot: 51
+    item: ARROW
+    skullvalue: ''
+    modeldata: 0
+    amount: 1
+    name: '&aNext Page'
+    lore:
+      - ''
+      - '&f➥ Click'
+  prev:
+    slot: 48
+    item: ARROW
+    skullvalue: ''
+    modeldata: 0
+    amount: 1
+    name: '&aPrevious Page'
+    lore:
+      - ''
+      - '&f➥ Click'
+
+quests-item:
+  ongoing:
+    name: '<display>'
+    lore:
+      - ''
+      - '<desc>'
+      - ''
+      - '&6Progress:'
+      - '(<objective-value>/<objective-max-value>)'
+      - ''
+      - '&6Reward:'
+      - '<reward>'
+      - ''
+  complete:
+    item: CHEST_MINECART
+    skullvalue: ''
+    modeldata: 0
+    amount: 1
+    name: '<display>'
+    lore:
+      - ''
+      - '<desc>'
+      - ''
+      - '&6Progress:'
+      - '(<objective-value>/<objective-max-value>)'
+      - ''
+      - '&6Reward:'
+      - '<reward>'
+      - ''
+      - '&f➥ Click to Claim'
+  claimed:
+    item: MINECART
+    skullvalue: ''
+    modeldata: 0
+    amount: 1
+    name: '<display>'
+    lore:
+      - ''
+      - '<desc>'
+      - ''
+      - '&6Progress:'
+      - '(<objective-value>/<objective-max-value>)'
+      - ''
+      - '&6Reward:'
+      - '<reward>'
+      - ''
+      - '&b&lCOMPLETED'
+
+
+
+
+
+# Custom Items
+item-custom:
+  pane1:
+    slots: [1, 10, 19, 28, 37, 46]
+    item: BLACK_STAINED_GLASS_PANE
+    enchanted: false
+    skullvalue: ''
+    modeldata: 0
+    amount: 1
+    name: ' '
+    lore:
+      - ''
+    commands: []
+  pane2:
+    slots: [18, 27, 36, 45, 47, 48, 49, 50, 51, 52, 53]
+    item: GRAY_STAINED_GLASS_PANE
+    enchanted: false
+    skullvalue: ''
+    modeldata: 0
+    amount: 1
+    name: ' '
+    lore:
+      - ''
+    commands: []
+
+  introduction:
+    slot: 0
+    item: BARRIER
+    enchanted: true
+    skullvalue: ''
+    modeldata: 0
+    amount: 1
+    name: '<#58D057>Introduction'
+    lore:
+      - '&7Back to Blacksmith'
+      - '&7Menu.'
+      - ''
+      - '&f➥ Click'
+    commands:
+      - '[console] ftbquests open introduction %player%'
+
+  overworld:
+    slot: 9
+    item: BARRIER
+    enchanted: false
+    skullvalue: ''
+    modeldata: 0
+    amount: 1
+    name: '<#89E7CC>Overworld'
+    lore:
+      - '&7Back to Blacksmith'
+      - '&7Menu.'
+      - ''
+      - '&f➥ Click'
+    commands: []

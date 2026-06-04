@@ -1,7 +1,6 @@
-name: EzFurnace
+name: FTBQuests
 author: DetraisMC
-description: Slimefun Addon that add Easy Crafting Enchanced Furnace
+description: Plugin inspired by mod FTB Quests to make player have a straight goal in server
 version: 1.0
-main: dark.detraismc.ezfurnace.EzFurnace
+main: me.detraismc.ftbquests.FTBQuests
 api-version: 1.21
-depend: [Slimefun]

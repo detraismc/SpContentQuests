@@ -1,0 +1,56 @@
+VOTE_OUR_SERVER:
+  category: introduction
+  icon:
+    item: DIAMOND
+    model: 0
+    skullvalue: ''
+    display: '&bVote our Server'
+    desc:
+      - '&7Vote to the server 1 times.'
+      - '&7Use &f/vote &7to get vote link.'
+  objective:
+    # you need to add the command in your voting plugin: /ftbquests objective add VOTE_OUR_SERVER [player] 1
+    type: none
+    amount: 1
+  # this is for when the quest is left clicked, often to guide player where to go like recipe or warp.
+  objective-command:
+    - '[player] vote'
+  reward-display:
+    - '&f1x Diamond'
+  reward-command:
+    - '[console] give %player% diamond 1'
+
+BE_A_BAKER:
+  category: overworld
+  icon:
+    item: BREAD
+    model: 0
+    skullvalue: ''
+    display: '&6Ba a Baker'
+    desc:
+      - '&7Craft 10 breads.'
+  objective:
+    # Type List:
+    # -> BREAK_BLOCK
+    # -> PLACE_BLOCK
+    # -> CRAFT
+    # -> PICKUP_ITEM
+    # -> CONSUME
+    # -> SMELT
+    # -> ENCHANT
+    # -> FISHING
+    # -> THROW
+    # -> KILL
+    # -> BREED
+    # -> TAME
+    # -> SHEAR
+    type: CRAFT
+    amount: 10
+    required:
+      - BREAD
+  objective-command:
+    - '[console] recipe bread %player%'
+  reward-display:
+    - '&f3x Iron Ingot'
+  reward-command:
+    - '[console] give %player% iron_ingot 3'

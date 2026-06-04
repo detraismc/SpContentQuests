@@ -5,11 +5,11 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>dark.detraismc</groupId>
-    <artifactId>EzFurnace</artifactId>
+    <artifactId>FTBQuests</artifactId>
     <version>1.0</version>
     <packaging>jar</packaging>
 
-    <name>EzFurnace</name>
+    <name>FTBQuests</name>
 
     <properties>
         <java.version>21</java.version>
@@ -66,12 +66,6 @@
             <groupId>io.papermc.paper</groupId>
             <artifactId>paper-api</artifactId>
             <version>1.21.10-R0.1-SNAPSHOT</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.github.slimefun</groupId>
-            <artifactId>Slimefun4</artifactId>
-            <version>RC-27</version>
             <scope>provided</scope>
         </dependency>
 
