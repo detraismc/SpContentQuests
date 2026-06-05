@@ -25,12 +25,14 @@ mysql-settings:
 
 messages:
   usage: '&cUsage: /ftbquests help'
+  usage-objective: '&cUsage: /ftbquests objective <add|subtract|set> <quest> <player> [amount]'
+  usage-quest: '&cUsage: /ftbquests quest <reset|completed|claimed> <quest> <player>'
+  usage-open: '&cUsage: /ftbquests open <category> [player]'
   category-not-found: '&cCategory {category} not found.'
   player-not-found: '&cPlayer not found.'
   no-permission: '&cNo permission.'
   invalid-amount: '&cInvalid amount.'
   quest-not-found: '&cQuest not found.'
-  quest-completed: '&aQuest Completed: &e{quest}'
   points-added: '&aAdded {amount} points to {player} for quest {quest}'
   points-subtracted: '&aSubtracted {amount} points from {player} for quest {quest}'
   points-set: '&aSet {amount} points for {player} on quest {quest}'
@@ -41,3 +43,30 @@ messages:
   help-header: '&6&lFTB Quests Commands:'
   already-claimed: '&cYou have already claimed this reward!'
   reward-claimed: '&aClaimed reward for {quest}!'
+  player-only: '&cOnly players can use this command.'
+  quest-book-disabled: '&cQuest book is disabled.'
+  quest-book-cooldown: '&cPlease wait {time} seconds before using this again.'
+  quest-book-given: '&aYou received the Quest Book!'
+
+
+quest-book:
+  enable: true
+  auto-give-newbies: true
+  give-cooldown: 10
+  open-category: 'introduction'
+  item:
+    material: KNOWLEDGE_BOOK
+    skullvalue: ''
+    modeldata: 0
+    amount: 1
+    name: '&6Quest Book'
+    lore:
+      - ''
+      - '&7Contains every quests'
+      - '&7and your guide to play'
+      - '&7in this server.'
+      - ''
+      - '&f➥ Right-click'
+
+
+

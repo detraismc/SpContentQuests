@@ -1,6 +1,23 @@
 gui-name: '&nQuests&8 -> Overworld'
 gui-rows: 6
 
+sound:
+  click: UI_BUTTON_CLICK
+  complete: ENTITY_PLAYER_LEVELUP
+  claim: BLOCK_NOTE_BLOCK_PLING
+  no: ENTITY_VILLAGER_NO
+
+message-complete:
+  enable: true
+  message: '&aQuest Completed: &e{quest}'
+
+title-complete:
+  enable: false
+  title: '%quest%'
+  subtitle: '&fQuest Completed!'
+  fadein: 10
+  stay: 40
+
 quests-slots: [2, 3, 4, 5, 6, 7, 8, 11, 12, 13, 14, 15, 16, 17, 20, 21, 22, 23, 24, 25, 26, 29, 30, 31, 32, 33, 34, 35, 38, 39, 40, 41, 42, 43, 44]
 
 item-page:
@@ -27,32 +44,32 @@ item-page:
 
 quests-item:
   ongoing:
-    name: '<display>'
+    name: '&f<display>'
     lore:
       - ''
-      - '<desc>'
+      - '&7<desc>'
       - ''
       - '&6Progress:'
       - '&e(<objective-value>/<objective-max-value>)'
       - ''
       - '&6Reward:'
-      - '<reward>'
+      - '&7<reward>'
       - ''
   complete:
     item: CHEST_MINECART
     skullvalue: ''
     modeldata: 0
     amount: 1
-    name: '<display>'
+    name: '&f<display>'
     lore:
       - ''
-      - '<desc>'
+      - '&7<desc>'
       - ''
       - '&6Progress:'
       - '&e(<objective-value>/<objective-max-value>)'
       - ''
       - '&6Reward:'
-      - '<reward>'
+      - '&7<reward>'
       - ''
       - '&f➥ Click to Claim'
   claimed:
@@ -60,18 +77,38 @@ quests-item:
     skullvalue: ''
     modeldata: 0
     amount: 1
-    name: '<display>'
+    name: '&f<display>'
     lore:
       - ''
-      - '<desc>'
+      - '&7<desc>'
       - ''
       - '&6Progress:'
       - '&e(<objective-value>/<objective-max-value>)'
       - ''
       - '&6Reward:'
-      - '<reward>'
+      - '&7<reward>'
       - ''
       - '&b&lCOMPLETED'
+  locked:
+    item: BARRIER
+    skullvalue: ''
+    modeldata: 0
+    amount: 1
+    name: '&f<display>'
+    lore:
+      - ''
+      - '&7<desc>'
+      - ''
+      - '&6Progress:'
+      - '&e(<objective-value>/<objective-max-value>)'
+      - ''
+      - '&6Reward:'
+      - '&7<reward>'
+      - ''
+      - '&cRequire completion of:'
+      - '&e<required-quests>'
+      - ''
+      - '&4&lLOCKED'
 
 
 

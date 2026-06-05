@@ -1,21 +1,34 @@
 package me.detraismc.ftbquests;
 
 import me.detraismc.ftbquests.commands.FTBQuestsCommand;
+import me.detraismc.ftbquests.commands.QuestBookCommand;
 import me.detraismc.ftbquests.database.DatabaseManager;
 import me.detraismc.ftbquests.database.MySQLManager;
 import me.detraismc.ftbquests.database.SQLiteManager;
 import me.detraismc.ftbquests.listener.MenuListener;
 import me.detraismc.ftbquests.listener.ObjectiveListener;
 import me.detraismc.ftbquests.listener.PlayerJoinQuitListener;
+import me.detraismc.ftbquests.listener.QuestBookListener;
 import me.detraismc.ftbquests.managers.MenuManager;
 import me.detraismc.ftbquests.managers.PlayerDataManager;
 import me.detraismc.ftbquests.managers.QuestManager;
 import me.detraismc.ftbquests.utils.GitHubUpdateChecker;
 
+import me.detraismc.ftbquests.models.Category;
+import me.detraismc.ftbquests.models.Quest;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.Sound;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class FTBQuests extends JavaPlugin {
    private static FTBQuests instance;
@@ -61,18 +74,20 @@ public class FTBQuests extends JavaPlugin {
        
        questManager.loadAll();
 
-       // Register Listeners
-       getServer().getPluginManager().registerEvents(new MenuListener(this), this);
-       getServer().getPluginManager().registerEvents(new ObjectiveListener(this), this);
-       getServer().getPluginManager().registerEvents(new PlayerJoinQuitListener(this), this);
+        // Register Listeners
+        getServer().getPluginManager().registerEvents(new MenuListener(this), this);
+        getServer().getPluginManager().registerEvents(new ObjectiveListener(this), this);
+        getServer().getPluginManager().registerEvents(new PlayerJoinQuitListener(this), this);
+        getServer().getPluginManager().registerEvents(new QuestBookListener(this), this);
 
        // Auto-save task (config: auto-save-interval in minutes)
        int interval = getConfig().getInt("auto-save-interval", 5);
        Bukkit.getScheduler().runTaskTimer(this, () -> playerDataManager.saveAllAsync(), interval * 1200L, interval * 1200L);
 
-       // Register Commands
-       getCommand("ftbquests").setExecutor(new FTBQuestsCommand(this));
-       getCommand("ftbquests").setTabCompleter(new FTBQuestsCommand(this));
+        // Register Commands
+        getCommand("ftbquests").setExecutor(new FTBQuestsCommand(this));
+        getCommand("ftbquests").setTabCompleter(new FTBQuestsCommand(this));
+        getCommand("questbook").setExecutor(new QuestBookCommand(this));
 
    }
 
@@ -121,12 +136,104 @@ public class FTBQuests extends JavaPlugin {
        return playerDataManager;
    }
 
-   public String msg(String key, String... replacements) {
-       String message = getConfig().getString("messages." + key, "&cMissing message: " + key);
-       message = message.replace("&", "§");
-       for (int i = 0; i < replacements.length - 1; i += 2) {
-           message = message.replace(replacements[i], replacements[i + 1]);
-       }
-       return message;
-   }
+    public String msg(String key, String... replacements) {
+        String message = getConfig().getString("messages." + key, "&cMissing message: " + key);
+        message = message.replace("&", "§");
+        for (int i = 0; i < replacements.length - 1; i += 2) {
+            message = message.replace(replacements[i], replacements[i + 1]);
+        }
+        return message;
+    }
+
+    public void playSound(Player player, String categoryId, String soundKey) {
+        Category category = questManager.getCategory(categoryId);
+        if (category == null) return;
+
+        ConfigurationSection soundSection = category.getConfig().getConfigurationSection("sound");
+        if (soundSection == null || !soundSection.contains(soundKey)) return;
+
+        try {
+            Sound sound = Sound.valueOf(soundSection.getString(soundKey));
+            player.playSound(player.getLocation(), sound, 1.0f, 1.0f);
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    public void playQuestComplete(Player player, Quest quest) {
+        Category category = questManager.getCategory(quest.getCategoryId());
+        if (category == null) return;
+
+        ConfigurationSection catConfig = category.getConfig();
+
+        // Message
+        ConfigurationSection msgSection = catConfig.getConfigurationSection("message-complete");
+        if (msgSection != null && msgSection.getBoolean("enable", true)) {
+            String msg = msgSection.getString("message", "&aQuest Completed: &e{quest}")
+                    .replace("{quest}", quest.getConfig().getString("icon.display", quest.getId()));
+            player.sendMessage(msg.replace("&", "§"));
+        }
+
+        // Sound
+        playSound(player, quest.getCategoryId(), "complete");
+
+        // Title
+        ConfigurationSection titleSection = catConfig.getConfigurationSection("title-complete");
+        if (titleSection != null && titleSection.getBoolean("enable", false)) {
+            String questDisplay = quest.getConfig().getString("icon.display", quest.getId());
+            String title = titleSection.getString("title", "%quest%").replace("%quest%", questDisplay);
+            String subtitle = titleSection.getString("subtitle", "").replace("%quest%", questDisplay);
+            int fadein = titleSection.getInt("fadein", 10);
+            int stay = titleSection.getInt("stay", 40);
+            int fadeout = titleSection.getInt("fadeout", 10);
+            player.sendTitle(
+                    title.replace("&", "§"),
+                    subtitle.replace("&", "§"),
+                    fadein, stay, fadeout
+            );
+        }
+    }
+
+    public boolean isQuestBookEnabled() {
+        return getConfig().getBoolean("quest-book.enable", false);
+    }
+
+    public boolean isQuestBookAutoGive() {
+        return getConfig().getBoolean("quest-book.auto-give-newbies", false);
+    }
+
+    public int getQuestBookCooldown() {
+        return getConfig().getInt("quest-book.give-cooldown", 10);
+    }
+
+    public String getQuestBookOpenCategory() {
+        return getConfig().getString("quest-book.open-category", "introduction");
+    }
+
+    public ItemStack getQuestBookItem() {
+        ConfigurationSection itemSection = getConfig().getConfigurationSection("quest-book.item");
+        if (itemSection == null) return null;
+
+        String matStr = itemSection.getString("material", "KNOWLEDGE_BOOK");
+        Material mat = Material.matchMaterial(matStr);
+        if (mat == null) mat = Material.KNOWLEDGE_BOOK;
+
+        ItemStack item = new ItemStack(mat, itemSection.getInt("amount", 1));
+        ItemMeta meta = item.getItemMeta();
+        if (meta != null) {
+            if (itemSection.contains("name")) {
+                meta.displayName(Component.text(itemSection.getString("name").replace("&", "§")));
+            }
+            if (itemSection.contains("lore")) {
+                List<Component> lore = new ArrayList<>();
+                for (String line : itemSection.getStringList("lore")) {
+                    lore.add(Component.text(line.replace("&", "§")));
+                }
+                meta.lore(lore);
+            }
+            if (itemSection.contains("modeldata")) {
+                meta.setCustomModelData(itemSection.getInt("modeldata"));
+            }
+            item.setItemMeta(meta);
+        }
+        return item;
+    }
 }

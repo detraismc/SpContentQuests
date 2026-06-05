@@ -37,11 +37,18 @@ public class MenuListener implements Listener {
             ConfigurationSection pageItems = category.getConfig().getConfigurationSection("item-page");
             if (pageItems != null) {
                 if (pageItems.contains("next") && slot == pageItems.getInt("next.slot")) {
-                    plugin.getMenuManager().openCategory(player, category, menu.getPage() + 1);
+                    int questsPerPage = category.getQuestsSlots().size();
+                    var allQuests = plugin.getQuestManager().getQuestsInCategory(category.getId());
+                    int totalPages = (int) Math.ceil((double) allQuests.size() / questsPerPage);
+                    if (menu.getPage() < totalPages) {
+                        plugin.playSound(player, category.getId(), "click");
+                        plugin.getMenuManager().openCategory(player, category, menu.getPage() + 1);
+                    }
                     return;
                 }
                 if (pageItems.contains("prev") && slot == pageItems.getInt("prev.slot")) {
                     if (menu.getPage() > 1) {
+                        plugin.playSound(player, category.getId(), "click");
                         plugin.getMenuManager().openCategory(player, category, menu.getPage() - 1);
                     }
                     return;
@@ -62,9 +69,12 @@ public class MenuListener implements Listener {
                         }
                         
                         if (match && itemCfg.contains("commands")) {
+                            plugin.playSound(player, category.getId(), "click");
                             for (String cmd : itemCfg.getStringList("commands")) {
                                 cmd = cmd.replace("%player%", player.getName());
-                                if (cmd.startsWith("[console] ")) {
+                                if (cmd.equalsIgnoreCase("[close]")) {
+                                    player.closeInventory();
+                                } else if (cmd.startsWith("[console] ")) {
                                     Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd.substring(10));
                                 } else if (cmd.startsWith("[player] ")) {
                                     player.performCommand(cmd.substring(9));
@@ -90,14 +100,18 @@ public class MenuListener implements Listener {
                     boolean isComplete = data.isCompleted() || data.getPoints() >= quest.getObjectiveAmount();
 
                     if (data.isClaimed()) {
+                        plugin.playSound(player, category.getId(), "no");
                         player.sendMessage(plugin.msg("already-claimed"));
                     } else if (isComplete) {
                         // Claim reward
+                        plugin.playSound(player, category.getId(), "claim");
                         player.sendMessage(plugin.msg("reward-claimed", "{quest}", quest.getId()));
                         if (quest.getRewardCommand() != null) {
                             for (String cmd : quest.getRewardCommand()) {
                                 cmd = cmd.replace("%player%", player.getName());
-                                if (cmd.startsWith("[console] ")) {
+                                if (cmd.equalsIgnoreCase("[close]")) {
+                                    player.closeInventory();
+                                } else if (cmd.startsWith("[console] ")) {
                                     Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd.substring(10));
                                 } else if (cmd.startsWith("[player] ")) {
                                     player.performCommand(cmd.substring(9));
@@ -112,10 +126,13 @@ public class MenuListener implements Listener {
                         
                     } else {
                         // Ongoing interaction (e.g., guide)
+                        plugin.playSound(player, category.getId(), "click");
                         if (quest.getObjectiveCommand() != null) {
                             for (String cmd : quest.getObjectiveCommand()) {
                                 cmd = cmd.replace("%player%", player.getName());
-                                if (cmd.startsWith("[console] ")) {
+                                if (cmd.equalsIgnoreCase("[close]")) {
+                                    player.closeInventory();
+                                } else if (cmd.startsWith("[console] ")) {
                                     Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd.substring(10));
                                 } else if (cmd.startsWith("[player] ")) {
                                     player.performCommand(cmd.substring(9));

@@ -8,8 +8,14 @@ commands:
   ftbquests:
     description: FTB Quests main command
     usage: /<command>
+  questbook:
+    description: Get the Quest Book
+    usage: /<command>
 
 permissions:
   ftbquests.admin:
     description: Allows use of admin commands
     default: op
+  ftbquests.questbook:
+    description: Allows use of /questbook command
+    default: true

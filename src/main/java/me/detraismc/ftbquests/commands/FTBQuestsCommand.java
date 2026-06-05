@@ -28,8 +28,7 @@ public class FTBQuestsCommand implements CommandExecutor, TabCompleter {
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label,
             @NotNull String[] args) {
         if (args.length == 0) {
-            sender.sendMessage(plugin.msg("usage"));
-            return true;
+            return handleHelp(sender);
         }
 
         switch (args[0].toLowerCase()) {
@@ -83,13 +82,13 @@ public class FTBQuestsCommand implements CommandExecutor, TabCompleter {
         }
 
         if (args.length < 4) {
-            sender.sendMessage(plugin.msg("usage"));
+            sender.sendMessage(plugin.msg("usage-objective"));
             return true;
         }
 
         String action = args[1].toLowerCase();
         if (!action.equals("add") && !action.equals("subtract") && !action.equals("set")) {
-            sender.sendMessage(plugin.msg("usage"));
+            sender.sendMessage(plugin.msg("usage-objective"));
             return true;
         }
 
@@ -128,8 +127,7 @@ public class FTBQuestsCommand implements CommandExecutor, TabCompleter {
                     data.setPoints(newPoints);
                     if (newPoints >= quest.getObjectiveAmount()) {
                         data.setCompleted(true);
-                        target.sendMessage(plugin.msg("quest-completed", "{quest}",
-                                quest.getConfig().getString("icon.display", quest.getId()).replace("&", "§")));
+                        plugin.playQuestComplete(target, quest);
                     }
                 }
                 sender.sendMessage(plugin.msg("points-added", "{amount}", String.valueOf(amount),
@@ -153,8 +151,7 @@ public class FTBQuestsCommand implements CommandExecutor, TabCompleter {
                 data.setPoints(amount);
                 if (amount >= quest.getObjectiveAmount()) {
                     data.setCompleted(true);
-                    target.sendMessage(plugin.msg("quest-completed", "{quest}",
-                            quest.getConfig().getString("icon.display", quest.getId()).replace("&", "§")));
+                    plugin.playQuestComplete(target, quest);
                 } else {
                     data.setCompleted(false);
                 }
@@ -174,13 +171,13 @@ public class FTBQuestsCommand implements CommandExecutor, TabCompleter {
         }
 
         if (args.length < 4) {
-            sender.sendMessage(plugin.msg("usage"));
+            sender.sendMessage(plugin.msg("usage-quest"));
             return true;
         }
 
         String action = args[1].toLowerCase();
         if (!action.equals("reset") && !action.equals("completed") && !action.equals("claimed")) {
-            sender.sendMessage(plugin.msg("usage"));
+            sender.sendMessage(plugin.msg("usage-quest"));
             return true;
         }
 
@@ -227,7 +224,7 @@ public class FTBQuestsCommand implements CommandExecutor, TabCompleter {
 
     private boolean handleOpen(CommandSender sender, String[] args) {
         if (args.length < 2) {
-            sender.sendMessage(plugin.msg("usage"));
+            sender.sendMessage(plugin.msg("usage-open"));
             return true;
         }
 

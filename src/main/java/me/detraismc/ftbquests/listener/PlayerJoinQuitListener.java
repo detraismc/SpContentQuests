@@ -15,7 +15,12 @@ public class PlayerJoinQuitListener implements Listener {
 
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
-        plugin.getPlayerDataManager().loadPlayer(event.getPlayer().getUniqueId());
+        var player = event.getPlayer();
+        plugin.getPlayerDataManager().loadPlayer(player.getUniqueId());
+
+        if (plugin.isQuestBookEnabled() && plugin.isQuestBookAutoGive() && !player.hasPlayedBefore()) {
+            player.getInventory().addItem(plugin.getQuestBookItem());
+        }
     }
 
     @EventHandler

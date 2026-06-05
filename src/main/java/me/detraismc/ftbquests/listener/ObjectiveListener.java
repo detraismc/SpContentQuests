@@ -59,7 +59,7 @@ public class ObjectiveListener implements Listener {
 
         if (newPoints >= quest.getObjectiveAmount()) {
             data.setCompleted(true);
-            player.sendMessage(plugin.msg("quest-completed", "{quest}", quest.getConfig().getString("icon.display", quest.getId()).replace("&", "§")));
+            plugin.playQuestComplete(player, quest);
         }
     }
 
