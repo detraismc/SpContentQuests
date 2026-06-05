@@ -15,6 +15,7 @@ VOTE_OUR_SERVER:
   # this is for when the quest is left clicked, often to guide player where to go like recipe or warp.
   objective-command:
     - '[player] vote'
+    - '[close]'
   reward-display:
     - '&f1x Diamond'
   reward-command:
@@ -44,6 +45,20 @@ BE_A_BAKER:
     # -> BREED
     # -> TAME
     # -> SHEAR
+    # -> MYTHICMOBS_KILL (requires MythicMobs)
+    # -> SLIMEFUN_CRAFT_ENHANCED_WORKBENCH (requires Slimefun)
+    # -> SLIMEFUN_CRAFT_GRIND_STONE
+    # -> SLIMEFUN_CRAFT_ORE_CRUSHER
+    # -> SLIMEFUN_CRAFT_COMPRESSOR
+    # -> SLIMEFUN_CRAFT_SMELTERY
+    # -> SLIMEFUN_CRAFT_PRESSURE_CHAMBER
+    # -> SLIMEFUN_CRAFT_MAGIC_WORKBENCH
+    # -> SLIMEFUN_USE_JUICER
+    # -> SLIMEFUN_USE_ORE_WASHER
+    # -> SLIMEFUN_USE_TABLE_SAW
+    # -> SLIMEFUN_USE_COMPOSTER
+    # -> SLIMEFUN_USE_PANNING
+    # -> SLIMEFUN_USE_CRUCIBLE
     type: CRAFT
     amount: 10
     required:

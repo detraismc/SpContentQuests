@@ -141,8 +141,8 @@ item-custom:
 
   introduction:
     slot: 0
-    item: BARRIER
-    enchanted: true
+    item: BOOK
+    enchanted: false
     skullvalue: ''
     modeldata: 0
     amount: 1
@@ -157,8 +157,8 @@ item-custom:
 
   overworld:
     slot: 9
-    item: BARRIER
-    enchanted: false
+    item: GRASS_BLOCK
+    enchanted: true
     skullvalue: ''
     modeldata: 0
     amount: 1

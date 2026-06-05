@@ -17,6 +17,7 @@ import me.detraismc.ftbquests.utils.GitHubUpdateChecker;
 import me.detraismc.ftbquests.models.Category;
 import me.detraismc.ftbquests.models.Quest;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -79,6 +80,16 @@ public class FTBQuests extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new ObjectiveListener(this), this);
         getServer().getPluginManager().registerEvents(new PlayerJoinQuitListener(this), this);
         getServer().getPluginManager().registerEvents(new QuestBookListener(this), this);
+
+        // Soft-depend: MythicMobs
+        if (Bukkit.getPluginManager().getPlugin("MythicMobs") != null) {
+            me.detraismc.ftbquests.integration.MythicMobsHook.register(this);
+        }
+
+        // Soft-depend: Slimefun
+        if (Bukkit.getPluginManager().getPlugin("Slimefun") != null) {
+            me.detraismc.ftbquests.integration.SlimefunHook.register(this);
+        }
 
        // Auto-save task (config: auto-save-interval in minutes)
        int interval = getConfig().getInt("auto-save-interval", 5);
@@ -204,6 +215,10 @@ public class FTBQuests extends JavaPlugin {
         return getConfig().getInt("quest-book.give-cooldown", 10);
     }
 
+    public int getGuiClickCooldown() {
+        return getConfig().getInt("gui-click-cooldown", 200);
+    }
+
     public String getQuestBookOpenCategory() {
         return getConfig().getString("quest-book.open-category", "introduction");
     }
@@ -220,12 +235,22 @@ public class FTBQuests extends JavaPlugin {
         ItemMeta meta = item.getItemMeta();
         if (meta != null) {
             if (itemSection.contains("name")) {
-                meta.displayName(Component.text(itemSection.getString("name").replace("&", "§")));
+                String name = itemSection.getString("name").replace("&", "§");
+                Component nameComponent = Component.text(name);
+                if (!name.contains("§o")) {
+                    nameComponent = nameComponent.decoration(TextDecoration.ITALIC, false);
+                }
+                meta.displayName(nameComponent);
             }
             if (itemSection.contains("lore")) {
                 List<Component> lore = new ArrayList<>();
                 for (String line : itemSection.getStringList("lore")) {
-                    lore.add(Component.text(line.replace("&", "§")));
+                    String raw = line.replace("&", "§");
+                    Component lineComponent = Component.text(raw);
+                    if (!raw.contains("§o")) {
+                        lineComponent = lineComponent.decoration(TextDecoration.ITALIC, false);
+                    }
+                    lore.add(lineComponent);
                 }
                 meta.lore(lore);
             }

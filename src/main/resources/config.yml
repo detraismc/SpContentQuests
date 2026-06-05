@@ -6,6 +6,9 @@ update-checker: true
 # Time in minutes between automatic database saves
 auto-save-interval: 5
 
+# Cooldown in milliseconds between GUI clicks to prevent spam
+gui-click-cooldown: 500
+
 mysql-settings:
 
   # Enable MySQL
@@ -47,6 +50,7 @@ messages:
   quest-book-disabled: '&cQuest book is disabled.'
   quest-book-cooldown: '&cPlease wait {time} seconds before using this again.'
   quest-book-given: '&aYou received the Quest Book!'
+  gui-cooldown: '&cPlease wait before clicking again.'
 
 
 quest-book:

@@ -6,6 +6,7 @@ import me.detraismc.ftbquests.models.Category;
 import me.detraismc.ftbquests.models.PlayerQuestData;
 import me.detraismc.ftbquests.models.Quest;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Bukkit;
@@ -33,9 +34,13 @@ public class MenuManager {
         if (text == null) return Component.empty();
         // Fallback for hex using MiniMessage or legacy &
         if (text.contains("<#") || text.contains("<")) {
-            return miniMessage.deserialize(text);
+            return miniMessage.deserialize("<!italic>" + text);
         } else {
-            return legacySerializer.deserialize(text);
+            Component component = legacySerializer.deserialize(text);
+            if (!text.contains("&o")) {
+                component = component.decoration(TextDecoration.ITALIC, false);
+            }
+            return component;
         }
     }
 

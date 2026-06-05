@@ -12,8 +12,13 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.InventoryHolder;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+
 public class MenuListener implements Listener {
     private final FTBQuests plugin;
+    private final Map<UUID, Long> lastClickTime = new HashMap<>();
 
     public MenuListener(FTBQuests plugin) {
         this.plugin = plugin;
@@ -28,9 +33,19 @@ public class MenuListener implements Listener {
             
             if (event.getCurrentItem() == null) return;
             
+            long now = System.currentTimeMillis();
+            Player player = (Player) event.getWhoClicked();
+            UUID uuid = player.getUniqueId();
+            long cooldown = plugin.getGuiClickCooldown();
+            Long lastClick = lastClickTime.get(uuid);
+            if (lastClick != null && (now - lastClick) < cooldown) {
+                player.sendMessage(plugin.msg("gui-cooldown"));
+                return;
+            }
+            lastClickTime.put(uuid, now);
+            
             QuestMenu menu = (QuestMenu) holder;
             Category category = menu.getCategory();
-            Player player = (Player) event.getWhoClicked();
             int slot = event.getRawSlot();
 
             // Check if it's a pagination button
@@ -105,7 +120,7 @@ public class MenuListener implements Listener {
                     } else if (isComplete) {
                         // Claim reward
                         plugin.playSound(player, category.getId(), "claim");
-                        player.sendMessage(plugin.msg("reward-claimed", "{quest}", quest.getId()));
+                        player.sendMessage(plugin.msg("reward-claimed", "{quest}", quest.getConfig().getString("icon.display", quest.getId())));
                         if (quest.getRewardCommand() != null) {
                             for (String cmd : quest.getRewardCommand()) {
                                 cmd = cmd.replace("%player%", player.getName());

@@ -5,11 +5,14 @@ import me.detraismc.ftbquests.models.Category;
 import me.detraismc.ftbquests.models.PlayerQuestData;
 import me.detraismc.ftbquests.models.Quest;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockPistonExtendEvent;
+import org.bukkit.event.block.BlockPistonRetractEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.enchantment.EnchantItemEvent;
 import org.bukkit.event.entity.EntityBreedEvent;
@@ -24,8 +27,12 @@ import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.event.player.PlayerShearEntityEvent;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.HashSet;
+import java.util.Set;
+
 public class ObjectiveListener implements Listener {
     private final FTBQuests plugin;
+    private final Set<Location> playerPlacedBlocks = new HashSet<>();
 
     public ObjectiveListener(FTBQuests plugin) {
         this.plugin = plugin;
@@ -65,11 +72,13 @@ public class ObjectiveListener implements Listener {
 
     @EventHandler(ignoreCancelled = true)
     public void onBlockBreak(BlockBreakEvent event) {
+        if (playerPlacedBlocks.remove(event.getBlock().getLocation())) return;
         addProgress(event.getPlayer(), "BREAK_BLOCK", event.getBlock().getType().name(), 1);
     }
 
     @EventHandler(ignoreCancelled = true)
     public void onBlockPlace(BlockPlaceEvent event) {
+        playerPlacedBlocks.add(event.getBlock().getLocation());
         addProgress(event.getPlayer(), "PLACE_BLOCK", event.getBlock().getType().name(), 1);
     }
 
@@ -160,5 +169,25 @@ public class ObjectiveListener implements Listener {
     @EventHandler(ignoreCancelled = true)
     public void onShear(PlayerShearEntityEvent event) {
         addProgress(event.getPlayer(), "SHEAR", event.getEntity().getType().name(), 1);
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onPistonExtend(BlockPistonExtendEvent event) {
+        for (var block : event.getBlocks()) {
+            Location loc = block.getLocation();
+            if (playerPlacedBlocks.remove(loc)) {
+                playerPlacedBlocks.add(loc.add(event.getDirection().getDirection()));
+            }
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onPistonRetract(BlockPistonRetractEvent event) {
+        for (var block : event.getBlocks()) {
+            Location loc = block.getLocation();
+            if (playerPlacedBlocks.remove(loc)) {
+                playerPlacedBlocks.add(loc.add(event.getDirection().getDirection()));
+            }
+        }
     }
 }

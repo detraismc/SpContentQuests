@@ -4,6 +4,7 @@ description: Plugin inspired by mod FTB Quests to make player have a straight go
 version: 1.0
 main: me.detraismc.ftbquests.FTBQuests
 api-version: 1.21
+softdepend: [MythicMobs, Slimefun]
 commands:
   ftbquests:
     description: FTB Quests main command
