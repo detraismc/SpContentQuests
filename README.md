@@ -1,6 +1,6 @@
 # FTB Quests
 
-A lightweight Minecraft plugin that adds a quest system to your server. Players can complete objectives, earn rewards, and track their progress through an intuitive GUI.
+A java Minecraft plugin that adds a quest system to your server. Players can complete objectives, earn rewards, and track their progress through an intuitive GUI.
 
 ## Features
 
