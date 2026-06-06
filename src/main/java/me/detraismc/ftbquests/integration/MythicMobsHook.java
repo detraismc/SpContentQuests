@@ -10,6 +10,13 @@ import java.lang.reflect.Method;
 
 public class MythicMobsHook {
 
+    private static boolean matchesRequired(String required, String value) {
+        if (required.regionMatches(true, 0, "CONTAINS:", 0, 9)) {
+            return value.toLowerCase().contains(required.substring(9).toLowerCase());
+        }
+        return required.equalsIgnoreCase(value);
+    }
+
     public static void register(FTBQuests plugin) {
         try {
             Class<?> eventClass = Class.forName("io.lumine.mythic.bukkit.events.MythicMobDeathEvent");
@@ -48,7 +55,7 @@ public class MythicMobsHook {
                             .filter(q -> "MYTHICMOBS_KILL".equalsIgnoreCase(q.getObjectiveType()))
                             .filter(q -> q.getObjectiveRequired() == null
                                 || q.getObjectiveRequired().isEmpty()
-                                || q.getObjectiveRequired().stream().anyMatch(r -> r.equalsIgnoreCase(mobName)))
+                                || q.getObjectiveRequired().stream().anyMatch(r -> matchesRequired(r, mobName)))
                             .forEach(q -> {
                                 PlayerQuestData data = plugin.getPlayerDataManager()
                                     .getOrCreateQuestData(player.getUniqueId(), q.getId());

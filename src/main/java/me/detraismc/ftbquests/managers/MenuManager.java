@@ -77,11 +77,20 @@ public class MenuManager {
 
         // Load Pagination Items
         ConfigurationSection pageItems = category.getConfig().getConfigurationSection("item-page");
-        if (pageItems != null) {
-            int questsPerPage = category.getQuestsSlots().size();
-            int totalPages = (int) Math.ceil((double) quests.size() / questsPerPage);
+        boolean autoLayout = category.isQuestsAutomaticLayout();
 
-            if (page < totalPages) {
+        if (pageItems != null) {
+            int maxPage = 1;
+            if (autoLayout) {
+                int questsPerPage = category.getQuestsSlots().size();
+                maxPage = (int) Math.ceil((double) quests.size() / questsPerPage);
+            } else {
+                for (Quest q : quests) {
+                    if (q.getPage() > maxPage) maxPage = q.getPage();
+                }
+            }
+
+            if (page < maxPage) {
                 ConfigurationSection next = pageItems.getConfigurationSection("next");
                 if (next != null) inv.setItem(next.getInt("slot"), buildItem(next));
             }
@@ -91,59 +100,110 @@ public class MenuManager {
                 if (prev != null) inv.setItem(prev.getInt("slot"), buildItem(prev));
             }
         }
-        List<Integer> questSlots = category.getQuestsSlots();
 
-        int questsPerPage = questSlots.size();
-        int startIndex = (page - 1) * questsPerPage;
-        
-        for (int i = 0; i < questsPerPage; i++) {
-            int questIndex = startIndex + i;
-            if (questIndex >= quests.size()) break;
-            
-            Quest quest = quests.get(questIndex);
-            
-            PlayerQuestData data = questData.getOrDefault(quest.getId(), new PlayerQuestData(quest.getId(), 0, false, false));
-            String state = data.isClaimed() ? "claimed" : (data.isCompleted() || data.getPoints() >= quest.getObjectiveAmount() ? "complete" : "ongoing");
+        if (autoLayout) {
+            List<Integer> questSlots = category.getQuestsSlots();
+            int questsPerPage = questSlots.size();
+            int startIndex = (page - 1) * questsPerPage;
 
-            ConfigurationSection questDisplay = category.getConfig().getConfigurationSection("quests-item." + state);
-            if (questDisplay != null) {
-                ConfigurationSection questIcon = quest.getConfig().getConfigurationSection("icon");
-                ItemStack icon = buildItem(questIcon != null ? questIcon : questDisplay);
-                
-                if (questDisplay.contains("item")) {
-                    icon.setType(Material.matchMaterial(questDisplay.getString("item", "STONE")));
-                }
+            for (int i = 0; i < questsPerPage; i++) {
+                int questIndex = startIndex + i;
+                if (questIndex >= quests.size()) break;
 
-                ItemMeta meta = icon.getItemMeta();
-                if (meta != null) {
-                    String displayName = quest.getConfig().getString("icon.display", "&cUnknown");
-                    if (questDisplay.contains("name")) {
-                        displayName = questDisplay.getString("name").replace("<display>", displayName);
+                Quest quest = quests.get(questIndex);
+                PlayerQuestData data = questData.getOrDefault(quest.getId(), new PlayerQuestData(quest.getId(), 0, false, false));
+                String state = data.isClaimed() ? "claimed" : (data.isCompleted() || data.getPoints() >= quest.getObjectiveAmount() ? "complete" : "ongoing");
+
+                ConfigurationSection questDisplay = category.getConfig().getConfigurationSection("quests-item." + state);
+                if (questDisplay != null) {
+                    ConfigurationSection questIcon = quest.getConfig().getConfigurationSection("icon");
+                    ItemStack icon = buildItem(questIcon != null ? questIcon : questDisplay);
+
+                    if (questDisplay.contains("item")) {
+                        icon.setType(Material.matchMaterial(questDisplay.getString("item", "STONE")));
                     }
-                    meta.displayName(format(displayName));
-                    
-                    List<Component> lore = new ArrayList<>();
-                    if (questDisplay.contains("lore")) {
-                        for (String line : questDisplay.getStringList("lore")) {
-                            if (line.contains("<desc>")) {
-                                if (quest.getConfig().contains("icon.desc")) {
-                                    for (String descLine : quest.getConfig().getStringList("icon.desc")) {
-                                        lore.add(format(descLine));
+
+                    ItemMeta meta = icon.getItemMeta();
+                    if (meta != null) {
+                        String displayName = quest.getConfig().getString("icon.display", "&cUnknown");
+                        if (questDisplay.contains("name")) {
+                            displayName = questDisplay.getString("name").replace("<display>", displayName);
+                        }
+                        meta.displayName(format(displayName));
+
+                        List<Component> lore = new ArrayList<>();
+                        if (questDisplay.contains("lore")) {
+                            for (String line : questDisplay.getStringList("lore")) {
+                                if (line.contains("<desc>")) {
+                                    if (quest.getConfig().contains("icon.desc")) {
+                                        for (String descLine : quest.getConfig().getStringList("icon.desc")) {
+                                            lore.add(format(descLine));
+                                        }
                                     }
+                                } else {
+                                    line = line.replace("<objective-value>", String.valueOf(data.getPoints()));
+                                    line = line.replace("<objective-max-value>", String.valueOf(quest.getObjectiveAmount()));
+                                    line = line.replace("<reward>", quest.getConfig().getStringList("reward-display").isEmpty() ? "" : String.join(", ", quest.getConfig().getStringList("reward-display")));
+                                    lore.add(format(line));
                                 }
-                            } else {
-                                line = line.replace("<objective-value>", String.valueOf(data.getPoints()));
-                                line = line.replace("<objective-max-value>", String.valueOf(quest.getObjectiveAmount()));
-                                line = line.replace("<reward>", quest.getConfig().getStringList("reward-display").isEmpty() ? "" : String.join(", ", quest.getConfig().getStringList("reward-display")));
-                                lore.add(format(line));
                             }
                         }
+                        meta.lore(lore);
+                        icon.setItemMeta(meta);
                     }
-                    meta.lore(lore);
-                    icon.setItemMeta(meta);
+
+                    inv.setItem(questSlots.get(i), icon);
                 }
-                
-                inv.setItem(questSlots.get(i), icon);
+            }
+        } else {
+            for (Quest quest : quests) {
+                if (quest.getPage() != page) continue;
+                int slot = quest.getSlot();
+                if (slot < 0 || slot >= inv.getSize()) continue;
+
+                PlayerQuestData data = questData.getOrDefault(quest.getId(), new PlayerQuestData(quest.getId(), 0, false, false));
+                String state = data.isClaimed() ? "claimed" : (data.isCompleted() || data.getPoints() >= quest.getObjectiveAmount() ? "complete" : "ongoing");
+
+                ConfigurationSection questDisplay = category.getConfig().getConfigurationSection("quests-item." + state);
+                if (questDisplay != null) {
+                    ConfigurationSection questIcon = quest.getConfig().getConfigurationSection("icon");
+                    ItemStack icon = buildItem(questIcon != null ? questIcon : questDisplay);
+
+                    if (questDisplay.contains("item")) {
+                        icon.setType(Material.matchMaterial(questDisplay.getString("item", "STONE")));
+                    }
+
+                    ItemMeta meta = icon.getItemMeta();
+                    if (meta != null) {
+                        String displayName = quest.getConfig().getString("icon.display", "&cUnknown");
+                        if (questDisplay.contains("name")) {
+                            displayName = questDisplay.getString("name").replace("<display>", displayName);
+                        }
+                        meta.displayName(format(displayName));
+
+                        List<Component> lore = new ArrayList<>();
+                        if (questDisplay.contains("lore")) {
+                            for (String line : questDisplay.getStringList("lore")) {
+                                if (line.contains("<desc>")) {
+                                    if (quest.getConfig().contains("icon.desc")) {
+                                        for (String descLine : quest.getConfig().getStringList("icon.desc")) {
+                                            lore.add(format(descLine));
+                                        }
+                                    }
+                                } else {
+                                    line = line.replace("<objective-value>", String.valueOf(data.getPoints()));
+                                    line = line.replace("<objective-max-value>", String.valueOf(quest.getObjectiveAmount()));
+                                    line = line.replace("<reward>", quest.getConfig().getStringList("reward-display").isEmpty() ? "" : String.join(", ", quest.getConfig().getStringList("reward-display")));
+                                    lore.add(format(line));
+                                }
+                            }
+                        }
+                        meta.lore(lore);
+                        icon.setItemMeta(meta);
+                    }
+
+                    inv.setItem(slot, icon);
+                }
             }
         }
 

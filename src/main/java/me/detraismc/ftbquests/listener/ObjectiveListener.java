@@ -5,6 +5,7 @@ import me.detraismc.ftbquests.models.Category;
 import me.detraismc.ftbquests.models.PlayerQuestData;
 import me.detraismc.ftbquests.models.Quest;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
@@ -26,6 +27,7 @@ import org.bukkit.event.player.PlayerFishEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.event.player.PlayerShearEntityEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -45,7 +47,7 @@ public class ObjectiveListener implements Listener {
 
             boolean match = true;
             if (quest.getObjectiveRequired() != null && !quest.getObjectiveRequired().isEmpty()) {
-                match = quest.getObjectiveRequired().stream().anyMatch(req -> req.equalsIgnoreCase(requiredMatch));
+                match = quest.getObjectiveRequired().stream().anyMatch(req -> matchesRequired(req, requiredMatch));
             }
 
             if (match) {
@@ -103,8 +105,34 @@ public class ObjectiveListener implements Listener {
                 amount = Math.max(count, result.getAmount());
             }
 
-            addProgress(player, "CRAFT", result.getType().name(), amount);
+            if (isCustomItem(result)) {
+                addProgress(player, "CRAFT_CUSTOM", getCustomItemMatch(result), amount);
+            } else {
+                addProgress(player, "CRAFT", result.getType().name(), amount);
+            }
         }
+    }
+
+    private boolean isCustomItem(ItemStack item) {
+        ItemMeta meta = item.getItemMeta();
+        if (meta == null) return false;
+        ItemMeta defaultMeta = new ItemStack(item.getType()).getItemMeta();
+        return !meta.equals(defaultMeta);
+    }
+
+    private String getCustomItemMatch(ItemStack item) {
+        ItemMeta meta = item.getItemMeta();
+        if (meta != null && meta.hasDisplayName()) {
+            return ChatColor.stripColor(meta.getDisplayName());
+        }
+        return item.getType().name();
+    }
+
+    private static boolean matchesRequired(String required, String value) {
+        if (required.regionMatches(true, 0, "CONTAINS:", 0, 9)) {
+            return value.toLowerCase().contains(required.substring(9).toLowerCase());
+        }
+        return required.equalsIgnoreCase(value);
     }
 
     @EventHandler(ignoreCancelled = true)

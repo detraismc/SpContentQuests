@@ -4,6 +4,7 @@ import me.detraismc.ftbquests.FTBQuests;
 import me.detraismc.ftbquests.menus.QuestMenu;
 import me.detraismc.ftbquests.models.Category;
 import me.detraismc.ftbquests.models.PlayerQuestData;
+import me.detraismc.ftbquests.models.Quest;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -52,10 +53,18 @@ public class MenuListener implements Listener {
             ConfigurationSection pageItems = category.getConfig().getConfigurationSection("item-page");
             if (pageItems != null) {
                 if (pageItems.contains("next") && slot == pageItems.getInt("next.slot")) {
-                    int questsPerPage = category.getQuestsSlots().size();
-                    var allQuests = plugin.getQuestManager().getQuestsInCategory(category.getId());
-                    int totalPages = (int) Math.ceil((double) allQuests.size() / questsPerPage);
-                    if (menu.getPage() < totalPages) {
+                    int maxPage;
+                    if (category.isQuestsAutomaticLayout()) {
+                        int questsPerPage = category.getQuestsSlots().size();
+                        var allQuests = plugin.getQuestManager().getQuestsInCategory(category.getId());
+                        maxPage = (int) Math.ceil((double) allQuests.size() / questsPerPage);
+                    } else {
+                        maxPage = 1;
+                        for (Quest q : plugin.getQuestManager().getQuestsInCategory(category.getId())) {
+                            if (q.getPage() > maxPage) maxPage = q.getPage();
+                        }
+                    }
+                    if (menu.getPage() < maxPage) {
                         plugin.playSound(player, category.getId(), "click");
                         plugin.getMenuManager().openCategory(player, category, menu.getPage() + 1);
                     }
@@ -102,56 +111,68 @@ public class MenuListener implements Listener {
             }
 
             // Check if it's a quest slot
-            if (category.getQuestsSlots().contains(slot)) {
-                // Determine which quest was clicked based on page and slot index
-                int slotIndex = category.getQuestsSlots().indexOf(slot);
-                int questIndex = ((menu.getPage() - 1) * category.getQuestsSlots().size()) + slotIndex;
-                
-                var quests = plugin.getQuestManager().getQuestsInCategory(category.getId());
-                if (questIndex < quests.size()) {
-                    var quest = new java.util.ArrayList<>(quests).get(questIndex);
-                    PlayerQuestData data = menu.getQuestData().getOrDefault(quest.getId(), new PlayerQuestData(quest.getId(), 0, false, false));
-                    
-                    boolean isComplete = data.isCompleted() || data.getPoints() >= quest.getObjectiveAmount();
+            Quest clickedQuest = null;
+            if (category.isQuestsAutomaticLayout()) {
+                if (category.getQuestsSlots().contains(slot)) {
+                    int slotIndex = category.getQuestsSlots().indexOf(slot);
+                    int questIndex = ((menu.getPage() - 1) * category.getQuestsSlots().size()) + slotIndex;
+                    var quests = plugin.getQuestManager().getQuestsInCategory(category.getId());
+                    if (questIndex < quests.size()) {
+                        clickedQuest = new java.util.ArrayList<>(quests).get(questIndex);
+                    }
+                }
+            } else {
+                for (Quest q : plugin.getQuestManager().getQuestsInCategory(category.getId())) {
+                    if (q.getPage() == menu.getPage() && q.getSlot() == slot) {
+                        clickedQuest = q;
+                        break;
+                    }
+                }
+            }
 
-                    if (data.isClaimed()) {
-                        plugin.playSound(player, category.getId(), "no");
-                        player.sendMessage(plugin.msg("already-claimed"));
-                    } else if (isComplete) {
-                        // Claim reward
-                        plugin.playSound(player, category.getId(), "claim");
-                        player.sendMessage(plugin.msg("reward-claimed", "{quest}", quest.getConfig().getString("icon.display", quest.getId())));
-                        if (quest.getRewardCommand() != null) {
-                            for (String cmd : quest.getRewardCommand()) {
-                                cmd = cmd.replace("%player%", player.getName());
-                                if (cmd.equalsIgnoreCase("[close]")) {
-                                    player.closeInventory();
-                                } else if (cmd.startsWith("[console] ")) {
-                                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd.substring(10));
-                                } else if (cmd.startsWith("[player] ")) {
-                                    player.performCommand(cmd.substring(9));
-                                }
+            if (clickedQuest != null) {
+                var quest = clickedQuest;
+                PlayerQuestData data = menu.getQuestData().getOrDefault(quest.getId(), new PlayerQuestData(quest.getId(), 0, false, false));
+                
+                boolean isComplete = data.isCompleted() || data.getPoints() >= quest.getObjectiveAmount();
+
+                if (data.isClaimed()) {
+                    plugin.playSound(player, category.getId(), "no");
+                    player.sendMessage(plugin.msg("already-claimed"));
+                } else if (isComplete) {
+                    // Claim reward
+                    plugin.playSound(player, category.getId(), "claim");
+                    player.sendMessage(plugin.msg("reward-claimed", "{quest}", quest.getConfig().getString("icon.display", quest.getId())));
+                    if (quest.getRewardCommand() != null) {
+                        for (String cmd : quest.getRewardCommand()) {
+                            cmd = cmd.replace("%player%", player.getName());
+                            if (cmd.equalsIgnoreCase("[close]")) {
+                                player.closeInventory();
+                            } else if (cmd.startsWith("[console] ")) {
+                                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd.substring(10));
+                            } else if (cmd.startsWith("[player] ")) {
+                                player.performCommand(cmd.substring(9));
                             }
                         }
-                        
-                        // Update cache and refresh GUI
-                         PlayerQuestData cacheData = plugin.getPlayerDataManager().getOrCreateQuestData(player.getUniqueId(), quest.getId());
-                        cacheData.setClaimed(true);
-                        plugin.getMenuManager().openCategory(player, category, menu.getPage());
-                        
-                    } else {
-                        // Ongoing interaction (e.g., guide)
-                        plugin.playSound(player, category.getId(), "click");
-                        if (quest.getObjectiveCommand() != null) {
-                            for (String cmd : quest.getObjectiveCommand()) {
-                                cmd = cmd.replace("%player%", player.getName());
-                                if (cmd.equalsIgnoreCase("[close]")) {
-                                    player.closeInventory();
-                                } else if (cmd.startsWith("[console] ")) {
-                                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd.substring(10));
-                                } else if (cmd.startsWith("[player] ")) {
-                                    player.performCommand(cmd.substring(9));
-                                }
+                    }
+                    
+                    // Update cache and refresh GUI
+                     PlayerQuestData cacheData = plugin.getPlayerDataManager().getOrCreateQuestData(player.getUniqueId(), quest.getId());
+                    cacheData.setClaimed(true);
+                    plugin.getMenuManager().openCategory(player, category, menu.getPage());
+                    
+                } else {
+                    // Ongoing interaction (e.g., guide)
+                    plugin.playSound(player, category.getId(), "click");
+                    if (quest.getObjectiveCommand() != null) {
+                        for (String cmd : quest.getObjectiveCommand()) {
+                            cmd = cmd.replace("%player%", player.getName());
+                            if (cmd.equalsIgnoreCase("[close]")) {
+                                player.closeInventory();
+                            } else if (cmd.startsWith("[console] ")) {
+                                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd.substring(10));
+                            } else if (cmd.startsWith("[player] ")) {
+                                player.performCommand(cmd.substring(9));
                             }
                         }
                     }

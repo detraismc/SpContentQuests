@@ -18,7 +18,12 @@ title-complete:
   fadein: 10
   stay: 40
 
+# The default is true, which means quests will be automatically placed in the GUI based on the order in the file and quests-slots. 
+# If false, you need to specify the slot and page for each quest, and quests-slots is not used.
+quests-automatic-layout: false
+# If automatic layout is false, this configuration below is not used.
 quests-slots: [2, 3, 4, 5, 6, 7, 8, 11, 12, 13, 14, 15, 16, 17, 20, 21, 22, 23, 24, 25, 26, 29, 30, 31, 32, 33, 34, 35, 38, 39, 40, 41, 42, 43, 44]
+
 
 item-page:
   next:

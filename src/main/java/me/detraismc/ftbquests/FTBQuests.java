@@ -91,6 +91,16 @@ public class FTBQuests extends JavaPlugin {
             me.detraismc.ftbquests.integration.SlimefunHook.register(this);
         }
 
+        // Soft-depend: MMOItems
+        if (Bukkit.getPluginManager().getPlugin("MMOItems") != null) {
+            me.detraismc.ftbquests.integration.MMOItemsHook.register(this);
+        }
+
+        // Soft-depend: ItemsAdder
+        if (Bukkit.getPluginManager().getPlugin("ItemsAdder") != null) {
+            me.detraismc.ftbquests.integration.ItemsAdderHook.register(this);
+        }
+
        // Auto-save task (config: auto-save-interval in minutes)
        int interval = getConfig().getInt("auto-save-interval", 5);
        Bukkit.getScheduler().runTaskTimer(this, () -> playerDataManager.saveAllAsync(), interval * 1200L, interval * 1200L);
@@ -148,12 +158,14 @@ public class FTBQuests extends JavaPlugin {
    }
 
     public String msg(String key, String... replacements) {
+        String prefix = getConfig().getString("messages.prefix", "");
+        prefix = prefix.replace("&", "§");
         String message = getConfig().getString("messages." + key, "&cMissing message: " + key);
         message = message.replace("&", "§");
         for (int i = 0; i < replacements.length - 1; i += 2) {
             message = message.replace(replacements[i], replacements[i + 1]);
         }
-        return message;
+        return prefix + message;
     }
 
     public void playSound(Player player, String categoryId, String soundKey) {
@@ -221,6 +233,10 @@ public class FTBQuests extends JavaPlugin {
 
     public String getQuestBookOpenCategory() {
         return getConfig().getString("quest-book.open-category", "introduction");
+    }
+
+    public String getQuestBookOpenSound() {
+        return getConfig().getString("quest-book.open-sound", "");
     }
 
     public ItemStack getQuestBookItem() {

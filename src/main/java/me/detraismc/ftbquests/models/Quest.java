@@ -39,6 +39,14 @@ public class Quest {
         return config.getStringList("objective.required");
     }
 
+    public int getSlot() {
+        return config.getInt("slot", -1);
+    }
+
+    public int getPage() {
+        return config.getInt("page", 1);
+    }
+
     public List<String> getObjectiveCommand() {
         return config.getStringList("objective-command");
     }

@@ -2,6 +2,7 @@ package me.detraismc.ftbquests.listener;
 
 import me.detraismc.ftbquests.FTBQuests;
 import me.detraismc.ftbquests.models.Category;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -35,6 +36,14 @@ public class QuestBookListener implements Listener {
         if (category == null) {
             player.sendMessage(plugin.msg("category-not-found", "{category}", categoryId));
             return;
+        }
+
+        String soundStr = plugin.getQuestBookOpenSound();
+        if (!soundStr.isEmpty()) {
+            try {
+                Sound sound = Sound.valueOf(soundStr);
+                player.playSound(player.getLocation(), sound, 1.0f, 1.0f);
+            } catch (IllegalArgumentException ignored) {}
         }
 
         plugin.getMenuManager().openCategory(player, category, 1);

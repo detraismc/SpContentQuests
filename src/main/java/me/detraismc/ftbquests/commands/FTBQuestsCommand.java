@@ -50,17 +50,17 @@ public class FTBQuestsCommand implements CommandExecutor, TabCompleter {
 
     private boolean handleHelp(CommandSender sender) {
         sender.sendMessage(plugin.msg("help-header"));
-        sender.sendMessage("§e/ftbquests help §7- §fShow this help");
-        sender.sendMessage("§e/ftbquests reload §7- §fReload config and quests");
+        sender.sendMessage(plugin.msg("help-command"));
+        sender.sendMessage(plugin.msg("help-reload"));
         if (sender.hasPermission("ftbquests.admin")) {
-            sender.sendMessage("§e/ftbquests objective add <quest> <player> <amount> §7- §fAdd progress");
-            sender.sendMessage("§e/ftbquests objective subtract <quest> <player> <amount> §7- §fSubtract progress");
-            sender.sendMessage("§e/ftbquests objective set <quest> <player> <amount> §7- §fSet progress");
-            sender.sendMessage("§e/ftbquests quest reset <quest> <player> §7- §fReset quest progress");
-            sender.sendMessage("§e/ftbquests quest completed <quest> <player> §7- §fMark quest completed");
-            sender.sendMessage("§e/ftbquests quest claimed <quest> <player> §7- §fMark quest claimed");
+            sender.sendMessage(plugin.msg("help-objective-add"));
+            sender.sendMessage(plugin.msg("help-objective-subtract"));
+            sender.sendMessage(plugin.msg("help-objective-set"));
+            sender.sendMessage(plugin.msg("help-quest-reset"));
+            sender.sendMessage(plugin.msg("help-quest-completed"));
+            sender.sendMessage(plugin.msg("help-quest-claimed"));
         }
-        sender.sendMessage("§e/ftbquests open <category> [player] §7- §fOpen quest category");
+        sender.sendMessage(plugin.msg("help-open"));
         return true;
     }
 

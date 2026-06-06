@@ -27,6 +27,7 @@ mysql-settings:
   connection-pool-size: 3
 
 messages:
+  prefix: '&7[<#FF843D>&lFTB Quests&7] &r'
   usage: '&cUsage: /ftbquests help'
   usage-objective: '&cUsage: /ftbquests objective <add|subtract|set> <quest> <player> [amount]'
   usage-quest: '&cUsage: /ftbquests quest <reset|completed|claimed> <quest> <player>'
@@ -44,6 +45,15 @@ messages:
   quest-set-claimed: '&aMarked quest {quest} as claimed for {player}'
   config-reloaded: '&aConfiguration and quests reloaded.'
   help-header: '&6&lFTB Quests Commands:'
+  help-command: '&e/ftbquests help &7- &fShow this help'
+  help-reload: '&e/ftbquests reload &7- &fReload config and quests'
+  help-objective-add: '&e/ftbquests objective add <quest> <player> <amount> &7- &fAdd progress'
+  help-objective-subtract: '&e/ftbquests objective subtract <quest> <player> <amount> &7- &fSubtract progress'
+  help-objective-set: '&e/ftbquests objective set <quest> <player> <amount> &7- &fSet progress'
+  help-quest-reset: '&e/ftbquests quest reset <quest> <player> &7- &fReset quest progress'
+  help-quest-completed: '&e/ftbquests quest completed <quest> <player> &7- &fMark quest completed'
+  help-quest-claimed: '&e/ftbquests quest claimed <quest> <player> &7- &fMark quest claimed'
+  help-open: '&e/ftbquests open <category> [player] &7- &fOpen quest category'
   already-claimed: '&cYou have already claimed this reward!'
   reward-claimed: '&aClaimed reward for {quest}!'
   player-only: '&cOnly players can use this command.'
@@ -58,6 +68,7 @@ quest-book:
   auto-give-newbies: true
   give-cooldown: 10
   open-category: 'introduction'
+  open-sound: UI_BOOK_PAGE_TURN
   item:
     material: KNOWLEDGE_BOOK
     skullvalue: ''

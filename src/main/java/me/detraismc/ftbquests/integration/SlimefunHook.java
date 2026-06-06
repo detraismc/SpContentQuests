@@ -8,30 +8,10 @@ import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 
 import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.Map;
 
 public class SlimefunHook {
 
     private static final String PKG = "io.github.thebusybiscuit.slimefun4.api.events";
-    private static final Map<String, String> MACHINE_MAP = new HashMap<>();
-
-    static {
-        MACHINE_MAP.put("ENHANCED_CRAFTING_TABLE", "SLIMEFUN_CRAFT_ENHANCED_WORKBENCH");
-        MACHINE_MAP.put("GRIND_STONE", "SLIMEFUN_CRAFT_GRIND_STONE");
-        MACHINE_MAP.put("ORE_CRUSHER", "SLIMEFUN_CRAFT_ORE_CRUSHER");
-        MACHINE_MAP.put("COMPRESSOR", "SLIMEFUN_CRAFT_COMPRESSOR");
-        MACHINE_MAP.put("SMELTERY", "SLIMEFUN_CRAFT_SMELTERY");
-        MACHINE_MAP.put("PRESSURE_CHAMBER", "SLIMEFUN_CRAFT_PRESSURE_CHAMBER");
-        MACHINE_MAP.put("MAGIC_WORKBENCH", "SLIMEFUN_CRAFT_MAGIC_WORKBENCH");
-        MACHINE_MAP.put("ORE_WASHER", "SLIMEFUN_USE_ORE_WASHER");
-        MACHINE_MAP.put("TABLE_SAW", "SLIMEFUN_USE_TABLE_SAW");
-        MACHINE_MAP.put("COMPOSTER", "SLIMEFUN_USE_COMPOSTER");
-        MACHINE_MAP.put("GOLD_PAN", "SLIMEFUN_USE_PANNING");
-        MACHINE_MAP.put("AUTOMATED_PANNING_MACHINE", "SLIMEFUN_USE_PANNING");
-        MACHINE_MAP.put("CRUCIBLE", "SLIMEFUN_USE_CRUCIBLE");
-        MACHINE_MAP.put("JUICER", "SLIMEFUN_USE_JUICER");
-    }
 
     public static void register(FTBQuests plugin) {
         Class<?> eventClass;
@@ -60,6 +40,8 @@ public class SlimefunHook {
             (l, rawEvent) -> handleCraft(plugin, resolvedEvent, resolvedPlayer, resolvedOutput, resolvedMachine, rawEvent),
             plugin
         );
+
+        registerAncientAltar(plugin);
         plugin.getLogger().info("Slimefun integration enabled!");
     }
 
@@ -75,8 +57,7 @@ public class SlimefunHook {
             String machineId = extractMachineId(event, getMachine);
             if (machineId == null) return;
 
-            String objectiveType = MACHINE_MAP.get(machineId);
-            if (objectiveType == null) return;
+            String objectiveType = "SLIMEFUN_MULTIBLOCK_" + machineId;
 
             Object itemObj = getOutput.invoke(event);
             ItemStack result;
@@ -88,13 +69,77 @@ public class SlimefunHook {
                 return;
             }
 
+            String slimefunId = extractSlimefunId(result);
             final String resolvedType = objectiveType;
+            final String resolvedRequired = slimefunId != null ? slimefunId : result.getType().name();
 
             plugin.getQuestManager().getAllQuests().stream()
                 .filter(q -> resolvedType.equalsIgnoreCase(q.getObjectiveType()))
                 .filter(q -> q.getObjectiveRequired() == null
                     || q.getObjectiveRequired().isEmpty()
-                    || q.getObjectiveRequired().stream().anyMatch(r -> r.equalsIgnoreCase(result.getType().name())))
+                    || q.getObjectiveRequired().stream().anyMatch(r -> matchesRequired(r, resolvedRequired)))
+                .forEach(q -> {
+                    PlayerQuestData data = plugin.getPlayerDataManager()
+                        .getOrCreateQuestData(player.getUniqueId(), q.getId());
+                    if (data.isCompleted()) return;
+                    int newPoints = Math.min(data.getPoints() + result.getAmount(), q.getObjectiveAmount());
+                    data.setPoints(newPoints);
+                    if (newPoints >= q.getObjectiveAmount()) {
+                        data.setCompleted(true);
+                        plugin.playQuestComplete(player, q);
+                    }
+                });
+        } catch (Exception ignored) {}
+    }
+
+    private static void registerAncientAltar(FTBQuests plugin) {
+        Class<?> eventClass;
+        try {
+            eventClass = Class.forName(PKG + ".AncientAltarCraftEvent");
+        } catch (ClassNotFoundException e) {
+            return;
+        }
+
+        Method getPlayer = findMethod(eventClass, "getPlayer");
+        if (getPlayer == null) return;
+
+        Method getOutput = findReturningMethod(eventClass, ItemStack.class, "getOutput", "getItem", "getResult");
+        if (getOutput == null) return;
+
+        final Class<?> resolvedEvent = eventClass;
+        final Method resolvedPlayer = getPlayer;
+        final Method resolvedOutput = getOutput;
+        final String objectiveType = "SLIMEFUN_ANCIENT_ALTAR";
+
+        Listener listener = new Listener() {};
+        plugin.getServer().getPluginManager().registerEvent(
+            (Class) resolvedEvent, listener, EventPriority.NORMAL,
+            (l, rawEvent) -> handleAncientAltar(plugin, resolvedEvent, resolvedPlayer, resolvedOutput, objectiveType, rawEvent),
+            plugin
+        );
+    }
+
+    private static void handleAncientAltar(FTBQuests plugin, Class<?> eventClass, Method getPlayer,
+                                            Method getOutput, String objectiveType, Object rawEvent) {
+        try {
+            if (!eventClass.isInstance(rawEvent)) return;
+            Object event = eventClass.cast(rawEvent);
+
+            Object playerObj = getPlayer.invoke(event);
+            if (!(playerObj instanceof Player player)) return;
+
+            Object itemObj = getOutput.invoke(event);
+            if (!(itemObj instanceof ItemStack result)) return;
+            if (result.getType().isAir()) return;
+
+            String slimefunId = extractSlimefunId(result);
+            final String resolvedRequired = slimefunId != null ? slimefunId : result.getType().name();
+
+            plugin.getQuestManager().getAllQuests().stream()
+                .filter(q -> objectiveType.equalsIgnoreCase(q.getObjectiveType()))
+                .filter(q -> q.getObjectiveRequired() == null
+                    || q.getObjectiveRequired().isEmpty()
+                    || q.getObjectiveRequired().stream().anyMatch(r -> matchesRequired(r, resolvedRequired)))
                 .forEach(q -> {
                     PlayerQuestData data = plugin.getPlayerDataManager()
                         .getOrCreateQuestData(player.getUniqueId(), q.getId());
@@ -119,6 +164,27 @@ public class SlimefunHook {
             if (id instanceof String s) return s;
         } catch (NoSuchMethodException ignored) {}
         return null;
+    }
+
+    private static String extractSlimefunId(ItemStack item) {
+        try {
+            Class<?> slimefunItemClass = Class.forName("io.github.thebusybiscuit.slimefun4.api.items.SlimefunItem");
+            Method getByItem = slimefunItemClass.getMethod("getByItem", ItemStack.class);
+            Object sfItem = getByItem.invoke(null, item);
+            if (sfItem == null) return null;
+            Method getId = sfItem.getClass().getMethod("getId");
+            Object id = getId.invoke(sfItem);
+            return id instanceof String s ? s : null;
+        } catch (Exception ignored) {
+            return null;
+        }
+    }
+
+    private static boolean matchesRequired(String required, String value) {
+        if (required.regionMatches(true, 0, "CONTAINS:", 0, 9)) {
+            return value.toLowerCase().contains(required.substring(9).toLowerCase());
+        }
+        return required.equalsIgnoreCase(value);
     }
 
     private static Method findMethod(Class<?> clazz, String... names) {

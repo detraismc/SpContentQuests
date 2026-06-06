@@ -1,7 +1,10 @@
 VOTE_OUR_SERVER:
   category: introduction
+  slot: 23
+  page: 1
   icon:
     item: DIAMOND
+    amount: 1
     model: 0
     skullvalue: ''
     display: '&bVote our Server'
@@ -25,16 +28,18 @@ BE_A_BAKER:
   category: overworld
   icon:
     item: BREAD
+    amount: 10
     model: 0
     skullvalue: ''
-    display: '&6Ba a Baker'
+    display: '&6Be a Baker'
     desc:
       - '&7Craft 10 breads.'
   objective:
     # Type List:
     # -> BREAK_BLOCK
     # -> PLACE_BLOCK
-    # -> CRAFT
+    # -> CRAFT (vanilla items only, skips items with lore/name/enchants)
+    # -> CRAFT_CUSTOM (custom items with lore/name/enchants, matched by display name)
     # -> PICKUP_ITEM
     # -> CONSUME
     # -> SMELT
@@ -46,19 +51,17 @@ BE_A_BAKER:
     # -> TAME
     # -> SHEAR
     # -> MYTHICMOBS_KILL (requires MythicMobs)
-    # -> SLIMEFUN_CRAFT_ENHANCED_WORKBENCH (requires Slimefun)
-    # -> SLIMEFUN_CRAFT_GRIND_STONE
-    # -> SLIMEFUN_CRAFT_ORE_CRUSHER
-    # -> SLIMEFUN_CRAFT_COMPRESSOR
-    # -> SLIMEFUN_CRAFT_SMELTERY
-    # -> SLIMEFUN_CRAFT_PRESSURE_CHAMBER
-    # -> SLIMEFUN_CRAFT_MAGIC_WORKBENCH
-    # -> SLIMEFUN_USE_JUICER
-    # -> SLIMEFUN_USE_ORE_WASHER
-    # -> SLIMEFUN_USE_TABLE_SAW
-    # -> SLIMEFUN_USE_COMPOSTER
-    # -> SLIMEFUN_USE_PANNING
-    # -> SLIMEFUN_USE_CRUCIBLE
+    # -> MMOITEMS_STATIONS_TRADE (requires MMOItems, required format: TYPE|ID)
+    # -> MMOITEMS_CONSUME
+    # -> MMOITEMS_APPLY_GEMSTONE
+    # -> MMOITEMS_APPLY_UPGRADE
+    # -> MMOITEMS_APPLY_SOULBOUND
+    # -> MMOITEMS_APPLY_REPAIR
+    # -> MMOITEMS_UNSOCKET_GEMSTONE
+    # -> SLIMEFUN_MULTIBLOCK_{ID} (requires Slimefun, e.g. SLIMEFUN_MULTIBLOCK_ENHANCED_CRAFTING_TABLE)
+    # -> SLIMEFUN_ANCIENT_ALTAR (requires Slimefun)
+    # -> ITEMSADDER_BREAK_BLOCK (requires ItemsAdder, matched by namespaced ID e.g. myitems:ruby_ore)
+    # -> ITEMSADDER_PLACE_BLOCK (requires ItemsAdder, matched by namespaced ID e.g. myitems:ruby_ore)
     type: CRAFT
     amount: 10
     required:
@@ -69,3 +72,101 @@ BE_A_BAKER:
     - '&f3x Iron Ingot'
   reward-command:
     - '[console] give %player% iron_ingot 3'
+    
+
+LEGENDARY_SWORD:
+  category: overworld
+  icon:
+    item: GOLDEN_SWORD
+    amount: 1
+    model: 0
+    skullvalue: ''
+    display: '&cLegendary Sword'
+    desc:
+      - '&7Craft 1 Excalibur.'
+  objective:
+    type: CRAFT_CUSTOM
+    amount: 1
+    required:
+      # use the color-stripped display name of an output item craft as the identifier for CRAFT_CUSTOM type
+      - Excalibur
+  objective-command:
+    - '[console] recipe bread %player%'
+  reward-display:
+    - '&f3x Iron Ingot'
+  reward-command:
+    - '[console] give %player% gold_ingot 3'
+
+
+BECOME_A_SAMURAI:
+  category: overworld
+  icon:
+    item: PINK_WOOL
+    amount: 1
+    model: 0
+    skullvalue: ''
+    display: '&6Become a Samurai'
+    desc:
+      - '&7Craft 2 Katanas.'
+  objective:
+    type: CRAFT_CUSTOM
+    amount: 2
+    required:
+      # this use CONTAINS match type, which checks if the display name contains the specified string.
+      # This is useful for items with variable parts in their names, like "Katana of Fire", "Frost Katana", etc.
+      - CONTAINS:Katana
+  objective-command:
+    - '[console] recipe bread %player%'
+  reward-display:
+    - '&f5x Pink Wool'
+  reward-command:
+    - '[console] give %player% pink_wool 5'
+
+
+
+# MAGNETIZE_YOURSELF:
+#   category: overworld
+#   icon:
+#     item: PLAYER_HEAD
+#     amount: 10
+#     model: 0
+#     skullvalue: ''
+#     display: '&9Magnetize Yourself'
+#     desc:
+#       - '&7Craft 10 Magnet.'
+#   objective:
+#     type: SLIMEFUN_MULTIBLOCK_SMELTERY
+#     amount: 10
+#     required:
+#       - MAGNET
+#   objective-command:
+#     - '[player] sf open_guide'
+#   reward-display:
+#     - '&f5x &6Bronze Ingot'
+#   reward-command:
+#     - '[console] sf give %player% BRONZE_INGOT 5'
+
+
+
+# GREATER_SWORD:
+#   category: overworld
+#   icon:
+#     item: NETHERITE_SWORD
+#     amount: 1
+#     model: 0
+#     skullvalue: ''
+#     display: '&6Greater Sword'
+#     desc:
+#       - '&7Trade and get a Steel Greatsword.'
+#   objective:
+#     type: MMOITEMS_STATIONS_TRADE
+#     amount: 1
+#     required:
+#       - GREATSWORD|STEEL_GREATSWORD
+#   objective-command:
+#     - '[player] warp blacksmith'
+#   reward-display:
+#     - '&f5x &bSteel Ingot'
+#   reward-command:
+#     - '[console] mmoitems give MATERIAL STEEL_INGOT %player% 1 0 100 0 -s'
+

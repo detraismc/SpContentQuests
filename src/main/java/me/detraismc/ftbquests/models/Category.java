@@ -38,4 +38,8 @@ public class Category {
     public ConfigurationSection getConfig() {
         return config;
     }
+
+    public boolean isQuestsAutomaticLayout() {
+        return config.getBoolean("quests-automatic-layout", true);
+    }
 }
