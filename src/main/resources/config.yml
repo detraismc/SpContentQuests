@@ -1,49 +1,98 @@
 # FTB Quests by DetraisMC
+# Main configuration file for the FTB Quests plugin.
+# This plugin allows server admins to create quests with objectives and rewards.
+
+# ---------------------------------------------------------------
+# GENERAL SETTINGS
+# ---------------------------------------------------------------
 
 config-version: 1
 update-checker: true
 
 # Time in minutes between automatic database saves
+# Player progress is saved to the database at this interval
 auto-save-interval: 5
 
 # Cooldown in milliseconds between GUI clicks to prevent spam
+# Lower values = faster clicks, higher values = more spam protection
 gui-click-cooldown: 200
+
+# ---------------------------------------------------------------
+# DATABASE SETTINGS
+# ---------------------------------------------------------------
 
 mysql-settings:
 
   # Enable MySQL
-  # If false, SQLite will be used instead
+  # If false, SQLite will be used instead (stored in plugin data folder)
   enabled: false
 
+  # MySQL server connection details
+  # Only required if mysql-settings.enabled is true
   hostname: 0.0.0.0
   port: 0
   database-name: ''
 
+  # MySQL authentication credentials
   user-name: ''
   user-password: ''
 
+  # Whether to use SSL for the MySQL connection
   use-ssl: false
 
+  # Maximum number of connections in the connection pool
   connection-pool-size: 3
+
+# ---------------------------------------------------------------
+# MESSAGES
+# All messages use Minecraft color codes (&) and hex colors (<#HEX>)
+# Placeholders are enclosed in {} and are replaced dynamically
+# ---------------------------------------------------------------
 
 messages:
   prefix: '&7[<#FF843D>&lFTB Quests&7] &r'
+
+  # Command usage messages
   usage: '&cUsage: /ftbquests help'
   usage-objective: '&cUsage: /ftbquests objective <add|subtract|set> <quest> <player> [amount]'
   usage-quest: '&cUsage: /ftbquests quest <reset|completed|claimed> <quest> <player>'
   usage-open: '&cUsage: /ftbquests open <category> [player]'
+  usage-resetall: '&cUsage: /ftbquests resetall <player|all>'
+  usage-resetcategory: '&cUsage: /ftbquests resetcategory <category> <player|all>'
+
+  # Error messages
   category-not-found: '&cCategory {category} not found.'
   player-not-found: '&cPlayer not found.'
   no-permission: '&cNo permission.'
   invalid-amount: '&cInvalid amount.'
   quest-not-found: '&cQuest not found.'
+  player-only: '&cOnly players can use this command.'
+  console-only: '&cOnly console can reset all players.'
+  category-no-quests: '&cCategory {category} has no quests.'
+
+  # Objective progress messages
+  # {amount} = number of points, {player} = target player name, {quest} = quest ID
   points-added: '&aAdded {amount} points to {player} for quest {quest}'
   points-subtracted: '&aSubtracted {amount} points from {player} for quest {quest}'
   points-set: '&aSet {amount} points for {player} on quest {quest}'
+
+  # Quest management messages
+  # {player} = target player name, {quest} = quest ID
   quest-reset: '&aReset quest {quest} for {player}'
   quest-set-completed: '&aMarked quest {quest} as completed for {player}'
   quest-set-claimed: '&aMarked quest {quest} as claimed for {player}'
+
+  # Reset command messages
+  # {player} = target player name, {category} = category ID
+  resetall-player: '&aReset all quest progress for {player}'
+  resetall-all: '&aReset all quest progress for all players'
+  resetcategory-player: '&aReset category {category} progress for {player}'
+  resetcategory-all: '&aReset category {category} progress for all players'
+
+  # Config reload
   config-reloaded: '&aConfiguration and quests reloaded.'
+
+  # Help command messages
   help-header: '&6&lFTB Quests Commands:'
   help-command: '&e/ftbquests help &7- &fShow this help'
   help-reload: '&e/ftbquests reload &7- &fReload config and quests'
@@ -54,24 +103,42 @@ messages:
   help-quest-completed: '&e/ftbquests quest completed <quest> <player> &7- &fMark quest completed'
   help-quest-claimed: '&e/ftbquests quest claimed <quest> <player> &7- &fMark quest claimed'
   help-open: '&e/ftbquests open <category> [player] &7- &fOpen quest category'
+  help-resetall: '&e/ftbquests resetall <player|all> &7- &fReset all quest progress'
+  help-resetcategory: '&e/ftbquests resetcategory <category> <player|all> &7- &fReset category progress'
+
+  # Reward and GUI messages
   already-claimed: '&cYou have already claimed this reward!'
   reward-claimed: '&aClaimed reward for {quest}!'
-  player-only: '&cOnly players can use this command.'
   quest-book-disabled: '&cQuest book is disabled.'
   quest-book-cooldown: '&cPlease wait {time} seconds before using this again.'
   quest-book-given: '&aYou received the Quest Book!'
   gui-cooldown: '&cPlease wait before clicking again.'
 
+# ---------------------------------------------------------------
+# QUEST BOOK SETTINGS
+# The quest book is a physical item given to players to open the quest GUI
+# ---------------------------------------------------------------
 
 quest-book:
+  # Whether the quest book system is enabled
   enable: true
+
+  # Automatically give the quest book to new players when they first join
   auto-give-newbies: true
+
+  # Cooldown in seconds between using the quest book command (/ftbquests book)
   give-cooldown: 10
+
+  # The default category to open when using the quest book
   open-category: 'introduction'
+
+  # Sound played when the quest book GUI is opened
   open-sound:
     id: ITEM_BOOK_PAGE_TURN
     pitch: 1.0
     volume: 1.0
+
+  # The quest book item properties
   item:
     material: KNOWLEDGE_BOOK
     skullvalue: ''
@@ -85,6 +152,3 @@ quest-book:
       - '&7in this server.'
       - ''
       - '&f➥ Right-click'
-
-
-

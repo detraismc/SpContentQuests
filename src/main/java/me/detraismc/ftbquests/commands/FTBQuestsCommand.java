@@ -15,6 +15,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class FTBQuestsCommand implements CommandExecutor, TabCompleter {
@@ -42,6 +43,10 @@ public class FTBQuestsCommand implements CommandExecutor, TabCompleter {
                 return handleQuest(sender, args);
             case "open":
                 return handleOpen(sender, args);
+            case "resetall":
+                return handleResetAll(sender, args);
+            case "resetcategory":
+                return handleResetCategory(sender, args);
             default:
                 sender.sendMessage(plugin.msg("usage"));
                 return true;
@@ -59,6 +64,8 @@ public class FTBQuestsCommand implements CommandExecutor, TabCompleter {
             sender.sendMessage(plugin.msg("help-quest-reset"));
             sender.sendMessage(plugin.msg("help-quest-completed"));
             sender.sendMessage(plugin.msg("help-quest-claimed"));
+            sender.sendMessage(plugin.msg("help-resetall"));
+            sender.sendMessage(plugin.msg("help-resetcategory"));
         }
         sender.sendMessage(plugin.msg("help-open"));
         return true;
@@ -251,6 +258,95 @@ public class FTBQuestsCommand implements CommandExecutor, TabCompleter {
         return true;
     }
 
+    private boolean handleResetAll(CommandSender sender, String[] args) {
+        if (!sender.hasPermission("ftbquests.admin")) {
+            sender.sendMessage(plugin.msg("no-permission"));
+            return true;
+        }
+
+        if (args.length < 2) {
+            sender.sendMessage(plugin.msg("usage-resetall"));
+            return true;
+        }
+
+        String target = args[1];
+
+        if (target.equals("*") || target.equalsIgnoreCase("all")) {
+            if (sender instanceof Player) {
+                sender.sendMessage(plugin.msg("console-only"));
+                return true;
+            }
+            plugin.getPlayerDataManager().purgeAll();
+            sender.sendMessage(plugin.msg("resetall-all"));
+            return true;
+        }
+
+        Player online = Bukkit.getPlayer(target);
+        if (online != null) {
+            plugin.getPlayerDataManager().purgePlayer(online.getUniqueId());
+            sender.sendMessage(plugin.msg("resetall-player", "{player}", online.getName()));
+            return true;
+        }
+
+        UUID uuid = Bukkit.getOfflinePlayer(target).getUniqueId();
+        plugin.getPlayerDataManager().purgePlayer(uuid);
+        sender.sendMessage(plugin.msg("resetall-player", "{player}", target));
+        return true;
+    }
+
+    private boolean handleResetCategory(CommandSender sender, String[] args) {
+        if (!sender.hasPermission("ftbquests.admin")) {
+            sender.sendMessage(plugin.msg("no-permission"));
+            return true;
+        }
+
+        if (args.length < 3) {
+            sender.sendMessage(plugin.msg("usage-resetcategory"));
+            return true;
+        }
+
+        String categoryId = args[1];
+        Category category = plugin.getQuestManager().getCategory(categoryId);
+        if (category == null) {
+            sender.sendMessage(plugin.msg("category-not-found", "{category}", categoryId));
+            return true;
+        }
+
+        List<String> questIds = plugin.getQuestManager().getAllQuests().stream()
+            .filter(q -> q.getCategoryId().equals(categoryId))
+            .map(Quest::getId)
+            .collect(Collectors.toList());
+
+        if (questIds.isEmpty()) {
+            sender.sendMessage(plugin.msg("category-no-quests", "{category}", categoryId));
+            return true;
+        }
+
+        String target = args[2];
+
+        if (target.equals("*") || target.equalsIgnoreCase("all")) {
+            if (sender instanceof Player) {
+                sender.sendMessage(plugin.msg("console-only"));
+                return true;
+            }
+            plugin.getPlayerDataManager().resetQuestsAll(questIds);
+            sender.sendMessage(plugin.msg("resetcategory-all", "{category}", categoryId));
+            return true;
+        }
+
+        Player online = Bukkit.getPlayer(target);
+        if (online != null) {
+            plugin.getPlayerDataManager().resetQuests(online.getUniqueId(), questIds);
+            sender.sendMessage(plugin.msg("resetcategory-player", "{category}", categoryId, "{player}", online.getName()));
+            return true;
+        }
+
+        UUID uuid = Bukkit.getOfflinePlayer(target).getUniqueId();
+        plugin.getPlayerDataManager().resetQuests(uuid, questIds);
+        sender.sendMessage(plugin.msg("resetcategory-player", "{category}", categoryId, "{player}", target));
+        return true;
+    }
+
     @Override
     public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command,
             @NotNull String label, @NotNull String[] args) {
@@ -263,10 +359,21 @@ public class FTBQuestsCommand implements CommandExecutor, TabCompleter {
                 completions.add("reload");
                 completions.add("objective");
                 completions.add("quest");
+                completions.add("resetall");
+                completions.add("resetcategory");
             }
         } else if (args.length == 2) {
             String sub = args[0].toLowerCase();
-            if (sub.equals("objective")) {
+            if (sub.equals("resetall")) {
+                for (Player p : Bukkit.getOnlinePlayers()) {
+                    completions.add(p.getName());
+                }
+                completions.add("all");
+            } else if (sub.equals("resetcategory")) {
+                completions.addAll(plugin.getQuestManager().getAllCategories().stream()
+                        .map(Category::getId)
+                        .collect(Collectors.toList()));
+            } else if (sub.equals("objective")) {
                 completions.add("add");
                 completions.add("subtract");
                 completions.add("set");
@@ -285,6 +392,11 @@ public class FTBQuestsCommand implements CommandExecutor, TabCompleter {
                 completions.addAll(plugin.getQuestManager().getAllQuests().stream()
                         .map(Quest::getId)
                         .collect(Collectors.toList()));
+            } else if (sub.equals("resetcategory")) {
+                for (Player p : Bukkit.getOnlinePlayers()) {
+                    completions.add(p.getName());
+                }
+                completions.add("all");
             } else if (sub.equals("open")) {
                 for (Player p : Bukkit.getOnlinePlayers()) {
                     completions.add(p.getName());

@@ -40,24 +40,26 @@ public class ItemsAdderHook {
         Method getPlayer = findMethod(eventClass, "getPlayer", "getBukkitPlayer");
         if (getPlayer == null) return;
 
-        Method getCustomBlock = findMethod(eventClass, "getCustomBlock");
-        if (getCustomBlock == null) return;
+        Method getNamespacedID = findMethod(eventClass, "getNamespacedID");
+        Method getCustomBlock = getNamespacedID != null ? null : findMethod(eventClass, "getCustomBlock");
+        if (getNamespacedID == null && getCustomBlock == null) return;
 
         final Class<?> resolvedEvent = eventClass;
         final Method resolvedPlayer = getPlayer;
-        final Method resolvedGetBlock = getCustomBlock;
+        final Method resolvedGetNamespacedID = getNamespacedID;
+        final Method resolvedGetCustomBlock = getCustomBlock;
         final String resolvedType = objectiveType;
 
         Listener listener = new Listener() {};
         plugin.getServer().getPluginManager().registerEvent(
             (Class) resolvedEvent, listener, EventPriority.NORMAL,
-            (l, rawEvent) -> handleBlockEvent(plugin, resolvedEvent, resolvedPlayer, resolvedGetBlock, resolvedType, rawEvent),
+            (l, rawEvent) -> handleBlockEvent(plugin, resolvedEvent, resolvedPlayer, resolvedGetNamespacedID, resolvedGetCustomBlock, resolvedType, rawEvent),
             plugin
         );
     }
 
     private static void handleBlockEvent(FTBQuests plugin, Class<?> eventClass, Method getPlayer,
-                                          Method getCustomBlock, String objectiveType, Object rawEvent) {
+                                          Method getNamespacedID, Method getCustomBlock, String objectiveType, Object rawEvent) {
         try {
             if (!eventClass.isInstance(rawEvent)) return;
             Object event = eventClass.cast(rawEvent);
@@ -65,12 +67,27 @@ public class ItemsAdderHook {
             Object playerObj = getPlayer.invoke(event);
             if (!(playerObj instanceof Player player)) return;
 
-            Object customBlock = getCustomBlock.invoke(event);
-            if (customBlock == null) return;
+            String blockId = null;
 
-            Method getNamespacedID = customBlock.getClass().getMethod("getNamespacedID");
-            Object idObj = getNamespacedID.invoke(customBlock);
-            if (!(idObj instanceof String blockId)) return;
+            if (getNamespacedID != null) {
+                Object idObj = getNamespacedID.invoke(event);
+                if (idObj != null) {
+                    blockId = idObj instanceof String s ? s : idObj.toString();
+                }
+            }
+
+            if (blockId == null && getCustomBlock != null) {
+                Object customBlock = getCustomBlock.invoke(event);
+                if (customBlock != null) {
+                    Method getNS = customBlock.getClass().getMethod("getNamespacedID");
+                    Object idObj = getNS.invoke(customBlock);
+                    if (idObj != null) {
+                        blockId = idObj instanceof String s ? s : idObj.toString();
+                    }
+                }
+            }
+
+            if (blockId == null || blockId.isEmpty()) return;
 
             final String resolvedRequired = blockId;
 

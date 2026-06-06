@@ -9,6 +9,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -120,5 +121,72 @@ public class PlayerDataManager {
 
     public void removePlayer(UUID uuid) {
         playerCache.remove(uuid);
+    }
+
+    public void purgePlayer(UUID uuid) {
+        playerCache.remove(uuid);
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+            try (Connection conn = plugin.getDatabaseManager().getConnection();
+                 PreparedStatement ps = conn.prepareStatement("DELETE FROM ftbquests_player_quests WHERE uuid = ?")) {
+                ps.setString(1, uuid.toString());
+                ps.executeUpdate();
+            } catch (SQLException e) {
+                plugin.getLogger().severe("Failed to purge data for player " + uuid);
+                e.printStackTrace();
+            }
+        });
+    }
+
+    public void purgeAll() {
+        playerCache.clear();
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+            try (Connection conn = plugin.getDatabaseManager().getConnection();
+                 PreparedStatement ps = conn.prepareStatement("DELETE FROM ftbquests_player_quests")) {
+                ps.executeUpdate();
+            } catch (SQLException e) {
+                plugin.getLogger().severe("Failed to purge all player data");
+                e.printStackTrace();
+            }
+        });
+    }
+
+    public void resetQuests(UUID uuid, List<String> questIds) {
+        Map<String, PlayerQuestData> dataMap = playerCache.get(uuid);
+        if (dataMap != null) {
+            questIds.forEach(dataMap::remove);
+        }
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+            try (Connection conn = plugin.getDatabaseManager().getConnection();
+                 PreparedStatement ps = conn.prepareStatement("DELETE FROM ftbquests_player_quests WHERE uuid = ? AND quest_id = ?")) {
+                for (String questId : questIds) {
+                    ps.setString(1, uuid.toString());
+                    ps.setString(2, questId);
+                    ps.addBatch();
+                }
+                ps.executeBatch();
+            } catch (SQLException e) {
+                plugin.getLogger().severe("Failed to reset quests for player " + uuid);
+                e.printStackTrace();
+            }
+        });
+    }
+
+    public void resetQuestsAll(List<String> questIds) {
+        for (Map.Entry<UUID, Map<String, PlayerQuestData>> entry : playerCache.entrySet()) {
+            questIds.forEach(entry.getValue()::remove);
+        }
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+            try (Connection conn = plugin.getDatabaseManager().getConnection();
+                 PreparedStatement ps = conn.prepareStatement("DELETE FROM ftbquests_player_quests WHERE quest_id = ?")) {
+                for (String questId : questIds) {
+                    ps.setString(1, questId);
+                    ps.addBatch();
+                }
+                ps.executeBatch();
+            } catch (SQLException e) {
+                plugin.getLogger().severe("Failed to reset quests for all players");
+                e.printStackTrace();
+            }
+        });
     }
 }

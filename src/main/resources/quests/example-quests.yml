@@ -1,31 +1,84 @@
+# ============================================================================
+# EXAMPLE QUESTS
+# This file contains example quests to demonstrate the quest system.
+# You can:
+#   - Edit these quests to fit your server
+#   - Add new quests in this file (separate each with a blank line)
+#   - Create additional .yml files in this folder for more quest sets
+#   - Delete this file entirely and start fresh
+#
+# Each quest is a YAML section with a unique ID (in ALL CAPS by convention).
+# The ID is used in commands like: /ftbquests objective add <ID> <player>
+# ============================================================================
+
+# ========================================================================
+# QUEST: VOTE_OUR_SERVER
+# This quest has no automated objective tracking (type: none).
+# Progress must be added manually via command.
+# ========================================================================
 VOTE_OUR_SERVER:
+  # Which category this quest belongs to (must match a filename in /category/)
   category: introduction
+
+  # GUI slot position (0-53). Only used when quests-automatic-layout is false.
   slot: 23
+
+  # GUI page number. Only used when quests-automatic-layout is false.
   page: 1
+
+  # ---------------------------------------------------------------
+  # ICON - The item displayed in the quest GUI
+  # ---------------------------------------------------------------
   icon:
-    item: DIAMOND
-    amount: 1
-    model: 0
-    skullvalue: ''
-    display: '&bVote our Server'
-    desc:
+    item: DIAMOND           # Minecraft material name
+    amount: 1                # Stack size shown
+    model: 0                 # Custom model data (for resource packs)
+    skullvalue: ''           # Base64 skull texture (for PLAYER_HEAD items)
+    display: '&bVote our Server'  # Display name (& for color codes)
+    desc:                    # Lore/description lines
       - '&7Vote to the server 1 times.'
       - '&7Use &f/vote &7to get vote link.'
+
+  # ---------------------------------------------------------------
+  # OBJECTIVE - What the player must do to complete the quest
+  # ---------------------------------------------------------------
   objective:
-    # you need to add the command in your voting plugin: /ftbquests objective add VOTE_OUR_SERVER [player] 1
+    # When type is "none", no automatic tracking occurs.
+    # Use a command from your voting plugin to add progress:
+    #   /ftbquests objective add VOTE_OUR_SERVER <player> 1
     type: none
-    amount: 1
-  # this is for when the quest is left clicked, often to guide player where to go like recipe or warp.
+    amount: 1                # How many times the objective must be done
+
+  # ---------------------------------------------------------------
+  # OBJECTIVE COMMAND - Runs when left-clicking the quest in the GUI
+  # Used to guide the player (e.g., open a recipe book, teleport).
+  # Command prefixes:
+  #   [console] <cmd>   - Runs as console
+  #   [player] <cmd>    - Runs as the player
+  #   [close]           - Closes the GUI
+  #   %player%          - Replaced with the player's name
+  # ---------------------------------------------------------------
   objective-command:
     - '[player] vote'
     - '[close]'
-  reward-display:
-    - '&f1x Diamond'
-  reward-command:
-    - '[console] give %player% diamond 1'
 
+  # ---------------------------------------------------------------
+  # REWARD - What the player gets for completing the quest
+  # ---------------------------------------------------------------
+  reward-display:
+    - '&f1x Diamond'         # Text shown in the GUI's reward section
+  reward-command:
+    - '[console] give %player% diamond 1'  # Commands run when claimed
+
+# ========================================================================
+# QUEST: BE_A_BAKER
+# Uses the CRAFT objective type — tracks vanilla crafting recipes.
+# ========================================================================
 BE_A_BAKER:
   category: overworld
+  # Note: slot and page are NOT set here because
+  # quests-automatic-layout is true for this category
+
   icon:
     item: BREAD
     amount: 10
@@ -34,48 +87,64 @@ BE_A_BAKER:
     display: '&6Be a Baker'
     desc:
       - '&7Craft 10 breads.'
+
+  # ---------------------------------------------------------------
+  # OBJECTIVE TYPES REFERENCE
+  # ---------------------------------------------------------------
+  #   BREAK_BLOCK            - Break a specific block (required: material name)
+  #   PLACE_BLOCK            - Place a specific block (required: material name)
+  #   CRAFT                  - Vanilla crafting (skips items with lore/name/enchants)
+  #   CRAFT_CUSTOM           - Custom items with lore/name/enchants (matched by display name)
+  #   PICKUP_ITEM            - Pick up an item
+  #   CONSUME                - Eat/drink an item
+  #   SMELT                  - Smelt an item in a furnace
+  #   ENCHANT                - Enchant an item
+  #   FISHING                - Catch a fish
+  #   THROW                  - Throw a projectile (ender pearl, egg, etc.)
+  #   KILL                   - Kill a mob (required: entity type)
+  #   BREED                  - Breed animals
+  #   TAME                   - Tame an animal
+  #   SHEAR                  - Shear a sheep
+  #   MYTHICMOBS_KILL        - Kill a MythicMobs mob (requires MythicMobs)
+  #   MMOITEMS_STATIONS_TRADE - Trade at MMOItems station (required: TYPE|ID)
+  #   MMOITEMS_CRAFT         - Craft an MMOItems item (deprecated event)
+  #   MMOITEMS_CONSUME       - Consume an MMOItems item (required: TYPE|ID)
+  #   MMOITEMS_APPLY_GEMSTONE - Apply a gem stone (required: TYPE|ID)
+  #   MMOITEMS_APPLY_UPGRADE  - Apply an upgrade item (required: TYPE|ID)
+  #   MMOITEMS_APPLY_SOULBOUND - Apply soulbound (required: TYPE|ID)
+  #   MMOITEMS_APPLY_REPAIR   - Repair an MMOItems item (required: TYPE|ID)
+  #   MMOITEMS_UNSOCKET_GEMSTONE - Remove a gem stone (required: TYPE|ID)
+  #   SLIMEFUN_MULTIBLOCK_{ID}- Use a Slimefun multiblock (e.g. ENHANCED_CRAFTING_TABLE)
+  #   SLIMEFUN_ANCIENT_ALTAR  - Use the Slimefun Ancient Altar
+  #   ITEMSADDER_BREAK_BLOCK  - Break an ItemsAdder custom block (required: namespaced ID)
+  #   ITEMSADDER_PLACE_BLOCK  - Place an ItemsAdder custom block (required: namespaced ID)
+  # ---------------------------------------------------------------
   objective:
-    # Type List:
-    # -> BREAK_BLOCK
-    # -> PLACE_BLOCK
-    # -> CRAFT (vanilla items only, skips items with lore/name/enchants)
-    # -> CRAFT_CUSTOM (custom items with lore/name/enchants, matched by display name)
-    # -> PICKUP_ITEM
-    # -> CONSUME
-    # -> SMELT
-    # -> ENCHANT
-    # -> FISHING
-    # -> THROW
-    # -> KILL
-    # -> BREED
-    # -> TAME
-    # -> SHEAR
-    # -> MYTHICMOBS_KILL (requires MythicMobs)
-    # -> MMOITEMS_STATIONS_TRADE (requires MMOItems, required format: TYPE|ID)
-    # -> MMOITEMS_CONSUME
-    # -> MMOITEMS_APPLY_GEMSTONE
-    # -> MMOITEMS_APPLY_UPGRADE
-    # -> MMOITEMS_APPLY_SOULBOUND
-    # -> MMOITEMS_APPLY_REPAIR
-    # -> MMOITEMS_UNSOCKET_GEMSTONE
-    # -> SLIMEFUN_MULTIBLOCK_{ID} (requires Slimefun, e.g. SLIMEFUN_MULTIBLOCK_ENHANCED_CRAFTING_TABLE)
-    # -> SLIMEFUN_ANCIENT_ALTAR (requires Slimefun)
-    # -> ITEMSADDER_BREAK_BLOCK (requires ItemsAdder, matched by namespaced ID e.g. myitems:ruby_ore)
-    # -> ITEMSADDER_PLACE_BLOCK (requires ItemsAdder, matched by namespaced ID e.g. myitems:ruby_ore)
     type: CRAFT
     amount: 10
+
+    # REQUIRED - What specific item the objective tracks.
+    # For CRAFT type: the vanilla material name of the crafted item.
+    # For other types, this can be material names, entity types, etc.
     required:
       - BREAD
+
   objective-command:
     - '[console] recipe bread %player%'
+
   reward-display:
     - '&f3x Iron Ingot'
   reward-command:
     - '[console] give %player% iron_ingot 3'
     
 
+# ========================================================================
+# QUEST: LEGENDARY_SWORD
+# Uses CRAFT_CUSTOM — tracks crafting of items with custom names/lore.
+# ========================================================================
 LEGENDARY_SWORD:
   category: overworld
+
   icon:
     item: GOLDEN_SWORD
     amount: 1
@@ -84,22 +153,31 @@ LEGENDARY_SWORD:
     display: '&cLegendary Sword'
     desc:
       - '&7Craft 1 Excalibur.'
+
   objective:
     type: CRAFT_CUSTOM
     amount: 1
     required:
-      # use the color-stripped display name of an output item craft as the identifier for CRAFT_CUSTOM type
+      # For CRAFT_CUSTOM type: use the stripped display name
+      # (color codes removed) of the output item from the crafting recipe.
       - Excalibur
+
   objective-command:
     - '[console] recipe bread %player%'
+
   reward-display:
     - '&f3x Iron Ingot'
   reward-command:
     - '[console] give %player% gold_ingot 3'
 
 
+# ========================================================================
+# QUEST: BECOME_A_SAMURAI
+# Shows how to use CONTAINS matching for items with variable names.
+# ========================================================================
 BECOME_A_SAMURAI:
   category: overworld
+
   icon:
     item: PINK_WOOL
     amount: 1
@@ -108,21 +186,29 @@ BECOME_A_SAMURAI:
     display: '&6Become a Samurai'
     desc:
       - '&7Craft 2 Katanas.'
+
   objective:
     type: CRAFT_CUSTOM
     amount: 2
     required:
-      # this use CONTAINS match type, which checks if the display name contains the specified string.
-      # This is useful for items with variable parts in their names, like "Katana of Fire", "Frost Katana", etc.
+      # CONTAINS: prefix makes the match partial instead of exact.
+      # This matches any item whose stripped display name contains "Katana",
+      # e.g. "Katana of Fire", "Frost Katana", "Obsidian Katana", etc.
       - CONTAINS:Katana
+
   objective-command:
     - '[console] recipe bread %player%'
+
   reward-display:
     - '&f5x Pink Wool'
   reward-command:
     - '[console] give %player% pink_wool 5'
 
 
+# ========================================================================
+# COMMENTED OUT EXAMPLES
+# Uncomment these quests (remove the leading #) to use them.
+# ========================================================================
 
 # MAGNETIZE_YOURSELF:
 #   category: overworld
@@ -135,9 +221,12 @@ BECOME_A_SAMURAI:
 #     desc:
 #       - '&7Craft 10 Magnet.'
 #   objective:
+#     # Slimefun multiblock objective: tracks usage of a specific multiblock machine.
+#     # Replace {ID} with the Slimefun multiblock ID (e.g., ENHANCED_CRAFTING_TABLE, SMELTERY).
 #     type: SLIMEFUN_MULTIBLOCK_SMELTERY
 #     amount: 10
 #     required:
+#       # For Slimefun: the Slimefun item ID the multiblock produces
 #       - MAGNET
 #   objective-command:
 #     - '[player] sf open_guide'
@@ -145,7 +234,6 @@ BECOME_A_SAMURAI:
 #     - '&f5x &6Bronze Ingot'
 #   reward-command:
 #     - '[console] sf give %player% BRONZE_INGOT 5'
-
 
 
 # GREATER_SWORD:
@@ -159,6 +247,8 @@ BECOME_A_SAMURAI:
 #     desc:
 #       - '&7Trade and get a Steel Greatsword.'
 #   objective:
+#     # MMOItems station trade: tracks trades at MMOItems crafting stations.
+#     # Required format: TYPE|ID (the MMOItems item type and ID separated by |)
 #     type: MMOITEMS_STATIONS_TRADE
 #     amount: 1
 #     required:
@@ -169,4 +259,3 @@ BECOME_A_SAMURAI:
 #     - '&f5x &bSteel Ingot'
 #   reward-command:
 #     - '[console] mmoitems give MATERIAL STEEL_INGOT %player% 1 0 100 0 -s'
-

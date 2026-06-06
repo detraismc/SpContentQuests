@@ -56,6 +56,7 @@ public class MMOItemsHook {
             plugin
         );
         registerGemStone(plugin);
+        registerCraftItem(plugin);
         registerConsumable(plugin);
         registerUpgradeItem(plugin);
         registerApplySoulbound(plugin);
@@ -125,6 +126,77 @@ public class MMOItemsHook {
                         .getOrCreateQuestData(player.getUniqueId(), q.getId());
                     if (data.isCompleted()) return;
                     int newPoints = Math.min(data.getPoints() + 1, q.getObjectiveAmount());
+                    data.setPoints(newPoints);
+                    if (newPoints >= q.getObjectiveAmount()) {
+                        data.setCompleted(true);
+                        plugin.playQuestComplete(player, q);
+                    }
+                });
+        } catch (Exception ignored) {}
+    }
+
+    private static void registerCraftItem(FTBQuests plugin) {
+        Class<?> eventClass = null;
+        String[] paths = {
+            "net.Indyuce.mmoitems.api.event.CraftMMOItemEvent",
+            "io.lumine.mmoitems.api.event.CraftMMOItemEvent"
+        };
+        for (String path : paths) {
+            try {
+                eventClass = Class.forName(path);
+                break;
+            } catch (ClassNotFoundException ignored) {}
+        }
+        if (eventClass == null) return;
+
+        Method getPlayerData = findMethod(eventClass, "getPlayerData");
+        if (getPlayerData == null) return;
+
+        Method getResult = findMethod(eventClass, "getResult");
+        if (getResult == null) return;
+
+        final Class<?> resolvedEvent = eventClass;
+        final Method resolvedGetPlayerData = getPlayerData;
+        final Method resolvedGetResult = getResult;
+
+        Listener listener = new Listener() {};
+        plugin.getServer().getPluginManager().registerEvent(
+            (Class) resolvedEvent, listener, EventPriority.NORMAL,
+            (l, rawEvent) -> handleCraftItem(plugin, resolvedEvent, resolvedGetPlayerData, resolvedGetResult, rawEvent),
+            plugin
+        );
+    }
+
+    private static void handleCraftItem(FTBQuests plugin, Class<?> eventClass, Method getPlayerData,
+                                         Method getResult, Object rawEvent) {
+        try {
+            if (!eventClass.isInstance(rawEvent)) return;
+            Object event = eventClass.cast(rawEvent);
+
+            Object resultObj = getResult.invoke(event);
+            if (!(resultObj instanceof ItemStack result)) return;
+            if (result.getType().isAir()) return;
+
+            Object playerDataObj = getPlayerData.invoke(event);
+            Method getPlayerMethod = playerDataObj.getClass().getMethod("getPlayer");
+            Object playerObj = getPlayerMethod.invoke(playerDataObj);
+            if (!(playerObj instanceof Player player)) return;
+
+            String mmoId = extractMMOItemId(result);
+            if (mmoId == null) return;
+
+            final String resolvedRequired = mmoId;
+
+            plugin.getQuestManager().getAllQuests().stream()
+                .filter(q -> "MMOITEMS_CRAFT".equalsIgnoreCase(q.getObjectiveType()))
+                .filter(q -> q.getObjectiveRequired() == null
+                    || q.getObjectiveRequired().isEmpty()
+                    || q.getObjectiveRequired().stream().anyMatch(r -> matchesRequired(r, resolvedRequired)))
+                .forEach(q -> {
+                    PlayerQuestData data = plugin.getPlayerDataManager()
+                        .getOrCreateQuestData(player.getUniqueId(), q.getId());
+                    if (data.isCompleted()) return;
+                    int newPoints = Math.min(data.getPoints() + result.getAmount(), q.getObjectiveAmount());
                     data.setPoints(newPoints);
                     if (newPoints >= q.getObjectiveAmount()) {
                         data.setCompleted(true);
@@ -554,11 +626,27 @@ public class MMOItemsHook {
     }
 
     private static String extractMMOItemId(ItemStack item) {
+        try {
+            Class<?> nbtItemClass = Class.forName("io.lumine.mythic.lib.api.item.NBTItem");
+            Method getMethod = nbtItemClass.getMethod("get", ItemStack.class);
+            Method getStringMethod = nbtItemClass.getMethod("getString", String.class);
+
+            Object nbtItem = getMethod.invoke(null, item);
+            if (nbtItem != null) {
+                String type = (String) getStringMethod.invoke(nbtItem, "MMOITEMS_ITEM_TYPE");
+                String id = (String) getStringMethod.invoke(nbtItem, "MMOITEMS_ITEM_ID");
+                if (type != null && !type.isEmpty() && id != null && !id.isEmpty()) {
+                    return type + "|" + id;
+                }
+            }
+        } catch (Exception ignored) {}
+
         for (String pkg : MMO_PACKAGES) {
             try {
                 Class<?> mmoClass = Class.forName(pkg + ".MMOItems");
 
-                Method getTypeAndID = findMethod(mmoClass, "getTypeAndID");
+                Method getTypeAndID = null;
+                try { getTypeAndID = mmoClass.getMethod("getTypeAndID", ItemStack.class); } catch (NoSuchMethodException ignored) {}
                 if (getTypeAndID != null) {
                     Object pair = getTypeAndID.invoke(null, item);
                     if (pair != null) {
@@ -568,8 +656,10 @@ public class MMOItemsHook {
                     }
                 }
 
-                Method getType = findMethod(mmoClass, "getType");
-                Method getID = findMethod(mmoClass, "getID");
+                Method getType = null;
+                try { getType = mmoClass.getMethod("getType", ItemStack.class); } catch (NoSuchMethodException ignored) {}
+                Method getID = null;
+                try { getID = mmoClass.getMethod("getID", ItemStack.class); } catch (NoSuchMethodException ignored) {}
                 if (getType != null && getID != null) {
                     Object type = getType.invoke(null, item);
                     Object id = getID.invoke(null, item);
