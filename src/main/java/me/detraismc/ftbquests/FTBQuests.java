@@ -16,6 +16,7 @@ import me.detraismc.ftbquests.utils.GitHubUpdateChecker;
 
 import me.detraismc.ftbquests.models.Category;
 import me.detraismc.ftbquests.models.Quest;
+import me.detraismc.ftbquests.models.SoundData;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
@@ -63,10 +64,9 @@ public class FTBQuests extends JavaPlugin {
            return;
        }
 
-       // Save default resources
-       saveResourceIfNotExists("category/introduction.yml");
-       saveResourceIfNotExists("category/overworld.yml");
-       saveResourceIfNotExists("quests/example-quests.yml");
+        // Save default resources (only if folder is empty/missing)
+        saveDefaultFolder("category", "introduction.yml", "overworld.yml");
+        saveDefaultFolder("quests", "example-quests.yml");
 
        // Initialize Managers
        questManager = new QuestManager(this);
@@ -112,12 +112,16 @@ public class FTBQuests extends JavaPlugin {
 
    }
 
-   private void saveResourceIfNotExists(String path) {
-       java.io.File file = new java.io.File(getDataFolder(), path);
-       if (!file.exists()) {
-           saveResource(path, false);
-       }
-   }
+    private void saveDefaultFolder(String folder, String... defaults) {
+        java.io.File dir = new java.io.File(getDataFolder(), folder);
+        if (dir.exists()) {
+            java.io.File[] files = dir.listFiles((f, name) -> name.endsWith(".yml"));
+            if (files != null && files.length > 0) return;
+        }
+        for (String name : defaults) {
+            saveResource(folder + "/" + name, false);
+        }
+    }
 
    public void onDisable() {
        if (playerDataManager != null) {
@@ -159,13 +163,25 @@ public class FTBQuests extends JavaPlugin {
 
     public String msg(String key, String... replacements) {
         String prefix = getConfig().getString("messages.prefix", "");
-        prefix = prefix.replace("&", "§");
+        prefix = hexToLegacy(prefix.replace("&", "§"));
         String message = getConfig().getString("messages." + key, "&cMissing message: " + key);
-        message = message.replace("&", "§");
+        message = hexToLegacy(message.replace("&", "§"));
         for (int i = 0; i < replacements.length - 1; i += 2) {
             message = message.replace(replacements[i], replacements[i + 1]);
         }
         return prefix + message;
+    }
+
+    private String hexToLegacy(String text) {
+        var pattern = java.util.regex.Pattern.compile("<#([0-9a-fA-F]{6})>");
+        return pattern.matcher(text).replaceAll(mr -> {
+            String hex = mr.group(1);
+            StringBuilder legacy = new StringBuilder("§x");
+            for (char c : hex.toCharArray()) {
+                legacy.append('§').append(c);
+            }
+            return legacy.toString();
+        });
     }
 
     public void playSound(Player player, String categoryId, String soundKey) {
@@ -173,11 +189,15 @@ public class FTBQuests extends JavaPlugin {
         if (category == null) return;
 
         ConfigurationSection soundSection = category.getConfig().getConfigurationSection("sound");
-        if (soundSection == null || !soundSection.contains(soundKey)) return;
+        if (soundSection == null) return;
+
+        ConfigurationSection soundDataSection = soundSection.getConfigurationSection(soundKey);
+        SoundData soundData = SoundData.fromConfig(soundDataSection);
+        if (soundData == null) return;
 
         try {
-            Sound sound = Sound.valueOf(soundSection.getString(soundKey));
-            player.playSound(player.getLocation(), sound, 1.0f, 1.0f);
+            Sound sound = Sound.valueOf(soundData.getId());
+            player.playSound(player.getLocation(), sound, soundData.getVolume(), soundData.getPitch());
         } catch (IllegalArgumentException ignored) {}
     }
 
@@ -235,8 +255,9 @@ public class FTBQuests extends JavaPlugin {
         return getConfig().getString("quest-book.open-category", "introduction");
     }
 
-    public String getQuestBookOpenSound() {
-        return getConfig().getString("quest-book.open-sound", "");
+    public SoundData getQuestBookOpenSound() {
+        ConfigurationSection section = getConfig().getConfigurationSection("quest-book.open-sound");
+        return SoundData.fromConfig(section);
     }
 
     public ItemStack getQuestBookItem() {

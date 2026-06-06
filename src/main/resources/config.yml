@@ -7,7 +7,7 @@ update-checker: true
 auto-save-interval: 5
 
 # Cooldown in milliseconds between GUI clicks to prevent spam
-gui-click-cooldown: 500
+gui-click-cooldown: 200
 
 mysql-settings:
 
@@ -68,7 +68,10 @@ quest-book:
   auto-give-newbies: true
   give-cooldown: 10
   open-category: 'introduction'
-  open-sound: UI_BOOK_PAGE_TURN
+  open-sound:
+    id: ITEM_BOOK_PAGE_TURN
+    pitch: 1.0
+    volume: 1.0
   item:
     material: KNOWLEDGE_BOOK
     skullvalue: ''

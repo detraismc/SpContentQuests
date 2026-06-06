@@ -2,10 +2,22 @@ gui-name: '&nQuests&8 -> Overworld'
 gui-rows: 6
 
 sound:
-  click: UI_BUTTON_CLICK
-  complete: ENTITY_PLAYER_LEVELUP
-  claim: BLOCK_NOTE_BLOCK_PLING
-  no: ENTITY_VILLAGER_NO
+  click:
+    id: ITEM_BOOK_PAGE_TURN
+    pitch: 1.0
+    volume: 1.0
+  complete:
+    id: ENTITY_PLAYER_LEVELUP
+    pitch: 1.0
+    volume: 1.0
+  claim: 
+    id: BLOCK_NOTE_BLOCK_PLING
+    pitch: 1.0
+    volume: 1.0
+  no: 
+    id: ENTITY_VILLAGER_NO
+    pitch: 1.0
+    volume: 1.0
 
 message-complete:
   enable: true
@@ -36,7 +48,7 @@ item-page:
       - ''
       - '&f➥ Click'
   prev:
-    slot: 48
+    slot: 49
     item: ARROW
     skullvalue: ''
     modeldata: 0
@@ -59,6 +71,7 @@ quests-item:
       - '&6Reward:'
       - '&7<reward>'
       - ''
+      - '&e➥ Click to show objective'
   complete:
     item: CHEST_MINECART
     skullvalue: ''

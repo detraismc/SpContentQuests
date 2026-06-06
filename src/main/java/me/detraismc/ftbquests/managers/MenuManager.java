@@ -16,6 +16,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.enchantments.Enchantment;
+import org.bukkit.inventory.ItemFlag;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -231,6 +233,10 @@ public class MenuManager {
             }
             if (section.contains("modeldata") || section.contains("model")) {
                 meta.setCustomModelData(section.getInt("modeldata", section.getInt("model", 0)));
+            }
+            if (section.getBoolean("enchanted", false)) {
+                meta.addEnchant(Enchantment.UNBREAKING, 1, false);
+                meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
             }
             item.setItemMeta(meta);
         }

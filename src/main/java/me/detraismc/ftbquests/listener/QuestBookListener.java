@@ -2,6 +2,7 @@ package me.detraismc.ftbquests.listener;
 
 import me.detraismc.ftbquests.FTBQuests;
 import me.detraismc.ftbquests.models.Category;
+import me.detraismc.ftbquests.models.SoundData;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -38,11 +39,11 @@ public class QuestBookListener implements Listener {
             return;
         }
 
-        String soundStr = plugin.getQuestBookOpenSound();
-        if (!soundStr.isEmpty()) {
+        SoundData soundData = plugin.getQuestBookOpenSound();
+        if (soundData != null) {
             try {
-                Sound sound = Sound.valueOf(soundStr);
-                player.playSound(player.getLocation(), sound, 1.0f, 1.0f);
+                Sound sound = Sound.valueOf(soundData.getId());
+                player.playSound(player.getLocation(), sound, soundData.getVolume(), soundData.getPitch());
             } catch (IllegalArgumentException ignored) {}
         }
 
