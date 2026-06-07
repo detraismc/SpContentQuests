@@ -238,7 +238,7 @@ item-custom:
       - ''
       - '&f➥ Click'
     commands:
-      - '[console] ftbquests open introduction %player%'
+      - '[console] spcontentquests open introduction %player%'
 
   # Navigation button: opens this category's own GUI (from the main menu)
   overworld:

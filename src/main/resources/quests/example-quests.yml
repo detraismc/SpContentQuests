@@ -8,7 +8,7 @@
 #   - Delete this file entirely and start fresh
 #
 # Each quest is a YAML section with a unique ID (in ALL CAPS by convention).
-# The ID is used in commands like: /ftbquests objective add <ID> <player>
+# The ID is used in commands like: /spcontentquests objective add <ID> <player>
 # ============================================================================
 
 # ========================================================================
@@ -45,7 +45,7 @@ VOTE_OUR_SERVER:
   objective:
     # When type is "none", no automatic tracking occurs.
     # Use a command from your voting plugin to add progress:
-    #   /ftbquests objective add VOTE_OUR_SERVER <player> 1
+    #   /spcontentquests objective add VOTE_OUR_SERVER <player> 1
     type: none
     amount: 1                # How many times the objective must be done
 

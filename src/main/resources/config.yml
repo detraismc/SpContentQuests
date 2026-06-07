@@ -1,5 +1,5 @@
-# FTB Quests by DetraisMC
-# Main configuration file for the FTB Quests plugin.
+# SpContentQuests by DetraisMC
+# Main configuration file for the SpContentQuests plugin.
 # This plugin allows server admins to create quests with objectives and rewards.
 
 # ---------------------------------------------------------------
@@ -50,15 +50,15 @@ mysql-settings:
 # ---------------------------------------------------------------
 
 messages:
-  prefix: '&7[<#FF843D>&lFTB Quests&7] &r'
+  prefix: '&7[<#FF843D>&lSpContentQuests&7] &r'
 
   # Command usage messages
-  usage: '&cUsage: /ftbquests help'
-  usage-objective: '&cUsage: /ftbquests objective <add|subtract|set> <quest> <player> [amount]'
-  usage-quest: '&cUsage: /ftbquests quest <reset|completed|claimed> <quest> <player>'
-  usage-open: '&cUsage: /ftbquests open <category> [player]'
-  usage-resetall: '&cUsage: /ftbquests resetall <player|all>'
-  usage-resetcategory: '&cUsage: /ftbquests resetcategory <category> <player|all>'
+  usage: '&cUsage: /spcontentquests help'
+  usage-objective: '&cUsage: /spcontentquests objective <add|subtract|set> <quest> <player> [amount]'
+  usage-quest: '&cUsage: /spcontentquests quest <reset|completed|claimed> <quest> <player>'
+  usage-open: '&cUsage: /spcontentquests open <category> [player]'
+  usage-resetall: '&cUsage: /spcontentquests resetall <player|all>'
+  usage-resetcategory: '&cUsage: /spcontentquests resetcategory <category> <player|all>'
 
   # Error messages
   category-not-found: '&cCategory {category} not found.'
@@ -93,18 +93,18 @@ messages:
   config-reloaded: '&aConfiguration and quests reloaded.'
 
   # Help command messages
-  help-header: '&6&lFTB Quests Commands:'
-  help-command: '&e/ftbquests help &7- &fShow this help'
-  help-reload: '&e/ftbquests reload &7- &fReload config and quests'
-  help-objective-add: '&e/ftbquests objective add <quest> <player> <amount> &7- &fAdd progress'
-  help-objective-subtract: '&e/ftbquests objective subtract <quest> <player> <amount> &7- &fSubtract progress'
-  help-objective-set: '&e/ftbquests objective set <quest> <player> <amount> &7- &fSet progress'
-  help-quest-reset: '&e/ftbquests quest reset <quest> <player> &7- &fReset quest progress'
-  help-quest-completed: '&e/ftbquests quest completed <quest> <player> &7- &fMark quest completed'
-  help-quest-claimed: '&e/ftbquests quest claimed <quest> <player> &7- &fMark quest claimed'
-  help-open: '&e/ftbquests open <category> [player] &7- &fOpen quest category'
-  help-resetall: '&e/ftbquests resetall <player|all> &7- &fReset all quest progress'
-  help-resetcategory: '&e/ftbquests resetcategory <category> <player|all> &7- &fReset category progress'
+  help-header: '&6&lSpContentQuests Commands:'
+  help-command: '&e/spcontentquests help &7- &fShow this help'
+  help-reload: '&e/spcontentquests reload &7- &fReload config and quests'
+  help-objective-add: '&e/spcontentquests objective add <quest> <player> <amount> &7- &fAdd progress'
+  help-objective-subtract: '&e/spcontentquests objective subtract <quest> <player> <amount> &7- &fSubtract progress'
+  help-objective-set: '&e/spcontentquests objective set <quest> <player> <amount> &7- &fSet progress'
+  help-quest-reset: '&e/spcontentquests quest reset <quest> <player> &7- &fReset quest progress'
+  help-quest-completed: '&e/spcontentquests quest completed <quest> <player> &7- &fMark quest completed'
+  help-quest-claimed: '&e/spcontentquests quest claimed <quest> <player> &7- &fMark quest claimed'
+  help-open: '&e/spcontentquests open <category> [player] &7- &fOpen quest category'
+  help-resetall: '&e/spcontentquests resetall <player|all> &7- &fReset all quest progress'
+  help-resetcategory: '&e/spcontentquests resetcategory <category> <player|all> &7- &fReset category progress'
 
   # Reward and GUI messages
   already-claimed: '&cYou have already claimed this reward!'
@@ -126,7 +126,7 @@ quest-book:
   # Automatically give the quest book to new players when they first join
   auto-give-newbies: true
 
-  # Cooldown in seconds between using the quest book command (/ftbquests book)
+  # Cooldown in seconds between giving the quest book command (/questbook)
   give-cooldown: 10
 
   # The default category to open when using the quest book

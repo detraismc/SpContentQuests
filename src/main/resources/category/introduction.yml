@@ -240,7 +240,7 @@ item-custom:
     commands: []
 
   # Navigation button: opens the Overworld category GUI
-  # The command below runs "ftbquests open overworld <player>" as console
+  # The command below runs "spcontentquests open overworld <player>" as console
   overworld:
     slot: 9
     item: GRASS_BLOCK
@@ -255,4 +255,4 @@ item-custom:
       - ''
       - '&f➥ Click'
     commands:
-      - '[console] ftbquests open overworld %player%'
+      - '[console] spcontentquests open overworld %player%'

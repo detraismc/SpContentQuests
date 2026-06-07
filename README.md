@@ -1,6 +1,6 @@
-# FTB Quests
+# SpContentQuests
 
-A Minecraft plugin inspired by the FTB Quests mod, adding a quest system to your server. Players can complete objectives, earn rewards, and track their progress through an intuitive GUI.
+A Minecraft quest plugin that adds a quest system to your server. Players can complete objectives, earn rewards, and track their progress through an intuitive GUI.
 
 ## Features
 
@@ -16,14 +16,14 @@ A Minecraft plugin inspired by the FTB Quests mod, adding a quest system to your
 
 ## Installation
 
-1. Place the `FTBQuests.jar` in your server's `plugins/` folder
+1. Place the `SpContentQuests.jar` in your server's `plugins/` folder
 2. Restart your server
-3. Configure categories in `plugins/FTBQuests/category/` and quests in `plugins/FTBQuests/quests/`
-4. Give yourself the quest book with `/questbook` or use direct command `/ftbquests open <category>`
+3. Configure categories in `plugins/SpContentQuests/category/` and quests in `plugins/SpContentQuests/quests/`
+4. Give yourself the quest book with `/questbook` or use direct command `/spcontentquests open <category>`
 
 ## Configuration
 
-The main configuration file: `plugins/FTBQuests/config.yml`
+The main configuration file: `plugins/SpContentQuests/config.yml`
 
 ```yaml
 config-version: 1
@@ -48,7 +48,7 @@ Quest book item properties are configurable under the `quest-book:` section incl
 
 ## Categories
 
-Category files are located in `plugins/FTBQuests/category/`. Each `.yml` file becomes its own category with a unique ID (the filename without `.yml`).
+Category files are located in `plugins/SpContentQuests/category/`. Each `.yml` file becomes its own category with a unique ID (the filename without `.yml`).
 
 Example: `category/introduction.yml`
 
@@ -93,7 +93,7 @@ Supported placeholders in quest item lore: `<display>`, `<desc>`, `<objective-va
 
 ## Quests
 
-Quest files are located in `plugins/FTBQuests/quests/`. Each `.yml` file can contain multiple quests.
+Quest files are located in `plugins/SpContentQuests/quests/`. Each `.yml` file can contain multiple quests.
 
 ```yaml
 QUEST_ID:                             # Unique identifier (used in commands)
@@ -211,15 +211,15 @@ required:
 
 | Command | Description | Permission |
 |---------|-------------|------------|
-| `/questbook` | Give yourself the quest book item | `ftbquests.questbook` |
-| `/ftbquests` | All subcommands require admin permission | `ftbquests.admin` |
-| `/ftbquests help` | Show help menu | `ftbquests.admin` |
-| `/ftbquests reload` | Reload config and quests | `ftbquests.admin` |
-| `/ftbquests open <category> [player]` | Open a category GUI | `ftbquests.admin` |
-| `/ftbquests objective <add\|subtract\|set> <quest> <player> [amount]` | Modify quest progress | `ftbquests.admin` |
-| `/ftbquests quest <reset\|completed\|claimed> <quest> <player>` | Manage quest state | `ftbquests.admin` |
-| `/ftbquests resetall <player\|all>` | Reset all progress for a player or everyone | `ftbquests.admin` |
-| `/ftbquests resetcategory <category> <player\|all>` | Reset progress in a specific category | `ftbquests.admin` |
+| `/questbook` | Give yourself the quest book item | `spcontentquests.questbook` |
+| `/spcontentquests` | All subcommands require admin permission | `spcontentquests.admin` |
+| `/spcontentquests help` | Show help menu | `spcontentquests.admin` |
+| `/spcontentquests reload` | Reload config and quests | `spcontentquests.admin` |
+| `/spcontentquests open <category> [player]` | Open a category GUI | `spcontentquests.admin` |
+| `/spcontentquests objective <add\|subtract\|set> <quest> <player> [amount]` | Modify quest progress | `spcontentquests.admin` |
+| `/spcontentquests quest <reset\|completed\|claimed> <quest> <player>` | Manage quest state | `spcontentquests.admin` |
+| `/spcontentquests resetall <player\|all>` | Reset all progress for a player or everyone | `spcontentquests.admin` |
+| `/spcontentquests resetcategory <category> <player\|all>` | Reset progress in a specific category | `spcontentquests.admin` |
 
 - `resetall all` and `resetcategory <category> all` require console (players get an error message)
 
@@ -227,12 +227,12 @@ required:
 
 | Permission | Default | Description |
 |------------|---------|-------------|
-| `ftbquests.admin` | op | Access to admin commands |
-| `ftbquests.questbook` | true | Allows use of `/questbook` command |
+| `spcontentquests.admin` | op | Access to admin commands |
+| `spcontentquests.questbook` | true | Allows use of `/questbook` command |
 
 ## Database
 
-- **SQLite** (default): stored in `plugins/FTBQuests/database.db`
+- **SQLite** (default): stored in `plugins/SpContentQuests/database.db`
 - **MySQL**: enable `mysql-settings.enabled` in `config.yml` and configure connection details
 
 Player data is auto-saved at the configured `auto-save-interval` and on player quit.

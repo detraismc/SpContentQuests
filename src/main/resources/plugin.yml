@@ -1,22 +1,23 @@
-name: FTBQuests
+name: SpContentQuests
 author: DetraisMC
 description: Plugin inspired by mod FTB Quests to make player have a straight goal in server
 version: 1.0
-main: me.detraismc.ftbquests.FTBQuests
+main: me.detraismc.spcontentquests.SpContentQuests
 api-version: 1.21
 softdepend: [MythicMobs, Slimefun, MMOItems, ItemsAdder]
 commands:
-  ftbquests:
-    description: FTB Quests main command
+  spcontentquests:
+    description: SpContentQuests main command
     usage: /<command>
+    aliases: [contentquests, contentquest, cquests, cquest]
   questbook:
     description: Get the Quest Book
     usage: /<command>
 
 permissions:
-  ftbquests.admin:
+  spcontentquests.admin:
     description: Allows use of admin commands
     default: op
-  ftbquests.questbook:
+  spcontentquests.questbook:
     description: Allows use of /questbook command
     default: true
