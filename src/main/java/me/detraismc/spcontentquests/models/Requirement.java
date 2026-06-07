@@ -28,7 +28,12 @@ public class Requirement {
         this.dataType = map.containsKey("data-type") ? (String) map.get("data-type") : "string";
         this.operator = map.containsKey("operator") ? (String) map.get("operator") : "==";
         this.input = (String) map.get("input");
-        this.output = (String) map.get("output");
+        Object rawOutput = map.get("output");
+        if (rawOutput instanceof Number) {
+            this.output = rawOutput.toString();
+        } else {
+            this.output = (String) rawOutput;
+        }
         this.display = map.containsKey("display") ? (String) map.get("display") : "";
     }
 

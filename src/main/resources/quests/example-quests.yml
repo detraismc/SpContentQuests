@@ -48,9 +48,9 @@ VOTE_OUR_SERVER:
     - type: PLACEHOLDER
       data-type: double     # data-type can be string, integer and double
       operator: '>='        # operator list: ==, !=, >, <, >=, <=
-      input: '%test_placeholder%'
-      output: 'Enabled'
-      display: '&cRequires test placeholder to be enabled'
+      input: '%vault_eco_balance%'
+      output: 200
+      display: '&cRequires 200 or more balance'
 
 
 
@@ -283,10 +283,10 @@ BECOME_A_SAMURAI:
         - CONTAINS:Katana
       display: 'Craft 2 Katanas'
       desc:
-        - 'Craft Katanas using the custom'
-        - 'recipe on the server.'
-        - 'if there is no recipe, this quest'
-        - 'didnt do anything, just a example.'
+        - '&7Craft Katanas using the custom'
+        - '&7recipe on the server.'
+        - '&7if there is no recipe, this quest'
+        - '&7didnt do anything, just a example.'
       command: []
 
   reward-display:

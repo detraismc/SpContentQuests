@@ -132,6 +132,10 @@ public class MenuManager {
                         icon.setType(Material.matchMaterial(questDisplay.getString("item", "STONE")));
                     }
 
+                    if (!"ongoing".equals(state) && questDisplay.contains("amount")) {
+                        icon.setAmount(questDisplay.getInt("amount"));
+                    }
+
                     ItemMeta meta = icon.getItemMeta();
                     if (meta != null) {
                         String displayName = quest.getConfig().getString("icon.display", "&cUnknown");
@@ -197,6 +201,10 @@ public class MenuManager {
 
                     if (questDisplay.contains("item")) {
                         icon.setType(Material.matchMaterial(questDisplay.getString("item", "STONE")));
+                    }
+
+                    if (!"ongoing".equals(state) && questDisplay.contains("amount")) {
+                        icon.setAmount(questDisplay.getInt("amount"));
                     }
 
                     ItemMeta meta = icon.getItemMeta();

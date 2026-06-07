@@ -104,14 +104,14 @@ public class ObjectiveListener implements Listener {
                     boolean found = false;
                     for (int i = 0; i < ingredientTypes.size(); i++) {
                         if (ingredientTypes.get(i).isSimilar(ingredient)) {
-                            neededAmounts.set(i, neededAmounts.get(i) + ingredient.getAmount());
+                            neededAmounts.set(i, neededAmounts.get(i) + 1);
                             found = true;
                             break;
                         }
                     }
                     if (!found) {
                         ingredientTypes.add(ingredient.clone());
-                        neededAmounts.add(ingredient.getAmount());
+                        neededAmounts.add(1);
                     }
                 }
 
