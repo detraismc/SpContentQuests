@@ -28,6 +28,10 @@ public class FTBQuestsCommand implements CommandExecutor, TabCompleter {
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label,
             @NotNull String[] args) {
+        if (!sender.hasPermission("ftbquests.admin")) {
+            return true;
+        }
+
         if (args.length == 0) {
             return handleHelp(sender);
         }
@@ -350,18 +354,20 @@ public class FTBQuestsCommand implements CommandExecutor, TabCompleter {
     @Override
     public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command,
             @NotNull String label, @NotNull String[] args) {
+        if (!sender.hasPermission("ftbquests.admin")) {
+            return new ArrayList<>();
+        }
+
         List<String> completions = new ArrayList<>();
 
         if (args.length == 1) {
             completions.add("help");
             completions.add("open");
-            if (sender.hasPermission("ftbquests.admin")) {
-                completions.add("reload");
-                completions.add("objective");
-                completions.add("quest");
-                completions.add("resetall");
-                completions.add("resetcategory");
-            }
+            completions.add("reload");
+            completions.add("objective");
+            completions.add("quest");
+            completions.add("resetall");
+            completions.add("resetcategory");
         } else if (args.length == 2) {
             String sub = args[0].toLowerCase();
             if (sub.equals("resetall")) {

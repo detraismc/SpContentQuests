@@ -1,6 +1,6 @@
 # FTB Quests
 
-A lightweight Minecraft plugin that adds a quest system to your server. Players can complete objectives, earn rewards, and track their progress through an intuitive GUI.
+A Minecraft plugin inspired by the FTB Quests mod, adding a quest system to your server. Players can complete objectives, earn rewards, and track their progress through an intuitive GUI.
 
 ## Features
 
@@ -212,9 +212,10 @@ required:
 | Command | Description | Permission |
 |---------|-------------|------------|
 | `/questbook` | Give yourself the quest book item | `ftbquests.questbook` |
-| `/ftbquests help` | Show help menu | — |
+| `/ftbquests` | All subcommands require admin permission | `ftbquests.admin` |
+| `/ftbquests help` | Show help menu | `ftbquests.admin` |
 | `/ftbquests reload` | Reload config and quests | `ftbquests.admin` |
-| `/ftbquests open <category> [player]` | Open a category GUI | — |
+| `/ftbquests open <category> [player]` | Open a category GUI | `ftbquests.admin` |
 | `/ftbquests objective <add\|subtract\|set> <quest> <player> [amount]` | Modify quest progress | `ftbquests.admin` |
 | `/ftbquests quest <reset\|completed\|claimed> <quest> <player>` | Manage quest state | `ftbquests.admin` |
 | `/ftbquests resetall <player\|all>` | Reset all progress for a player or everyone | `ftbquests.admin` |

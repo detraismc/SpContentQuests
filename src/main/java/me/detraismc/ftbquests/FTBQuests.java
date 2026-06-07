@@ -108,7 +108,9 @@ public class FTBQuests extends JavaPlugin {
         // Register Commands
         getCommand("ftbquests").setExecutor(new FTBQuestsCommand(this));
         getCommand("ftbquests").setTabCompleter(new FTBQuestsCommand(this));
-        getCommand("questbook").setExecutor(new QuestBookCommand(this));
+        QuestBookCommand questBookCommand = new QuestBookCommand(this);
+        getCommand("questbook").setExecutor(questBookCommand);
+        getCommand("questbook").setTabCompleter(questBookCommand);
 
    }
 
