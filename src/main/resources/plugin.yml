@@ -4,7 +4,7 @@ description: Plugin inspired by mod FTB Quests to make player have a straight go
 version: 1.0
 main: me.detraismc.spcontentquests.SpContentQuests
 api-version: 1.21
-softdepend: [MythicMobs, Slimefun, MMOItems, ItemsAdder]
+softdepend: [MythicMobs, Slimefun, MMOItems, ItemsAdder, PlaceholderAPI]
 commands:
   spcontentquests:
     description: SpContentQuests main command

@@ -1,17 +1,18 @@
 # SpContentQuests
 
-A Minecraft quest plugin that adds a quest system to your server. Players can complete objectives, earn rewards, and track their progress through an intuitive GUI.
+A Minecraft quest plugin inspired by the FTB Quests mod that guides players through server content from early game to endgame. Players complete objectives, earn rewards, and track their progress through an intuitive GUI, while server admins can design structured progression paths with tiered quests, requirements, and integrations with popular plugins.
 
 ## Features
 
 - **Quest Categories** — Organize quests into categories with their own GUI
 - **Multiple Objective Types** — Built-in types plus integrations with popular plugins
-- **Custom GUI** — Fully customizable quest and category menus with sounds, titles, and custom items
+- **Quest Requirements** — Lock quests behind quest completion, permissions, or PlaceholderAPI conditions
+- **Custom GUI** — Fully customizable quest, category, and objective menus with sounds, titles, and custom items
 - **Reward System** — Commands executed on quest completion (console or player)
 - **Objective Commands** — Guide players with clickable commands in the quest GUI
+- **Per-Objective Icons** — Override objective item icons individually per quest
 - **Database** — SQLite (default) or MySQL for persistent player data
-- **Integrations** — MMOItems, ItemsAdder, MythicMobs, Slimefun
-- **PlaceholderAPI** — Support for placeholders in GUI items
+- **Integrations** — MMOItems, ItemsAdder, MythicMobs, Slimefun, PlaceholderAPI
 - **Auto-save** — Automatic database saving at configurable intervals
 
 ## Installation
@@ -77,11 +78,12 @@ item-page:
   prev: { slot: 49, item: ARROW, name: '&aPrevious Page', lore: ['', '&f➥ Click'] }
 
 # Quest display at each stage (ongoing, complete, claimed, locked)
+# The locked state uses <requirements> to show unmet requirement text
 quests-item:
   ongoing:  { name: '&f<display>', lore: [...] }
   complete: { item: CHEST_MINECART, name: '&f<display>', lore: [...] }
   claimed:  { item: MINECART, name: '&f<display>', lore: [...] }
-  locked:   { item: BARRIER, name: '&f<display>', lore: [...] }
+  locked:   { item: BARRIER, name: '&f<display>', lore: ['', '<requirements>', '', '&4&lLOCKED'] }
 
 # Custom decorative/navigation items at specific slots
 item-custom:
@@ -89,7 +91,7 @@ item-custom:
   mynav:  { slot: 0, item: BOOK, name: '&aMenu', commands: ['[console] mycommand %player%'] }
 ```
 
-Supported placeholders in quest item lore: `<display>`, `<desc>`, `<objective-value>`, `<objective-max-value>`, `<reward>`, `<required-quests>`.
+Supported placeholders in quest item lore: `<display>`, `<desc>`, `<objective>`, `<objective-value>`, `<objective-max-value>`, `<reward>`, `<requirements>`.
 
 ## Quests
 
@@ -101,6 +103,23 @@ QUEST_ID:                             # Unique identifier (used in commands)
   slot: 23                            # GUI slot (only if category uses manual layout)
   page: 1                             # GUI page (only if category uses manual layout)
 
+  # ---- Optional Requirements ----
+  # Lock this quest behind conditions. If omitted, no requirements are needed.
+  # All requirements must be met for the quest to unlock.
+  requirements:
+    - type: QUEST                      # Requires another quest to be completed
+      quest: ANOTHER_QUEST             # Quest ID that must be completed first
+      display: '&cRequires <quest>'    # Text shown when locked
+    - type: PERMISSION                 # Requires a permission node
+      permission: myplugin.vote        # Permission node
+      display: '&cRequires permission: <permission>'
+    - type: PLACEHOLDER                # Requires a PlaceholderAPI value
+      data-type: string                # string, integer, or double
+      operator: '=='                   # ==, !=, >, <, >=, <=
+      input: '%some_placeholder%'      # The placeholder to check
+      output: 'value'                  # Expected value
+      display: '&cRequires condition'
+
   icon:                               # The quest's display item
     item: DIAMOND                     # Minecraft material
     amount: 1                         # Stack size
@@ -110,11 +129,25 @@ QUEST_ID:                             # Unique identifier (used in commands)
     desc:                             # Lore/description
       - '&7Description here.'
 
-  objective:                          # The objective to complete
-    type: BREAK_BLOCK                 # Objective type (see below)
-    amount: 10                        # How many times to complete
-    required:                         # What to track (varies by type)
-      - DIAMOND_BLOCK
+  # ---- Objectives ----
+  # A quest can have one or more objectives (list)
+  objective:
+    - type: BREAK_BLOCK               # Objective type (see below)
+      amount: 10                      # How many times to complete
+      required:                       # What to track (varies by type)
+        - DIAMOND_BLOCK
+      display: '&fMine Diamonds'      # Name shown in the objective GUI (optional)
+      desc:                           # Description in the objective GUI (optional)
+        - '&7Go to the mine and break'
+        - '&710 diamond ore blocks.'
+      command:                        # Commands when clicking this objective (optional)
+        - '[player] warp mine'
+        - '[close]'
+      icon:                           # Optional per-objective icon override
+        item: DIAMOND_ORE             # Overrides the default objective-item icon
+        skullvalue: ''
+        modeldata: 0
+        amount: 1
 
   objective-command:                  # Runs when left-clicking the quest
     - '[player] warp mine'            # [player] = run as player
@@ -126,6 +159,31 @@ QUEST_ID:                             # Unique identifier (used in commands)
     - '[console] give %player% diamond 5'
 ```
 
+### Quest Requirements
+
+Requirements are optional. If no `requirements` section exists, the quest is always available. Requirements are checked when rendering the quest GUI:
+
+- **Locked quests** show the `locked` item from the category's `quests-item.locked` section
+- The `<requirements>` placeholder in locked lore renders each requirement's `display` text
+- The `<quest>` placeholder in display text is replaced with the required quest's display name
+- The `<permission>` placeholder is replaced with the required permission node
+
+Supported requirement types:
+
+| Type | Fields | Description |
+|------|--------|-------------|
+| `QUEST` | `quest`, `display` | Requires another quest to be completed first |
+| `PERMISSION` | `permission`, `display` | Requires the player to have a permission node |
+| `PLACEHOLDER` | `data-type`, `operator`, `input`, `output`, `display` | Requires a PlaceholderAPI placeholder to match a value |
+
+Placeholder operators by `data-type`:
+
+| data-type | Supported operators |
+|-----------|-------------------|
+| `string` | `==`, `!=` |
+| `integer` | `==`, `!=`, `>`, `<`, `>=`, `<=` |
+| `double` | `==`, `!=`, `>`, `<`, `>=`, `<=` |
+
 ### Command prefixes
 
 | Prefix | Description |
@@ -134,6 +192,77 @@ QUEST_ID:                             # Unique identifier (used in commands)
 | `[player] <cmd>` | Runs as the player |
 | `[close]` | Closes the GUI |
 | `%player%` | Replaced with the player's name |
+
+## Objective GUI
+
+The objective GUI is configured in `plugins/SpContentQuests/gui-objective.yml`.
+
+```yaml
+gui-name: '&nObjective&8 -> {quest}'         # GUI title ({quest} = quest display name)
+gui-rows: 5                                    # GUI height (1-6 rows)
+
+# Slots for objectives based on how many quest has (1-7 supported)
+objective-slots:
+  1: [22]
+  3: [20, 22, 24]
+
+# Objective item appearance per state
+objective-item:
+  ongoing:  { item: PAPER, name: '&f<objective-display>', lore: ['', '<objective-desc>', '', '&e➥ Click'] }
+  complete: { item: LIME_DYE, name: '&f<objective-display>', lore: ['', '<objective-desc>', '', '&2✔ Complete'] }
+
+# Back button
+goback-item:
+  slot: 8
+  item: RED_DYE
+  name: '&fGo Back'
+
+# Reward display item (replaces <reward> with quest's reward-display list)
+reward-item:
+  slot: 41
+  item: CHEST
+  name: '&eQuest Reward'
+  lore:
+    - ''
+    - '<reward>'
+
+# Description display item (replaces <desc> with quest's icon.desc list)
+desc-item:
+  slot: 39
+  item: BOOK
+  name: '&9Quest Description'
+  lore:
+    - ''
+    - '<desc>'
+```
+
+### Objective GUI Placeholders
+
+| Placeholder | Description |
+|-------------|-------------|
+| `<objective-display>` | The objective's display name |
+| `<objective-desc>` | The objective's description lines |
+| `<objective-value>` | Player's current progress |
+| `<objective-max-value>` | The maximum progress needed |
+| `<desc>` | Quest icon description lines |
+| `<reward>` | Quest reward-display lines |
+
+### Per-Objective Icon Override
+
+Each objective in a quest can optionally include an `icon` section to override the default `objective-item` appearance:
+
+```yaml
+objective:
+  - type: CRAFT
+    amount: 10
+    icon:                              # Optional: overrides objective-item.ongoing/complete
+      item: BREAD                      # Material override
+      skullvalue: ''
+      modeldata: 0
+      amount: 1
+```
+
+If no `icon` is defined, the default from `objective-item` in `gui-objective.yml` is used.
 
 ## Objective Types
 

@@ -1,7 +1,7 @@
 gui-name: '&nObjective&8 -> {quest}'
 
 # Number of rows in the GUI inventory (1-6)
-gui-rows: 4
+gui-rows: 5
 
 # ---------------------------------------------------------------
 # SOUND SETTINGS
@@ -19,13 +19,13 @@ sound:
 # Controls how the objective is displayed in the GUI
 # ---------------------------------------------------------------
 objective-slots: 
-  1: [13]
-  2: [12, 14]
-  3: [11, 13, 15]
-  4: [10, 12, 14, 16]
-  5: [10, 11, 13, 15, 17]
-  6: [10, 11, 12, 14, 15, 16]
-  7: [10, 11, 12, 13, 15, 16, 17]
+  1: [22]
+  2: [21, 23]
+  3: [20, 22, 24]
+  4: [19, 21, 23, 25]
+  5: [19, 20, 22, 24, 26]
+  6: [19, 20, 21, 23, 24, 25]
+  7: [19, 20, 21, 22, 24, 25, 26]
 
 
 
@@ -48,7 +48,7 @@ objective-item:
     name: '&f<objective-display>'
     lore:
       - ''
-      - '&7<objective-desc>'
+      - '<objective-desc>'
       - ''
       - '&6Progress:'
       - '&7(<objective-value>/<objective-max-value>)'
@@ -63,7 +63,7 @@ objective-item:
     name: '&f<objective-display>'
     lore:
       - ''
-      - '&7<objective-desc>'
+      - '<objective-desc>'
       - ''
       - '&6Progress:'
       - '&7(<objective-value>/<objective-max-value>)'
@@ -80,6 +80,28 @@ goback-item:
   lore:
     - ''
     - '&7Return to the quest category menu'
+
+reward-item:
+  slot: 41
+  item: CHEST
+  skullvalue: ''
+  modeldata: 0
+  amount: 1
+  name: '&eQuest Reward'
+  lore:
+    - ''
+    - '<reward>'
+
+desc-item:
+  slot: 39
+  item: BOOK
+  skullvalue: ''
+  modeldata: 0
+  amount: 1
+  name: '&9Quest Description'
+  lore:
+    - ''
+    - '<desc>'
 
 
 
@@ -108,7 +130,7 @@ item-custom:
       - ''
     commands: []
   pane2:
-    slots: [0, 1, 2, 3, 4, 5, 6, 7]
+    slots: [0, 1, 2, 3, 4, 5, 6, 7, 36, 37, 38, 40, 42, 43, 44]
     item: GRAY_STAINED_GLASS_PANE
     enchanted: false
     skullvalue: ''

@@ -119,7 +119,9 @@ public class MenuManager {
 
                 Quest quest = quests.get(questIndex);
                 PlayerQuestData data = questData.getOrDefault(quest.getId(), new PlayerQuestData(quest.getId()));
-                String state = data.isClaimed() ? "claimed" : (data.isCompleted() || quest.isCompleted(data.getObjectivesProgress()) ? "complete" : "ongoing");
+                boolean isComplete = data.isCompleted() || quest.isCompleted(data.getObjectivesProgress());
+                boolean isLocked = !isComplete && !data.isClaimed() && !quest.checkRequirements(player);
+                String state = data.isClaimed() ? "claimed" : (isComplete ? "complete" : (isLocked ? "locked" : "ongoing"));
 
                 ConfigurationSection questDisplay = category.getConfig().getConfigurationSection("quests-item." + state);
                 if (questDisplay != null) {
@@ -156,6 +158,10 @@ public class MenuManager {
                                         fmt = fmt.replace("<objective-value>", String.valueOf(data.getObjectiveProgress(oi)));
                                         fmt = fmt.replace("<objective-max-value>", String.valueOf(obj.getAmount()));
                                         lore.add(format(fmt));
+                                    }
+                                } else if (line.contains("<requirements>")) {
+                                    for (String reqLine : quest.getRequirementDisplays(player)) {
+                                        lore.add(format(reqLine));
                                     }
                                 } else {
                                     int totalMax = quest.getObjectives().stream().mapToInt(Objective::getAmount).sum();
@@ -180,7 +186,9 @@ public class MenuManager {
                 if (slot < 0 || slot >= inv.getSize()) continue;
 
                 PlayerQuestData data = questData.getOrDefault(quest.getId(), new PlayerQuestData(quest.getId()));
-                String state = data.isClaimed() ? "claimed" : (data.isCompleted() || quest.isCompleted(data.getObjectivesProgress()) ? "complete" : "ongoing");
+                boolean isComplete = data.isCompleted() || quest.isCompleted(data.getObjectivesProgress());
+                boolean isLocked = !isComplete && !data.isClaimed() && !quest.checkRequirements(player);
+                String state = data.isClaimed() ? "claimed" : (isComplete ? "complete" : (isLocked ? "locked" : "ongoing"));
 
                 ConfigurationSection questDisplay = category.getConfig().getConfigurationSection("quests-item." + state);
                 if (questDisplay != null) {
@@ -217,6 +225,10 @@ public class MenuManager {
                                         fmt = fmt.replace("<objective-value>", String.valueOf(data.getObjectiveProgress(oi)));
                                         fmt = fmt.replace("<objective-max-value>", String.valueOf(obj.getAmount()));
                                         lore.add(format(fmt));
+                                    }
+                                } else if (line.contains("<requirements>")) {
+                                    for (String reqLine : quest.getRequirementDisplays(player)) {
+                                        lore.add(format(reqLine));
                                     }
                                 } else {
                                     int totalMax = quest.getObjectives().stream().mapToInt(Objective::getAmount).sum();
@@ -332,8 +344,26 @@ public class MenuManager {
             if (itemSection == null) continue;
 
             ItemStack icon = buildItem(itemSection);
+
+            // Apply per-objective icon override if present
+            Map<String, Object> objIcon = obj.getIcon();
+            if (objIcon != null && !objIcon.isEmpty()) {
+                if (objIcon.containsKey("item")) {
+                    Material mat = Material.matchMaterial((String) objIcon.get("item"));
+                    if (mat != null) icon.setType(mat);
+                }
+                if (objIcon.containsKey("amount")) {
+                    icon.setAmount(((Number) objIcon.get("amount")).intValue());
+                }
+            }
+
             ItemMeta meta = icon.getItemMeta();
             if (meta != null) {
+                // Apply modeldata from objective icon override
+                if (objIcon != null && objIcon.containsKey("modeldata")) {
+                    meta.setCustomModelData(((Number) objIcon.get("modeldata")).intValue());
+                }
+
                 String displayName = itemSection.getString("name", "<objective-display>");
                 displayName = displayName.replace("<objective-display>", obj.getDisplay());
                 meta.displayName(format(displayName));
@@ -356,7 +386,64 @@ public class MenuManager {
                 meta.lore(lore);
                 icon.setItemMeta(meta);
             }
+
             inv.setItem(slot, icon);
+        }
+
+        // Reward item
+        ConfigurationSection rewardSection = objCfg.getConfigurationSection("reward-item");
+        if (rewardSection != null) {
+            int rewardSlot = rewardSection.getInt("slot", -1);
+            if (rewardSlot >= 0 && rewardSlot < inv.getSize()) {
+                ItemStack rewardItem = buildItem(rewardSection);
+                ItemMeta rewardMeta = rewardItem.getItemMeta();
+                if (rewardMeta != null && rewardItem.getItemMeta() != null) {
+                    List<Component> rewardLore = new ArrayList<>();
+                    if (rewardSection.contains("lore")) {
+                        for (String line : rewardSection.getStringList("lore")) {
+                            if (line.contains("<reward>")) {
+                                for (String rl : quest.getConfig().getStringList("reward-display")) {
+                                    rewardLore.add(format(rl));
+                                }
+                            } else {
+                                rewardLore.add(format(line));
+                            }
+                        }
+                    }
+                    rewardMeta.lore(rewardLore);
+                    rewardItem.setItemMeta(rewardMeta);
+                }
+                inv.setItem(rewardSlot, rewardItem);
+            }
+        }
+
+        // Description item
+        ConfigurationSection descSection = objCfg.getConfigurationSection("desc-item");
+        if (descSection != null) {
+            int descSlot = descSection.getInt("slot", -1);
+            if (descSlot >= 0 && descSlot < inv.getSize()) {
+                ItemStack descItem = buildItem(descSection);
+                ItemMeta descMeta = descItem.getItemMeta();
+                if (descMeta != null && descItem.getItemMeta() != null) {
+                    List<Component> descLore = new ArrayList<>();
+                    if (descSection.contains("lore")) {
+                        for (String line : descSection.getStringList("lore")) {
+                            if (line.contains("<desc>")) {
+                                if (quest.getConfig().contains("icon.desc")) {
+                                    for (String dl : quest.getConfig().getStringList("icon.desc")) {
+                                        descLore.add(format(dl));
+                                    }
+                                }
+                            } else {
+                                descLore.add(format(line));
+                            }
+                        }
+                    }
+                    descMeta.lore(descLore);
+                    descItem.setItemMeta(descMeta);
+                }
+                inv.setItem(descSlot, descItem);
+            }
         }
 
         player.openInventory(inv);

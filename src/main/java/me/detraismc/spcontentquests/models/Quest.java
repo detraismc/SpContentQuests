@@ -1,24 +1,29 @@
 package me.detraismc.spcontentquests.models;
 
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class Quest {
     private final String id;
     private final String categoryId;
     private final ConfigurationSection config;
     private final List<Objective> objectives;
+    private final List<Requirement> requirements;
 
     public Quest(String id, ConfigurationSection config) {
         this.id = id;
         this.config = config;
         this.categoryId = config.getString("category", "introduction");
         this.objectives = parseObjectives(config);
+        this.requirements = parseRequirements(config);
     }
 
+    @SuppressWarnings("unchecked")
     private List<Objective> parseObjectives(ConfigurationSection config) {
         List<Objective> result = new ArrayList<>();
         List<Map<?, ?>> rawList = config.getMapList("objective");
@@ -26,14 +31,12 @@ public class Quest {
             for (Map<?, ?> entry : rawList) {
                 String type = entry.containsKey("type") ? (String) entry.get("type") : "none";
                 int amount = entry.containsKey("amount") ? ((Number) entry.get("amount")).intValue() : 1;
-                @SuppressWarnings("unchecked")
                 List<String> required = (List<String>) entry.get("required");
                 String display = entry.containsKey("display") ? (String) entry.get("display") : type + " x" + amount;
-                @SuppressWarnings("unchecked")
                 List<String> desc = (List<String>) entry.get("desc");
-                @SuppressWarnings("unchecked")
                 List<String> command = (List<String>) entry.get("command");
-                result.add(new Objective(type, amount, required, display, desc, command));
+                Map<String, Object> icon = entry.containsKey("icon") ? (Map<String, Object>) entry.get("icon") : null;
+                result.add(new Objective(type, amount, required, display, desc, command, icon));
             }
         }
         if (result.isEmpty()) {
@@ -66,6 +69,35 @@ public class Quest {
             }
         }
         return true;
+    }
+
+    @SuppressWarnings("unchecked")
+    private List<Requirement> parseRequirements(ConfigurationSection config) {
+        List<Requirement> result = new ArrayList<>();
+        List<Map<?, ?>> rawList = config.getMapList("requirements");
+        if (rawList == null) return result;
+        for (Map<?, ?> entry : rawList) {
+            result.add(new Requirement((Map<String, Object>) entry));
+        }
+        return result;
+    }
+
+    public boolean checkRequirements(Player player) {
+        if (requirements.isEmpty()) return true;
+        for (Requirement req : requirements) {
+            if (!req.check(player)) return false;
+        }
+        return true;
+    }
+
+    public List<String> getRequirementDisplays(Player player) {
+        return requirements.stream()
+                .map(req -> req.getDisplay(player))
+                .collect(Collectors.toList());
+    }
+
+    public List<Requirement> getRequirements() {
+        return requirements;
     }
 
     public int getSlot() {

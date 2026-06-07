@@ -109,9 +109,9 @@ item-page:
 #   <display>       - The quest's display name
 #   <desc>          - The quest's description/lore
 #   <objective-value>     - Player's current progress
-#   <objective-max-value> - Required progress to complete
+#   <objective-max-value> - requirements progress to complete
 #   <reward>        - The reward-display text
-#   <required-quests>     - Quests that must be completed first
+#   <requirements-quests>     - Quests that must be completed first
 # ---------------------------------------------------------------
 quests-item:
   # Quest that is in progress (not yet completed)
@@ -119,13 +119,13 @@ quests-item:
     name: '&f<display>'
     lore:
       - ''
-      - '&7<desc>'
+      - '<desc>'
       - ''
       - '&6Objective:'
-      - '&7<objective>'
+      - '<objective>'
       - ''
       - '&6Reward:'
-      - '&7<reward>'
+      - '<reward>'
       - ''
       - '&e➥ Click to show objective'
   # Quest that is completed but reward not yet claimed
@@ -138,13 +138,13 @@ quests-item:
     name: '&f<display>'
     lore:
       - ''
-      - '&7<desc>'
+      - '<desc>'
       - ''
       - '&6Objective:'
-      - '&7<objective>'
+      - '<objective>'
       - ''
       - '&6Reward:'
-      - '&7<reward>'
+      - '<reward>'
       - ''
       - '&f➥ Click to Claim'
   # Quest that has been completed and claimed
@@ -156,13 +156,13 @@ quests-item:
     name: '&f<display>'
     lore:
       - ''
-      - '&7<desc>'
+      - '<desc>'
       - ''
       - '&6Objective:'
-      - '&7<objective>'
+      - '<objective>'
       - ''
       - '&6Reward:'
-      - '&7<reward>'
+      - '<reward>'
       - ''
       - '&b&lCOMPLETED'
   # Quest that is locked (prerequisite quests not completed)
@@ -174,16 +174,15 @@ quests-item:
     name: '&f<display>'
     lore:
       - ''
-      - '&7<desc>'
+      - '<desc>'
       - ''
       - '&6Objective:'
-      - '&7<objective>'
+      - '<objective>'
       - ''
       - '&6Reward:'
-      - '&7<reward>'
+      - '<reward>'
       - ''
-      - '&cRequire completion of:'
-      - '&e<required-quests>'
+      - '<requirements>'
       - ''
       - '&4&lLOCKED'
       

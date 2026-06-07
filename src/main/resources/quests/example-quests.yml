@@ -26,6 +26,34 @@ VOTE_OUR_SERVER:
   # GUI page number. Only used when quests-automatic-layout is false.
   page: 1
 
+  requirements:
+    - type: QUEST
+      # Quest IDs that must be completed before this quest unlocks
+      quest: BE_A_BAKER
+      display: '&cRequires <quest>' # Text shown in the GUI when the quest is locked due to this requirement
+
+    - type: PERMISSION
+      # Permission nodes required to unlock this quest
+      permission: testquest.vote
+      display: '&cRequires permission: <permission>'
+        
+    - type: PLACEHOLDER
+      data-type: string     # data-type can be string, integer and double
+      operator: '=='        # operator list: ==, !=
+      # Placeholder are from PlaceholderAPI
+      input: '%test_placeholder%'
+      output: 'Enabled'
+      display: '&cRequires test placeholder to be enabled'
+
+    - type: PLACEHOLDER
+      data-type: double     # data-type can be string, integer and double
+      operator: '>='        # operator list: ==, !=, >, <, >=, <=
+      input: '%test_placeholder%'
+      output: 'Enabled'
+      display: '&cRequires test placeholder to be enabled'
+
+
+
   # ---------------------------------------------------------------
   # ICON - The item displayed in the quest GUI
   # ---------------------------------------------------------------
@@ -51,6 +79,11 @@ VOTE_OUR_SERVER:
     - type: none
       amount: 1                # How many times the objective must be done
       display: 'Vote 1 time'   # Text shown in the GUI's objective section
+      icon:                     # Optional override for the objective item icon in the GUI
+        item: DIAMOND
+        skullvalue: ''
+        modeldata: 0
+        amount: 1
 
       # Objective commands run when the player clicks the objective in the quest objective GUI.
       # Command prefixes:
@@ -141,6 +174,11 @@ BE_A_BAKER:
       command:
         - '[player] recipe bread'
         - '[redirect]' # when the player close the recipe gui, it will back to open the quest objective gui
+      icon:
+        item: BREAD
+        skullvalue: ''
+        modeldata: 0
+        amount: 1
 
   reward-display:
     - '&f3x Iron Ingot'
@@ -168,30 +206,40 @@ LEGENDARY_SWORD:
   objective:
     - type: CRAFT_CUSTOM
       amount: 1
+      icon:
+        item: GOLDEN_SWORD
+        skullvalue: ''
+        modeldata: 0
+        amount: 1
       required:
         # For CRAFT_CUSTOM type: use the stripped display name
         # (color codes removed) of the output item from the crafting recipe.
         - Excalibur
       display: 'Craft Excalibur'
       desc:
-        - 'Craft Excalibur using the custom'
-        - 'recipe on the server.'
-        - 'if there is no recipe, this quest'
-        - 'didnt do anything, just a example.'
+        - '&7Craft Excalibur using the custom'
+        - '&7recipe on the server.'
+        - '&7if there is no recipe, this quest'
+        - '&7didnt do anything, just a example.'
       command:
         - '[player] recipe excalibur'
     - type: CRAFT_CUSTOM
       amount: 1
+      icon:
+        item: NETHERITE_SWORD
+        skullvalue: ''
+        modeldata: 0
+        amount: 1
       required:
         # For CRAFT_CUSTOM type: use the stripped display name
         # (color codes removed) of the output item from the crafting recipe.
         - Nightsword
       display: 'Craft Nightsword'
       desc:
-        - 'Craft Nightsword using the custom'
-        - 'recipe on the server.'
-        - 'if there is no recipe, this quest'
-        - 'didnt do anything, just a example.'
+        - '&7Craft Nightsword using the custom'
+        - '&7recipe on the server.'
+        - '&7if there is no recipe, this quest'
+        - '&7didnt do anything, just a example.'
       command:
         - '[player] recipe nightsword'
 
@@ -223,6 +271,11 @@ BECOME_A_SAMURAI:
   objective:
     - type: CRAFT_CUSTOM
       amount: 2
+      icon:
+        item: IRON_SWORD
+        skullvalue: ''
+        modeldata: 0
+        amount: 1
       required:
         # CONTAINS: prefix makes the match partial instead of exact.
         # This matches any item whose stripped display name contains "Katana",
@@ -263,6 +316,11 @@ BECOME_A_SAMURAI:
 #     # Replace {ID} with the Slimefun multiblock ID (e.g., ENHANCED_CRAFTING_TABLE, SMELTERY).
 #     - type: SLIMEFUN_MULTIBLOCK_SMELTERY
 #       amount: 10
+#       icon:
+#         item: PLAYER_HEAD
+#         skullvalue: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYWJhOGViYzRjNmE4MTczMDk0NzQ5OWJmN2UxZDVlNzNmZWQ2YzFiYjJjMDUxZTk2ZDM1ZWIxNmQyNDYxMGU3In19fQ=='
+#         modeldata: 0
+#         amount: 1
 #       required:
 #         # For Slimefun: the Slimefun item ID the multiblock produces
 #         - MAGNET
@@ -303,6 +361,11 @@ BECOME_A_SAMURAI:
 #         - 'the Steel Greatsword.'
 #       command:
 #         - '[player] warp blacksmith'
+#       icon:
+#         item: NETHERITE_SWORD
+#         skullvalue: ''
+#         modeldata: 0
+#         amount: 1
 #   reward-display:
 #     - '&f5x &bSteel Ingot'
 #   reward-command:

@@ -112,7 +112,7 @@ messages:
   quest-book-disabled: '&cQuest book is disabled.'
   quest-book-cooldown: '&cPlease wait {time} seconds before using this again.'
   quest-book-given: '&aYou received the Quest Book!'
-  gui-cooldown: '&cPlease wait before clicking again.'
+  quest-locked: '&cThis quest is locked! Complete the requirements first.'
 
 # ---------------------------------------------------------------
 # QUEST BOOK SETTINGS

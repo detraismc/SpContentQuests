@@ -85,7 +85,6 @@ public class MenuListener implements Listener {
         long cooldown = plugin.getGuiClickCooldown();
         Long lastClick = lastClickTime.get(uuid);
         if (lastClick != null && (now - lastClick) < cooldown) {
-            player.sendMessage(plugin.msg("gui-cooldown"));
             return;
         }
         lastClickTime.put(uuid, now);
@@ -148,7 +147,6 @@ public class MenuListener implements Listener {
         long cooldown = plugin.getGuiClickCooldown();
         Long lastClick = lastClickTime.get(uuid);
         if (lastClick != null && (now - lastClick) < cooldown) {
-            player.sendMessage(plugin.msg("gui-cooldown"));
             return;
         }
         lastClickTime.put(uuid, now);
@@ -236,6 +234,9 @@ public class MenuListener implements Listener {
             if (data.isClaimed()) {
                 plugin.playSound(player, category.getId(), "no");
                 player.sendMessage(plugin.msg("already-claimed"));
+            } else if (!isComplete && !quest.checkRequirements(player)) {
+                plugin.playSound(player, category.getId(), "no");
+                player.sendMessage(plugin.msg("quest-locked"));
             } else if (isComplete) {
                 plugin.playSound(player, category.getId(), "claim");
                 player.sendMessage(plugin.msg("reward-claimed", "{quest}", quest.getConfig().getString("icon.display", quest.getId())));

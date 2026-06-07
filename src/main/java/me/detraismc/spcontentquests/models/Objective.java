@@ -1,6 +1,7 @@
 package me.detraismc.spcontentquests.models;
 
 import java.util.List;
+import java.util.Map;
 
 public class Objective {
     private final String type;
@@ -9,14 +10,20 @@ public class Objective {
     private final String display;
     private final List<String> desc;
     private final List<String> command;
+    private final Map<String, Object> icon;
 
     public Objective(String type, int amount, List<String> required, String display, List<String> desc, List<String> command) {
+        this(type, amount, required, display, desc, command, null);
+    }
+
+    public Objective(String type, int amount, List<String> required, String display, List<String> desc, List<String> command, Map<String, Object> icon) {
         this.type = type;
         this.amount = amount;
         this.required = required;
         this.display = display;
         this.desc = desc;
         this.command = command;
+        this.icon = icon;
     }
 
     public String getType() {
@@ -41,5 +48,9 @@ public class Objective {
 
     public List<String> getCommand() {
         return command;
+    }
+
+    public Map<String, Object> getIcon() {
+        return icon;
     }
 }
