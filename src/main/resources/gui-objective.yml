@@ -1,0 +1,122 @@
+gui-name: '&nObjective&8 -> {quest}'
+
+# Number of rows in the GUI inventory (1-6)
+gui-rows: 4
+
+# ---------------------------------------------------------------
+# SOUND SETTINGS
+# Each sound plays when a specific GUI action occurs
+# Sound IDs are Minecraft namespaced sound identifiers
+# ---------------------------------------------------------------
+sound:
+  click:
+    id: ITEM_BOOK_PAGE_TURN
+    pitch: 1.0
+    volume: 1.0
+
+# ---------------------------------------------------------------
+# OBJECTIVE DISPLAY SETTINGS
+# Controls how the objective is displayed in the GUI
+# ---------------------------------------------------------------
+objective-slots: 
+  1: [13]
+  2: [12, 14]
+  3: [11, 13, 15]
+  4: [10, 12, 14, 16]
+  5: [10, 11, 13, 15, 17]
+  6: [10, 11, 12, 14, 15, 16]
+  7: [10, 11, 12, 13, 15, 16, 17]
+
+
+
+# ---------------------------------------------------------------
+# OBJECTIVE ITEM SETTINGS
+# Controls the item used to represent objectives in the GUI
+# Supports placeholders in the name and lore:
+#   <objective-display>    - The objective's display name
+#   <objective-desc>       - The objective's description
+#   <objective-value>      - The player's current progress value for this objective
+#   <objective-max-value>  - The maximum progress value for this objective
+# ---------------------------------------------------------------
+objective-item:
+  # Quest that is in progress (not yet completed)
+  ongoing:
+    item: PAPER
+    skullvalue: ''
+    modeldata: 0
+    amount: 1
+    name: '&f<objective-display>'
+    lore:
+      - ''
+      - '&7<objective-desc>'
+      - ''
+      - '&6Progress:'
+      - '&7(<objective-value>/<objective-max-value>)'
+      - ''
+      - '&e➥ Click'
+  # Quest that is completed but reward not yet claimed
+  complete:
+    item: LIME_DYE
+    skullvalue: ''
+    modeldata: 0
+    amount: 1
+    name: '&f<objective-display>'
+    lore:
+      - ''
+      - '&7<objective-desc>'
+      - ''
+      - '&6Progress:'
+      - '&7(<objective-value>/<objective-max-value>)'
+      - ''
+      - '&2✔ Objective Complete'
+
+goback-item:
+  slot: 8
+  item: RED_DYE
+  skullvalue: ''
+  modeldata: 0
+  amount: 1
+  name: '&fGo Back'
+  lore:
+    - ''
+    - '&7Return to the quest category menu'
+
+
+
+# ---------------------------------------------------------------
+# CUSTOM ITEMS
+# Decorative or functional items placed at specific slots in the GUI.
+# These are NOT quests — they're static items used for decoration,
+# navigation between categories, or running commands on click.
+#
+# Commands support these prefixes:
+#   [console] <command>   - Runs command as console
+#   [player] <command>    - Runs command as the player
+#   [close]               - Closes the GUI
+#   %player%              - Replaced with the player's name
+# ---------------------------------------------------------------
+item-custom:
+  pane1:
+    slots: [9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35]
+    item: BLACK_STAINED_GLASS_PANE
+    enchanted: false
+    skullvalue: ''
+    modeldata: 0
+    amount: 1
+    name: ' '
+    lore:
+      - ''
+    commands: []
+  pane2:
+    slots: [0, 1, 2, 3, 4, 5, 6, 7]
+    item: GRAY_STAINED_GLASS_PANE
+    enchanted: false
+    skullvalue: ''
+    modeldata: 0
+    amount: 1
+    name: ' '
+    lore:
+      - ''
+    commands: []
+
+

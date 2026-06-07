@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/FTBQuests.iml" filepath="$PROJECT_DIR$/FTBQuests.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/SpContentQuests.iml" filepath="$PROJECT_DIR$/.idea/SpContentQuests.iml" />
     </modules>
   </component>
 </project>

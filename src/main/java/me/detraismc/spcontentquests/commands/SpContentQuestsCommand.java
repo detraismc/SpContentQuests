@@ -82,6 +82,7 @@ public class SpContentQuestsCommand implements CommandExecutor, TabCompleter {
         }
         plugin.reloadConfig();
         plugin.getQuestManager().loadAll();
+        plugin.getMenuManager().reloadObjectiveConfig();
         sender.sendMessage(plugin.msg("config-reloaded"));
         return true;
     }
@@ -134,9 +135,11 @@ public class SpContentQuestsCommand implements CommandExecutor, TabCompleter {
         switch (action) {
             case "add": {
                 if (!data.isCompleted()) {
-                    int newPoints = Math.min(data.getPoints() + amount, quest.getObjectiveAmount());
-                    data.setPoints(newPoints);
-                    if (newPoints >= quest.getObjectiveAmount()) {
+                    int current = data.getObjectiveProgress(0);
+                    int max = quest.getObjectives().get(0).getAmount();
+                    int newPoints = Math.min(current + amount, max);
+                    data.setObjectiveProgress(0, newPoints);
+                    if (quest.isCompleted(data.getObjectivesProgress())) {
                         data.setCompleted(true);
                         plugin.playQuestComplete(target, quest);
                     }
@@ -146,9 +149,10 @@ public class SpContentQuestsCommand implements CommandExecutor, TabCompleter {
                 break;
             }
             case "subtract": {
-                int newPoints = Math.max(data.getPoints() - amount, 0);
-                data.setPoints(newPoints);
-                if (data.isCompleted() && newPoints < quest.getObjectiveAmount()) {
+                int current = data.getObjectiveProgress(0);
+                int newPoints = Math.max(current - amount, 0);
+                data.setObjectiveProgress(0, newPoints);
+                if (data.isCompleted() && !quest.isCompleted(data.getObjectivesProgress())) {
                     data.setCompleted(false);
                 }
                 sender.sendMessage(plugin.msg("points-subtracted", "{amount}", String.valueOf(amount),
@@ -156,11 +160,12 @@ public class SpContentQuestsCommand implements CommandExecutor, TabCompleter {
                 break;
             }
             case "set": {
-                if (amount > quest.getObjectiveAmount()) {
-                    amount = quest.getObjectiveAmount();
+                int max = quest.getObjectives().get(0).getAmount();
+                if (amount > max) {
+                    amount = max;
                 }
-                data.setPoints(amount);
-                if (amount >= quest.getObjectiveAmount()) {
+                data.setObjectiveProgress(0, amount);
+                if (quest.isCompleted(data.getObjectivesProgress())) {
                     data.setCompleted(true);
                     plugin.playQuestComplete(target, quest);
                 } else {
@@ -216,10 +221,13 @@ public class SpContentQuestsCommand implements CommandExecutor, TabCompleter {
                 break;
             }
             case "completed": {
-                data.setCompleted(true);
-                if (data.getPoints() < quest.getObjectiveAmount()) {
-                    data.setPoints(quest.getObjectiveAmount());
+                for (int i = 0; i < quest.getObjectives().size(); i++) {
+                    int max = quest.getObjectives().get(i).getAmount();
+                    if (data.getObjectiveProgress(i) < max) {
+                        data.setObjectiveProgress(i, max);
+                    }
                 }
+                data.setCompleted(true);
                 sender.sendMessage(plugin.msg("quest-set-completed", "{player}", target.getName(), "{quest}", questId));
                 break;
             }

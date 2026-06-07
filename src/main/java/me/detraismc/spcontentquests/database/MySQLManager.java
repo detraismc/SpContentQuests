@@ -69,7 +69,7 @@ public class MySQLManager implements DatabaseManager {
             stmt.executeUpdate("CREATE TABLE IF NOT EXISTS spcontentquests_player_quests (" +
                     "uuid VARCHAR(36) NOT NULL, " +
                     "quest_id VARCHAR(64) NOT NULL, " +
-                    "points INT DEFAULT 0, " +
+                    "objectives_data TEXT DEFAULT '', " +
                     "completed BOOLEAN DEFAULT FALSE, " +
                     "claimed BOOLEAN DEFAULT FALSE, " +
                     "PRIMARY KEY (uuid, quest_id), " +
@@ -77,7 +77,7 @@ public class MySQLManager implements DatabaseManager {
                     ");");
                     
             try {
-                stmt.executeUpdate("ALTER TABLE spcontentquests_player_quests ADD COLUMN claimed BOOLEAN DEFAULT FALSE");
+                stmt.executeUpdate("ALTER TABLE spcontentquests_player_quests ADD COLUMN objectives_data TEXT DEFAULT ''");
             } catch (SQLException ignored) {
                 // Column already exists
             }

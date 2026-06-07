@@ -65,6 +65,7 @@ public class SpContentQuests extends JavaPlugin {
        }
 
         // Save default resources (only if folder is empty/missing)
+        saveResource("gui-objective.yml", false);
         saveDefaultFolder("category", "introduction.yml", "overworld.yml");
         saveDefaultFolder("quests", "example-quests.yml");
 
@@ -169,7 +170,8 @@ public class SpContentQuests extends JavaPlugin {
         String message = getConfig().getString("messages." + key, "&cMissing message: " + key);
         message = hexToLegacy(message.replace("&", "§"));
         for (int i = 0; i < replacements.length - 1; i += 2) {
-            message = message.replace(replacements[i], replacements[i + 1]);
+            String value = hexToLegacy(replacements[i + 1].replace("&", "§"));
+            message = message.replace(replacements[i], value);
         }
         return prefix + message;
     }

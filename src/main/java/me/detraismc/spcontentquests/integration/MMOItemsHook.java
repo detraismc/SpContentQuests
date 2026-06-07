@@ -1,6 +1,7 @@
 package me.detraismc.spcontentquests.integration;
 
 import me.detraismc.spcontentquests.SpContentQuests;
+import me.detraismc.spcontentquests.models.Objective;
 import me.detraismc.spcontentquests.models.PlayerQuestData;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventPriority;
@@ -8,6 +9,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 
 import java.lang.reflect.Method;
+import java.util.List;
 
 public class MMOItemsHook {
 
@@ -116,22 +118,32 @@ public class MMOItemsHook {
 
             final String resolvedRequired = mmoId;
 
-            plugin.getQuestManager().getAllQuests().stream()
-                .filter(q -> "MMOITEMS_APPLY_GEMSTONE".equalsIgnoreCase(q.getObjectiveType()))
-                .filter(q -> q.getObjectiveRequired() == null
-                    || q.getObjectiveRequired().isEmpty()
-                    || q.getObjectiveRequired().stream().anyMatch(r -> matchesRequired(r, resolvedRequired)))
-                .forEach(q -> {
-                    PlayerQuestData data = plugin.getPlayerDataManager()
+            plugin.getQuestManager().getAllQuests().forEach(q -> {
+                PlayerQuestData data = plugin.getPlayerDataManager()
                         .getOrCreateQuestData(player.getUniqueId(), q.getId());
-                    if (data.isCompleted()) return;
-                    int newPoints = Math.min(data.getPoints() + 1, q.getObjectiveAmount());
-                    data.setPoints(newPoints);
-                    if (newPoints >= q.getObjectiveAmount()) {
-                        data.setCompleted(true);
-                        plugin.playQuestComplete(player, q);
-                    }
-                });
+                if (data.isCompleted()) return;
+
+                List<Objective> objectives = q.getObjectives();
+                boolean progressed = false;
+
+                for (int i = 0; i < objectives.size(); i++) {
+                    Objective obj = objectives.get(i);
+                    if (!"MMOITEMS_APPLY_GEMSTONE".equalsIgnoreCase(obj.getType())) continue;
+                    if (obj.getRequired() != null && !obj.getRequired().isEmpty()
+                            && obj.getRequired().stream().noneMatch(r -> matchesRequired(r, resolvedRequired)))
+                        continue;
+
+                    int current = data.getObjectiveProgress(i);
+                    int max = obj.getAmount();
+                    data.setObjectiveProgress(i, Math.min(current + 1, max));
+                    progressed = true;
+                }
+
+                if (progressed && q.isCompleted(data.getObjectivesProgress())) {
+                    data.setCompleted(true);
+                    plugin.playQuestComplete(player, q);
+                }
+            });
         } catch (Exception ignored) {}
     }
 
@@ -187,22 +199,32 @@ public class MMOItemsHook {
 
             final String resolvedRequired = mmoId;
 
-            plugin.getQuestManager().getAllQuests().stream()
-                .filter(q -> "MMOITEMS_CRAFT".equalsIgnoreCase(q.getObjectiveType()))
-                .filter(q -> q.getObjectiveRequired() == null
-                    || q.getObjectiveRequired().isEmpty()
-                    || q.getObjectiveRequired().stream().anyMatch(r -> matchesRequired(r, resolvedRequired)))
-                .forEach(q -> {
-                    PlayerQuestData data = plugin.getPlayerDataManager()
+            plugin.getQuestManager().getAllQuests().forEach(q -> {
+                PlayerQuestData data = plugin.getPlayerDataManager()
                         .getOrCreateQuestData(player.getUniqueId(), q.getId());
-                    if (data.isCompleted()) return;
-                    int newPoints = Math.min(data.getPoints() + result.getAmount(), q.getObjectiveAmount());
-                    data.setPoints(newPoints);
-                    if (newPoints >= q.getObjectiveAmount()) {
-                        data.setCompleted(true);
-                        plugin.playQuestComplete(player, q);
-                    }
-                });
+                if (data.isCompleted()) return;
+
+                List<Objective> objectives = q.getObjectives();
+                boolean progressed = false;
+
+                for (int i = 0; i < objectives.size(); i++) {
+                    Objective obj = objectives.get(i);
+                    if (!"MMOITEMS_CRAFT".equalsIgnoreCase(obj.getType())) continue;
+                    if (obj.getRequired() != null && !obj.getRequired().isEmpty()
+                            && obj.getRequired().stream().noneMatch(r -> matchesRequired(r, resolvedRequired)))
+                        continue;
+
+                    int current = data.getObjectiveProgress(i);
+                    int max = obj.getAmount();
+                    data.setObjectiveProgress(i, Math.min(current + result.getAmount(), max));
+                    progressed = true;
+                }
+
+                if (progressed && q.isCompleted(data.getObjectivesProgress())) {
+                    data.setCompleted(true);
+                    plugin.playQuestComplete(player, q);
+                }
+            });
         } catch (Exception ignored) {}
     }
 
@@ -257,22 +279,32 @@ public class MMOItemsHook {
 
             final String resolvedRequired = mmoId;
 
-            plugin.getQuestManager().getAllQuests().stream()
-                .filter(q -> "MMOITEMS_CONSUME".equalsIgnoreCase(q.getObjectiveType()))
-                .filter(q -> q.getObjectiveRequired() == null
-                    || q.getObjectiveRequired().isEmpty()
-                    || q.getObjectiveRequired().stream().anyMatch(r -> matchesRequired(r, resolvedRequired)))
-                .forEach(q -> {
-                    PlayerQuestData data = plugin.getPlayerDataManager()
+            plugin.getQuestManager().getAllQuests().forEach(q -> {
+                PlayerQuestData data = plugin.getPlayerDataManager()
                         .getOrCreateQuestData(player.getUniqueId(), q.getId());
-                    if (data.isCompleted()) return;
-                    int newPoints = Math.min(data.getPoints() + 1, q.getObjectiveAmount());
-                    data.setPoints(newPoints);
-                    if (newPoints >= q.getObjectiveAmount()) {
-                        data.setCompleted(true);
-                        plugin.playQuestComplete(player, q);
-                    }
-                });
+                if (data.isCompleted()) return;
+
+                List<Objective> objectives = q.getObjectives();
+                boolean progressed = false;
+
+                for (int i = 0; i < objectives.size(); i++) {
+                    Objective obj = objectives.get(i);
+                    if (!"MMOITEMS_CONSUME".equalsIgnoreCase(obj.getType())) continue;
+                    if (obj.getRequired() != null && !obj.getRequired().isEmpty()
+                            && obj.getRequired().stream().noneMatch(r -> matchesRequired(r, resolvedRequired)))
+                        continue;
+
+                    int current = data.getObjectiveProgress(i);
+                    int max = obj.getAmount();
+                    data.setObjectiveProgress(i, Math.min(current + 1, max));
+                    progressed = true;
+                }
+
+                if (progressed && q.isCompleted(data.getObjectivesProgress())) {
+                    data.setCompleted(true);
+                    plugin.playQuestComplete(player, q);
+                }
+            });
         } catch (Exception ignored) {}
     }
 
@@ -327,22 +359,32 @@ public class MMOItemsHook {
 
             final String resolvedRequired = mmoId;
 
-            plugin.getQuestManager().getAllQuests().stream()
-                .filter(q -> "MMOITEMS_APPLY_UPGRADE".equalsIgnoreCase(q.getObjectiveType()))
-                .filter(q -> q.getObjectiveRequired() == null
-                    || q.getObjectiveRequired().isEmpty()
-                    || q.getObjectiveRequired().stream().anyMatch(r -> matchesRequired(r, resolvedRequired)))
-                .forEach(q -> {
-                    PlayerQuestData data = plugin.getPlayerDataManager()
+            plugin.getQuestManager().getAllQuests().forEach(q -> {
+                PlayerQuestData data = plugin.getPlayerDataManager()
                         .getOrCreateQuestData(player.getUniqueId(), q.getId());
-                    if (data.isCompleted()) return;
-                    int newPoints = Math.min(data.getPoints() + 1, q.getObjectiveAmount());
-                    data.setPoints(newPoints);
-                    if (newPoints >= q.getObjectiveAmount()) {
-                        data.setCompleted(true);
-                        plugin.playQuestComplete(player, q);
-                    }
-                });
+                if (data.isCompleted()) return;
+
+                List<Objective> objectives = q.getObjectives();
+                boolean progressed = false;
+
+                for (int i = 0; i < objectives.size(); i++) {
+                    Objective obj = objectives.get(i);
+                    if (!"MMOITEMS_APPLY_UPGRADE".equalsIgnoreCase(obj.getType())) continue;
+                    if (obj.getRequired() != null && !obj.getRequired().isEmpty()
+                            && obj.getRequired().stream().noneMatch(r -> matchesRequired(r, resolvedRequired)))
+                        continue;
+
+                    int current = data.getObjectiveProgress(i);
+                    int max = obj.getAmount();
+                    data.setObjectiveProgress(i, Math.min(current + 1, max));
+                    progressed = true;
+                }
+
+                if (progressed && q.isCompleted(data.getObjectivesProgress())) {
+                    data.setCompleted(true);
+                    plugin.playQuestComplete(player, q);
+                }
+            });
         } catch (Exception ignored) {}
     }
 
@@ -397,22 +439,32 @@ public class MMOItemsHook {
 
             final String resolvedRequired = mmoId;
 
-            plugin.getQuestManager().getAllQuests().stream()
-                .filter(q -> "MMOITEMS_APPLY_SOULBOUND".equalsIgnoreCase(q.getObjectiveType()))
-                .filter(q -> q.getObjectiveRequired() == null
-                    || q.getObjectiveRequired().isEmpty()
-                    || q.getObjectiveRequired().stream().anyMatch(r -> matchesRequired(r, resolvedRequired)))
-                .forEach(q -> {
-                    PlayerQuestData data = plugin.getPlayerDataManager()
+            plugin.getQuestManager().getAllQuests().forEach(q -> {
+                PlayerQuestData data = plugin.getPlayerDataManager()
                         .getOrCreateQuestData(player.getUniqueId(), q.getId());
-                    if (data.isCompleted()) return;
-                    int newPoints = Math.min(data.getPoints() + 1, q.getObjectiveAmount());
-                    data.setPoints(newPoints);
-                    if (newPoints >= q.getObjectiveAmount()) {
-                        data.setCompleted(true);
-                        plugin.playQuestComplete(player, q);
-                    }
-                });
+                if (data.isCompleted()) return;
+
+                List<Objective> objectives = q.getObjectives();
+                boolean progressed = false;
+
+                for (int i = 0; i < objectives.size(); i++) {
+                    Objective obj = objectives.get(i);
+                    if (!"MMOITEMS_APPLY_SOULBOUND".equalsIgnoreCase(obj.getType())) continue;
+                    if (obj.getRequired() != null && !obj.getRequired().isEmpty()
+                            && obj.getRequired().stream().noneMatch(r -> matchesRequired(r, resolvedRequired)))
+                        continue;
+
+                    int current = data.getObjectiveProgress(i);
+                    int max = obj.getAmount();
+                    data.setObjectiveProgress(i, Math.min(current + 1, max));
+                    progressed = true;
+                }
+
+                if (progressed && q.isCompleted(data.getObjectivesProgress())) {
+                    data.setCompleted(true);
+                    plugin.playQuestComplete(player, q);
+                }
+            });
         } catch (Exception ignored) {}
     }
 
@@ -467,22 +519,32 @@ public class MMOItemsHook {
 
             final String resolvedRequired = mmoId;
 
-            plugin.getQuestManager().getAllQuests().stream()
-                .filter(q -> "MMOITEMS_APPLY_REPAIR".equalsIgnoreCase(q.getObjectiveType()))
-                .filter(q -> q.getObjectiveRequired() == null
-                    || q.getObjectiveRequired().isEmpty()
-                    || q.getObjectiveRequired().stream().anyMatch(r -> matchesRequired(r, resolvedRequired)))
-                .forEach(q -> {
-                    PlayerQuestData data = plugin.getPlayerDataManager()
+            plugin.getQuestManager().getAllQuests().forEach(q -> {
+                PlayerQuestData data = plugin.getPlayerDataManager()
                         .getOrCreateQuestData(player.getUniqueId(), q.getId());
-                    if (data.isCompleted()) return;
-                    int newPoints = Math.min(data.getPoints() + 1, q.getObjectiveAmount());
-                    data.setPoints(newPoints);
-                    if (newPoints >= q.getObjectiveAmount()) {
-                        data.setCompleted(true);
-                        plugin.playQuestComplete(player, q);
-                    }
-                });
+                if (data.isCompleted()) return;
+
+                List<Objective> objectives = q.getObjectives();
+                boolean progressed = false;
+
+                for (int i = 0; i < objectives.size(); i++) {
+                    Objective obj = objectives.get(i);
+                    if (!"MMOITEMS_APPLY_REPAIR".equalsIgnoreCase(obj.getType())) continue;
+                    if (obj.getRequired() != null && !obj.getRequired().isEmpty()
+                            && obj.getRequired().stream().noneMatch(r -> matchesRequired(r, resolvedRequired)))
+                        continue;
+
+                    int current = data.getObjectiveProgress(i);
+                    int max = obj.getAmount();
+                    data.setObjectiveProgress(i, Math.min(current + 1, max));
+                    progressed = true;
+                }
+
+                if (progressed && q.isCompleted(data.getObjectivesProgress())) {
+                    data.setCompleted(true);
+                    plugin.playQuestComplete(player, q);
+                }
+            });
         } catch (Exception ignored) {}
     }
 
@@ -537,22 +599,32 @@ public class MMOItemsHook {
 
             final String resolvedRequired = mmoId;
 
-            plugin.getQuestManager().getAllQuests().stream()
-                .filter(q -> "MMOITEMS_UNSOCKET_GEMSTONE".equalsIgnoreCase(q.getObjectiveType()))
-                .filter(q -> q.getObjectiveRequired() == null
-                    || q.getObjectiveRequired().isEmpty()
-                    || q.getObjectiveRequired().stream().anyMatch(r -> matchesRequired(r, resolvedRequired)))
-                .forEach(q -> {
-                    PlayerQuestData data = plugin.getPlayerDataManager()
+            plugin.getQuestManager().getAllQuests().forEach(q -> {
+                PlayerQuestData data = plugin.getPlayerDataManager()
                         .getOrCreateQuestData(player.getUniqueId(), q.getId());
-                    if (data.isCompleted()) return;
-                    int newPoints = Math.min(data.getPoints() + 1, q.getObjectiveAmount());
-                    data.setPoints(newPoints);
-                    if (newPoints >= q.getObjectiveAmount()) {
-                        data.setCompleted(true);
-                        plugin.playQuestComplete(player, q);
-                    }
-                });
+                if (data.isCompleted()) return;
+
+                List<Objective> objectives = q.getObjectives();
+                boolean progressed = false;
+
+                for (int i = 0; i < objectives.size(); i++) {
+                    Objective obj = objectives.get(i);
+                    if (!"MMOITEMS_UNSOCKET_GEMSTONE".equalsIgnoreCase(obj.getType())) continue;
+                    if (obj.getRequired() != null && !obj.getRequired().isEmpty()
+                            && obj.getRequired().stream().noneMatch(r -> matchesRequired(r, resolvedRequired)))
+                        continue;
+
+                    int current = data.getObjectiveProgress(i);
+                    int max = obj.getAmount();
+                    data.setObjectiveProgress(i, Math.min(current + 1, max));
+                    progressed = true;
+                }
+
+                if (progressed && q.isCompleted(data.getObjectivesProgress())) {
+                    data.setCompleted(true);
+                    plugin.playQuestComplete(player, q);
+                }
+            });
         } catch (Exception ignored) {}
     }
 
@@ -606,22 +678,32 @@ public class MMOItemsHook {
 
             final String resolvedRequired = mmoId;
 
-            plugin.getQuestManager().getAllQuests().stream()
-                .filter(q -> "MMOITEMS_STATIONS_TRADE".equalsIgnoreCase(q.getObjectiveType()))
-                .filter(q -> q.getObjectiveRequired() == null
-                    || q.getObjectiveRequired().isEmpty()
-                    || q.getObjectiveRequired().stream().anyMatch(r -> matchesRequired(r, resolvedRequired)))
-                .forEach(q -> {
-                    PlayerQuestData data = plugin.getPlayerDataManager()
+            plugin.getQuestManager().getAllQuests().forEach(q -> {
+                PlayerQuestData data = plugin.getPlayerDataManager()
                         .getOrCreateQuestData(player.getUniqueId(), q.getId());
-                    if (data.isCompleted()) return;
-                    int newPoints = Math.min(data.getPoints() + result.getAmount(), q.getObjectiveAmount());
-                    data.setPoints(newPoints);
-                    if (newPoints >= q.getObjectiveAmount()) {
-                        data.setCompleted(true);
-                        plugin.playQuestComplete(player, q);
-                    }
-                });
+                if (data.isCompleted()) return;
+
+                List<Objective> objectives = q.getObjectives();
+                boolean progressed = false;
+
+                for (int i = 0; i < objectives.size(); i++) {
+                    Objective obj = objectives.get(i);
+                    if (!"MMOITEMS_STATIONS_TRADE".equalsIgnoreCase(obj.getType())) continue;
+                    if (obj.getRequired() != null && !obj.getRequired().isEmpty()
+                            && obj.getRequired().stream().noneMatch(r -> matchesRequired(r, resolvedRequired)))
+                        continue;
+
+                    int current = data.getObjectiveProgress(i);
+                    int max = obj.getAmount();
+                    data.setObjectiveProgress(i, Math.min(current + result.getAmount(), max));
+                    progressed = true;
+                }
+
+                if (progressed && q.isCompleted(data.getObjectivesProgress())) {
+                    data.setCompleted(true);
+                    plugin.playQuestComplete(player, q);
+                }
+            });
         } catch (Exception ignored) {}
     }
 

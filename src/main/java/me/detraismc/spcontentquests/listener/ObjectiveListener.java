@@ -1,7 +1,7 @@
 package me.detraismc.spcontentquests.listener;
 
 import me.detraismc.spcontentquests.SpContentQuests;
-import me.detraismc.spcontentquests.models.Category;
+import me.detraismc.spcontentquests.models.Objective;
 import me.detraismc.spcontentquests.models.PlayerQuestData;
 import me.detraismc.spcontentquests.models.Quest;
 import org.bukkit.Bukkit;
@@ -30,6 +30,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class ObjectiveListener implements Listener {
@@ -42,33 +43,35 @@ public class ObjectiveListener implements Listener {
 
     private void addProgress(Player player, String type, String requiredMatch, int amount) {
         for (Quest quest : plugin.getQuestManager().getAllQuests()) {
-            if (!quest.getObjectiveType().equalsIgnoreCase(type))
-                continue;
+            PlayerQuestData data = plugin.getPlayerDataManager()
+                    .getOrCreateQuestData(player.getUniqueId(), quest.getId());
+            if (data.isCompleted()) continue;
 
-            boolean match = true;
-            if (quest.getObjectiveRequired() != null && !quest.getObjectiveRequired().isEmpty()) {
-                match = quest.getObjectiveRequired().stream().anyMatch(req -> matchesRequired(req, requiredMatch));
+            List<Objective> objectives = quest.getObjectives();
+            boolean progressed = false;
+
+            for (int i = 0; i < objectives.size(); i++) {
+                Objective obj = objectives.get(i);
+                if (!obj.getType().equalsIgnoreCase(type)) continue;
+
+                boolean match = true;
+                if (obj.getRequired() != null && !obj.getRequired().isEmpty()) {
+                    match = obj.getRequired().stream().anyMatch(req -> matchesRequired(req, requiredMatch));
+                }
+
+                if (match) {
+                    int current = data.getObjectiveProgress(i);
+                    int max = obj.getAmount();
+                    int newPoints = Math.min(current + amount, max);
+                    data.setObjectiveProgress(i, newPoints);
+                    progressed = true;
+                }
             }
 
-            if (match) {
-                incrementPoints(player, quest, amount);
+            if (progressed && quest.isCompleted(data.getObjectivesProgress())) {
+                data.setCompleted(true);
+                plugin.playQuestComplete(player, quest);
             }
-        }
-    }
-
-    private void incrementPoints(Player player, Quest quest, int amount) {
-        PlayerQuestData data = plugin.getPlayerDataManager()
-                .getOrCreateQuestData(player.getUniqueId(), quest.getId());
-
-        if (data.isCompleted())
-            return;
-
-        int newPoints = Math.min(data.getPoints() + amount, quest.getObjectiveAmount());
-        data.setPoints(newPoints);
-
-        if (newPoints >= quest.getObjectiveAmount()) {
-            data.setCompleted(true);
-            plugin.playQuestComplete(player, quest);
         }
     }
 
@@ -92,17 +95,51 @@ public class ObjectiveListener implements Listener {
             int amount = result.getAmount();
 
             if (event.isShiftClick()) {
-                int count = 0;
-                for (ItemStack item : player.getInventory().getStorageContents()) {
-                    if (item != null && item.isSimilar(result)) {
-                        count += item.getAmount();
+                ItemStack[] matrix = event.getInventory().getMatrix();
+                java.util.List<ItemStack> ingredientTypes = new java.util.ArrayList<>();
+                java.util.List<Integer> neededAmounts = new java.util.ArrayList<>();
+
+                for (ItemStack ingredient : matrix) {
+                    if (ingredient == null || ingredient.getType().isAir()) continue;
+                    boolean found = false;
+                    for (int i = 0; i < ingredientTypes.size(); i++) {
+                        if (ingredientTypes.get(i).isSimilar(ingredient)) {
+                            neededAmounts.set(i, neededAmounts.get(i) + ingredient.getAmount());
+                            found = true;
+                            break;
+                        }
+                    }
+                    if (!found) {
+                        ingredientTypes.add(ingredient.clone());
+                        neededAmounts.add(ingredient.getAmount());
                     }
                 }
-                ItemStack resultSlot = event.getInventory().getResult();
-                if (resultSlot != null && !resultSlot.getType().isAir() && resultSlot.isSimilar(result)) {
-                    count += resultSlot.getAmount();
+
+                int maxCrafts = Integer.MAX_VALUE;
+                for (int i = 0; i < ingredientTypes.size(); i++) {
+                    ItemStack neededType = ingredientTypes.get(i);
+                    int neededPerOp = neededAmounts.get(i);
+                    int available = 0;
+
+                    for (ItemStack item : player.getInventory().getStorageContents()) {
+                        if (item != null && item.isSimilar(neededType)) {
+                            available += item.getAmount();
+                        }
+                    }
+                    for (ItemStack item : matrix) {
+                        if (item != null && item.isSimilar(neededType)) {
+                            available += item.getAmount();
+                        }
+                    }
+
+                    maxCrafts = Math.min(maxCrafts, available / neededPerOp);
                 }
-                amount = Math.max(count, result.getAmount());
+
+                if (maxCrafts == Integer.MAX_VALUE || maxCrafts < 1) {
+                    amount = result.getAmount();
+                } else {
+                    amount = maxCrafts * result.getAmount();
+                }
             }
 
             if (isCustomItem(result)) {

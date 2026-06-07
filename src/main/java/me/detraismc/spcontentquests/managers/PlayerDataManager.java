@@ -26,13 +26,15 @@ public class PlayerDataManager {
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             Map<String, PlayerQuestData> dataMap = new HashMap<>();
             try (Connection conn = plugin.getDatabaseManager().getConnection()) {
-                PreparedStatement ps = conn.prepareStatement("SELECT quest_id, points, completed, claimed FROM spcontentquests_player_quests WHERE uuid = ?");
+                PreparedStatement ps = conn.prepareStatement("SELECT quest_id, objectives_data, completed, claimed FROM spcontentquests_player_quests WHERE uuid = ?");
                 ps.setString(1, uuid.toString());
                 ResultSet rs = ps.executeQuery();
                 while (rs.next()) {
+                    String raw = rs.getString("objectives_data");
+                    Map<Integer, Integer> progress = PlayerQuestData.deserializeProgress(raw);
                     dataMap.put(rs.getString("quest_id"), new PlayerQuestData(
                             rs.getString("quest_id"),
-                            rs.getInt("points"),
+                            progress,
                             rs.getBoolean("completed"),
                             rs.getBoolean("claimed")
                     ));
@@ -74,25 +76,25 @@ public class PlayerDataManager {
     private void saveDataToDB(UUID uuid, Map<String, PlayerQuestData> dataMap) {
         try (Connection conn = plugin.getDatabaseManager().getConnection()) {
             PreparedStatement update = conn.prepareStatement(
-                    "UPDATE spcontentquests_player_quests SET points = ?, completed = ?, claimed = ? WHERE uuid = ? AND quest_id = ?");
+                    "UPDATE spcontentquests_player_quests SET objectives_data = ?, completed = ?, claimed = ? WHERE uuid = ? AND quest_id = ?");
             PreparedStatement insert = conn.prepareStatement(
-                    "INSERT INTO spcontentquests_player_quests (uuid, quest_id, points, completed, claimed) VALUES (?, ?, ?, ?, ?)");
+                    "INSERT INTO spcontentquests_player_quests (uuid, quest_id, objectives_data, completed, claimed) VALUES (?, ?, ?, ?, ?)");
 
             for (PlayerQuestData data : dataMap.values()) {
                 if (!data.isModified()) continue;
 
-                // Try update first
-                update.setInt(1, data.getPoints());
+                String serialized = PlayerQuestData.serializeProgress(data.getObjectivesProgress());
+
+                update.setString(1, serialized);
                 update.setBoolean(2, data.isCompleted());
                 update.setBoolean(3, data.isClaimed());
                 update.setString(4, uuid.toString());
                 update.setString(5, data.getQuestId());
-                
+
                 if (update.executeUpdate() == 0) {
-                    // Row didn't exist, insert it
                     insert.setString(1, uuid.toString());
                     insert.setString(2, data.getQuestId());
-                    insert.setInt(3, data.getPoints());
+                    insert.setString(3, serialized);
                     insert.setBoolean(4, data.isCompleted());
                     insert.setBoolean(5, data.isClaimed());
                     insert.executeUpdate();
@@ -113,8 +115,8 @@ public class PlayerDataManager {
     public PlayerQuestData getOrCreateQuestData(UUID uuid, String questId) {
         Map<String, PlayerQuestData> map = playerCache.computeIfAbsent(uuid, k -> new HashMap<>());
         return map.computeIfAbsent(questId, k -> {
-            PlayerQuestData data = new PlayerQuestData(questId, 0, false, false);
-            data.setModified(true); // new data should be saved
+            PlayerQuestData data = new PlayerQuestData(questId);
+            data.setModified(true);
             return data;
         });
     }

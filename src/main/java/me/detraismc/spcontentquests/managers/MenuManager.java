@@ -1,8 +1,10 @@
 package me.detraismc.spcontentquests.managers;
 
 import me.detraismc.spcontentquests.SpContentQuests;
+import me.detraismc.spcontentquests.menus.ObjectiveMenu;
 import me.detraismc.spcontentquests.menus.QuestMenu;
 import me.detraismc.spcontentquests.models.Category;
+import me.detraismc.spcontentquests.models.Objective;
 import me.detraismc.spcontentquests.models.PlayerQuestData;
 import me.detraismc.spcontentquests.models.Quest;
 import net.kyori.adventure.text.Component;
@@ -12,6 +14,7 @@ import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -19,6 +22,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -34,7 +38,6 @@ public class MenuManager {
 
     public Component format(String text) {
         if (text == null) return Component.empty();
-        // Fallback for hex using MiniMessage or legacy &
         if (text.contains("<#") || text.contains("<")) {
             return miniMessage.deserialize("<!italic>" + text);
         } else {
@@ -53,7 +56,6 @@ public class MenuManager {
         Inventory inv = Bukkit.createInventory(holder, category.getGuiRows() * 9, format(category.getGuiName()));
         holder.setInventory(inv);
 
-        // Load Custom Items
         ConfigurationSection customItems = category.getConfig().getConfigurationSection("item-custom");
         if (customItems != null) {
             for (String key : customItems.getKeys(false)) {
@@ -74,10 +76,8 @@ public class MenuManager {
             }
         }
 
-        // Load Quests
         List<Quest> quests = new ArrayList<>(plugin.getQuestManager().getQuestsInCategory(category.getId()));
 
-        // Load Pagination Items
         ConfigurationSection pageItems = category.getConfig().getConfigurationSection("item-page");
         boolean autoLayout = category.isQuestsAutomaticLayout();
 
@@ -103,6 +103,11 @@ public class MenuManager {
             }
         }
 
+        String ongoingFormat = category.getConfig().getString("quests-item.objective-ongoing",
+                "&8- &f<objective-display> &7(<objective-value>/<objective-max-value>) &4X");
+        String completeFormat = category.getConfig().getString("quests-item.objective-complete",
+                "&8- &f<objective-display> &7(<objective-value>/<objective-max-value>) &2\u2713");
+
         if (autoLayout) {
             List<Integer> questSlots = category.getQuestsSlots();
             int questsPerPage = questSlots.size();
@@ -113,8 +118,8 @@ public class MenuManager {
                 if (questIndex >= quests.size()) break;
 
                 Quest quest = quests.get(questIndex);
-                PlayerQuestData data = questData.getOrDefault(quest.getId(), new PlayerQuestData(quest.getId(), 0, false, false));
-                String state = data.isClaimed() ? "claimed" : (data.isCompleted() || data.getPoints() >= quest.getObjectiveAmount() ? "complete" : "ongoing");
+                PlayerQuestData data = questData.getOrDefault(quest.getId(), new PlayerQuestData(quest.getId()));
+                String state = data.isClaimed() ? "claimed" : (data.isCompleted() || quest.isCompleted(data.getObjectivesProgress()) ? "complete" : "ongoing");
 
                 ConfigurationSection questDisplay = category.getConfig().getConfigurationSection("quests-item." + state);
                 if (questDisplay != null) {
@@ -142,9 +147,20 @@ public class MenuManager {
                                             lore.add(format(descLine));
                                         }
                                     }
+                                } else if (line.contains("<objective>")) {
+                                    for (int oi = 0; oi < quest.getObjectives().size(); oi++) {
+                                        Objective obj = quest.getObjectives().get(oi);
+                                        boolean objComplete = data.getObjectiveProgress(oi) >= obj.getAmount();
+                                        String fmt = objComplete ? completeFormat : ongoingFormat;
+                                        fmt = fmt.replace("<objective-display>", obj.getDisplay());
+                                        fmt = fmt.replace("<objective-value>", String.valueOf(data.getObjectiveProgress(oi)));
+                                        fmt = fmt.replace("<objective-max-value>", String.valueOf(obj.getAmount()));
+                                        lore.add(format(fmt));
+                                    }
                                 } else {
+                                    int totalMax = quest.getObjectives().stream().mapToInt(Objective::getAmount).sum();
                                     line = line.replace("<objective-value>", String.valueOf(data.getPoints()));
-                                    line = line.replace("<objective-max-value>", String.valueOf(quest.getObjectiveAmount()));
+                                    line = line.replace("<objective-max-value>", String.valueOf(totalMax));
                                     line = line.replace("<reward>", quest.getConfig().getStringList("reward-display").isEmpty() ? "" : String.join(", ", quest.getConfig().getStringList("reward-display")));
                                     lore.add(format(line));
                                 }
@@ -163,8 +179,8 @@ public class MenuManager {
                 int slot = quest.getSlot();
                 if (slot < 0 || slot >= inv.getSize()) continue;
 
-                PlayerQuestData data = questData.getOrDefault(quest.getId(), new PlayerQuestData(quest.getId(), 0, false, false));
-                String state = data.isClaimed() ? "claimed" : (data.isCompleted() || data.getPoints() >= quest.getObjectiveAmount() ? "complete" : "ongoing");
+                PlayerQuestData data = questData.getOrDefault(quest.getId(), new PlayerQuestData(quest.getId()));
+                String state = data.isClaimed() ? "claimed" : (data.isCompleted() || quest.isCompleted(data.getObjectivesProgress()) ? "complete" : "ongoing");
 
                 ConfigurationSection questDisplay = category.getConfig().getConfigurationSection("quests-item." + state);
                 if (questDisplay != null) {
@@ -192,9 +208,20 @@ public class MenuManager {
                                             lore.add(format(descLine));
                                         }
                                     }
+                                } else if (line.contains("<objective>")) {
+                                    for (int oi = 0; oi < quest.getObjectives().size(); oi++) {
+                                        Objective obj = quest.getObjectives().get(oi);
+                                        boolean objComplete = data.getObjectiveProgress(oi) >= obj.getAmount();
+                                        String fmt = objComplete ? completeFormat : ongoingFormat;
+                                        fmt = fmt.replace("<objective-display>", obj.getDisplay());
+                                        fmt = fmt.replace("<objective-value>", String.valueOf(data.getObjectiveProgress(oi)));
+                                        fmt = fmt.replace("<objective-max-value>", String.valueOf(obj.getAmount()));
+                                        lore.add(format(fmt));
+                                    }
                                 } else {
+                                    int totalMax = quest.getObjectives().stream().mapToInt(Objective::getAmount).sum();
                                     line = line.replace("<objective-value>", String.valueOf(data.getPoints()));
-                                    line = line.replace("<objective-max-value>", String.valueOf(quest.getObjectiveAmount()));
+                                    line = line.replace("<objective-max-value>", String.valueOf(totalMax));
                                     line = line.replace("<reward>", quest.getConfig().getStringList("reward-display").isEmpty() ? "" : String.join(", ", quest.getConfig().getStringList("reward-display")));
                                     lore.add(format(line));
                                 }
@@ -207,6 +234,129 @@ public class MenuManager {
                     inv.setItem(slot, icon);
                 }
             }
+        }
+
+        player.openInventory(inv);
+    }
+
+    private YamlConfiguration objectiveConfig;
+
+    private YamlConfiguration getObjectiveConfig() {
+        if (objectiveConfig == null) {
+            File file = new File(plugin.getDataFolder(), "gui-objective.yml");
+            if (file.exists()) {
+                objectiveConfig = YamlConfiguration.loadConfiguration(file);
+            }
+        }
+        return objectiveConfig;
+    }
+
+    public void reloadObjectiveConfig() {
+        objectiveConfig = null;
+    }
+
+    public void openObjective(Player player, Quest quest, Category category, int questPage) {
+        YamlConfiguration objCfg = getObjectiveConfig();
+        if (objCfg == null) return;
+
+        Map<String, PlayerQuestData> questData = plugin.getPlayerDataManager().getQuestData(player.getUniqueId());
+        PlayerQuestData data = questData.getOrDefault(quest.getId(), new PlayerQuestData(quest.getId()));
+
+        String guiName = objCfg.getString("gui-name", "Objective").replace("{quest}", quest.getConfig().getString("icon.display", quest.getId()));
+        int rows = objCfg.getInt("gui-rows", 4);
+        int size = Math.min(Math.max(rows, 1), 6) * 9;
+
+        ObjectiveMenu holder = new ObjectiveMenu(quest, category, questPage, questData);
+        Inventory inv = Bukkit.createInventory(holder, size, format(guiName));
+        holder.setInventory(inv);
+
+        // Custom items
+        ConfigurationSection customItems = objCfg.getConfigurationSection("item-custom");
+        if (customItems != null) {
+            for (String key : customItems.getKeys(false)) {
+                ConfigurationSection itemCfg = customItems.getConfigurationSection(key);
+                if (itemCfg != null) {
+                    ItemStack item = buildItem(itemCfg);
+                    List<Integer> slots = itemCfg.getIntegerList("slots");
+                    if (slots.isEmpty() && itemCfg.contains("slot")) {
+                        slots = new ArrayList<>();
+                        slots.add(itemCfg.getInt("slot"));
+                    }
+                    for (int slot : slots) {
+                        if (slot >= 0 && slot < inv.getSize()) {
+                            inv.setItem(slot, item);
+                        }
+                    }
+                }
+            }
+        }
+
+        // Go back item
+        ConfigurationSection gobackSection = objCfg.getConfigurationSection("goback-item");
+        if (gobackSection != null) {
+            int gobackSlot = gobackSection.getInt("slot", 8);
+            if (gobackSlot >= 0 && gobackSlot < inv.getSize()) {
+                inv.setItem(gobackSlot, buildItem(gobackSection));
+            }
+        }
+
+        // Objective slots config
+        ConfigurationSection objSlotsCfg = objCfg.getConfigurationSection("objective-slots");
+        List<Integer> targetSlots = null;
+        int objCount = quest.getObjectives().size();
+        if (objSlotsCfg != null) {
+            String key = String.valueOf(objCount);
+            if (objSlotsCfg.contains(key)) {
+                targetSlots = objSlotsCfg.getIntegerList(key);
+            } else if (objSlotsCfg.contains("7")) {
+                targetSlots = objSlotsCfg.getIntegerList("7");
+            }
+        }
+        if (targetSlots == null) {
+            targetSlots = new ArrayList<>();
+            int start = (size / 2) - objCount / 2;
+            for (int i = 0; i < objCount; i++) {
+                targetSlots.add(start + i);
+            }
+        }
+
+        // Place objective items
+        for (int i = 0; i < quest.getObjectives().size() && i < targetSlots.size(); i++) {
+            Objective obj = quest.getObjectives().get(i);
+            int slot = targetSlots.get(i);
+            if (slot < 0 || slot >= inv.getSize()) continue;
+
+            boolean isComplete = data.getObjectiveProgress(i) >= obj.getAmount();
+            String stateKey = isComplete ? "complete" : "ongoing";
+            ConfigurationSection itemSection = objCfg.getConfigurationSection("objective-item." + stateKey);
+            if (itemSection == null) continue;
+
+            ItemStack icon = buildItem(itemSection);
+            ItemMeta meta = icon.getItemMeta();
+            if (meta != null) {
+                String displayName = itemSection.getString("name", "<objective-display>");
+                displayName = displayName.replace("<objective-display>", obj.getDisplay());
+                meta.displayName(format(displayName));
+
+                List<Component> lore = new ArrayList<>();
+                if (itemSection.contains("lore")) {
+                    for (String line : itemSection.getStringList("lore")) {
+                        line = line.replace("<objective-display>", obj.getDisplay());
+                        line = line.replace("<objective-value>", String.valueOf(data.getObjectiveProgress(i)));
+                        line = line.replace("<objective-max-value>", String.valueOf(obj.getAmount()));
+                        if (line.contains("<objective-desc>") && obj.getDesc() != null) {
+                            for (String descLine : obj.getDesc()) {
+                                lore.add(format(descLine));
+                            }
+                        } else {
+                            lore.add(format(line));
+                        }
+                    }
+                }
+                meta.lore(lore);
+                icon.setItemMeta(meta);
+            }
+            inv.setItem(slot, icon);
         }
 
         player.openInventory(inv);

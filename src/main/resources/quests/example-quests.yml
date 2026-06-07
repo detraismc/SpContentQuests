@@ -36,8 +36,10 @@ VOTE_OUR_SERVER:
     skullvalue: ''           # Base64 skull texture (for PLAYER_HEAD items)
     display: '&bVote our Server'  # Display name (& for color codes)
     desc:                    # Lore/description lines
-      - '&7Vote to the server 1 times.'
-      - '&7Use &f/vote &7to get vote link.'
+      - '&7Do you know you can vote for our server?'
+      - '&7Voting helps us grow and is greatly appreciated!'
+      - '&7As a reward, you will receive a diamond for each vote.'
+      - '&7Use &f/vote &7to get the vote link.'
 
   # ---------------------------------------------------------------
   # OBJECTIVE - What the player must do to complete the quest
@@ -46,24 +48,29 @@ VOTE_OUR_SERVER:
     # When type is "none", no automatic tracking occurs.
     # Use a command from your voting plugin to add progress:
     #   /spcontentquests objective add VOTE_OUR_SERVER <player> 1
-    type: none
-    amount: 1                # How many times the objective must be done
+    - type: none
+      amount: 1                # How many times the objective must be done
+      display: 'Vote 1 time'   # Text shown in the GUI's objective section
+
+      # Objective commands run when the player clicks the objective in the quest objective GUI.
+      # Command prefixes:
+      #   [console] <cmd>   - Runs as console
+      #   [player] <cmd>    - Runs as the player
+      #   [close]           - Closes the GUI
+      #   [redirect]        - Redirects the player to objective GUI when close the current GUI
+      #   %player%          - Replaced with the player's name
+      # ---------------------------------------------------------------
+      command:
+        - '[player] vote'      # Command run when the player clicks the objective in the quest objective GUI
+        - '[close]'            # Closes the GUI when the player clicks the objective in the quest objective GUI
 
   # ---------------------------------------------------------------
-  # OBJECTIVE COMMAND - Runs when left-clicking the quest in the GUI
-  # Used to guide the player (e.g., open a recipe book, teleport).
+  # REWARD - What the player gets for completing the quest
   # Command prefixes:
   #   [console] <cmd>   - Runs as console
   #   [player] <cmd>    - Runs as the player
   #   [close]           - Closes the GUI
   #   %player%          - Replaced with the player's name
-  # ---------------------------------------------------------------
-  objective-command:
-    - '[player] vote'
-    - '[close]'
-
-  # ---------------------------------------------------------------
-  # REWARD - What the player gets for completing the quest
   # ---------------------------------------------------------------
   reward-display:
     - '&f1x Diamond'         # Text shown in the GUI's reward section
@@ -86,7 +93,7 @@ BE_A_BAKER:
     skullvalue: ''
     display: '&6Be a Baker'
     desc:
-      - '&7Craft 10 breads.'
+      - '&7Now you want to become a baker.'
 
   # ---------------------------------------------------------------
   # OBJECTIVE TYPES REFERENCE
@@ -120,17 +127,20 @@ BE_A_BAKER:
   #   ITEMSADDER_PLACE_BLOCK  - Place an ItemsAdder custom block (required: namespaced ID)
   # ---------------------------------------------------------------
   objective:
-    type: CRAFT
-    amount: 10
-
-    # REQUIRED - What specific item the objective tracks.
-    # For CRAFT type: the vanilla material name of the crafted item.
-    # For other types, this can be material names, entity types, etc.
-    required:
-      - BREAD
-
-  objective-command:
-    - '[console] recipe bread %player%'
+    - type: CRAFT
+      amount: 10
+      # REQUIRED - What specific item the objective tracks.
+      # For CRAFT type: the vanilla material name of the crafted item.
+      # For other types, this can be material names, entity types, etc.
+      required:
+        - BREAD
+      display: 'Craft 10 Breads'  # Text shown in the GUI's objective section
+      desc:
+        - 'Craft bread using wheat'
+        - 'in a crafting table.'
+      command:
+        - '[player] recipe bread'
+        - '[redirect]' # when the player close the recipe gui, it will back to open the quest objective gui
 
   reward-display:
     - '&f3x Iron Ingot'
@@ -152,15 +162,38 @@ LEGENDARY_SWORD:
     skullvalue: ''
     display: '&cLegendary Sword'
     desc:
-      - '&7Craft 1 Excalibur.'
+      - '&7Becomes powerful and craft'
+      - '&7Legendary Swords.'
 
   objective:
-    type: CRAFT_CUSTOM
-    amount: 1
-    required:
-      # For CRAFT_CUSTOM type: use the stripped display name
-      # (color codes removed) of the output item from the crafting recipe.
-      - Excalibur
+    - type: CRAFT_CUSTOM
+      amount: 1
+      required:
+        # For CRAFT_CUSTOM type: use the stripped display name
+        # (color codes removed) of the output item from the crafting recipe.
+        - Excalibur
+      display: 'Craft Excalibur'
+      desc:
+        - 'Craft Excalibur using the custom'
+        - 'recipe on the server.'
+        - 'if there is no recipe, this quest'
+        - 'didnt do anything, just a example.'
+      command:
+        - '[player] recipe excalibur'
+    - type: CRAFT_CUSTOM
+      amount: 1
+      required:
+        # For CRAFT_CUSTOM type: use the stripped display name
+        # (color codes removed) of the output item from the crafting recipe.
+        - Nightsword
+      display: 'Craft Nightsword'
+      desc:
+        - 'Craft Nightsword using the custom'
+        - 'recipe on the server.'
+        - 'if there is no recipe, this quest'
+        - 'didnt do anything, just a example.'
+      command:
+        - '[player] recipe nightsword'
 
   objective-command:
     - '[console] recipe bread %player%'
@@ -185,19 +218,23 @@ BECOME_A_SAMURAI:
     skullvalue: ''
     display: '&6Become a Samurai'
     desc:
-      - '&7Craft 2 Katanas.'
+      - '&7Your samurai journey begins.'
 
   objective:
-    type: CRAFT_CUSTOM
-    amount: 2
-    required:
-      # CONTAINS: prefix makes the match partial instead of exact.
-      # This matches any item whose stripped display name contains "Katana",
-      # e.g. "Katana of Fire", "Frost Katana", "Obsidian Katana", etc.
-      - CONTAINS:Katana
-
-  objective-command:
-    - '[console] recipe bread %player%'
+    - type: CRAFT_CUSTOM
+      amount: 2
+      required:
+        # CONTAINS: prefix makes the match partial instead of exact.
+        # This matches any item whose stripped display name contains "Katana",
+        # e.g. "Katana of Fire", "Frost Katana", "Obsidian Katana", etc.
+        - CONTAINS:Katana
+      display: 'Craft 2 Katanas'
+      desc:
+        - 'Craft Katanas using the custom'
+        - 'recipe on the server.'
+        - 'if there is no recipe, this quest'
+        - 'didnt do anything, just a example.'
+      command: []
 
   reward-display:
     - '&f5x Pink Wool'
@@ -216,20 +253,25 @@ BECOME_A_SAMURAI:
 #     item: PLAYER_HEAD
 #     amount: 10
 #     model: 0
-#     skullvalue: ''
+#     skullvalue: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYWJhOGViYzRjNmE4MTczMDk0NzQ5OWJmN2UxZDVlNzNmZWQ2YzFiYjJjMDUxZTk2ZDM1ZWIxNmQyNDYxMGU3In19fQ=='
 #     display: '&9Magnetize Yourself'
 #     desc:
-#       - '&7Craft 10 Magnet.'
+#       - '&7Now you want a crap ton of magnets'
+#       - '&7to make many slimefun machines.'
 #   objective:
 #     # Slimefun multiblock objective: tracks usage of a specific multiblock machine.
 #     # Replace {ID} with the Slimefun multiblock ID (e.g., ENHANCED_CRAFTING_TABLE, SMELTERY).
-#     type: SLIMEFUN_MULTIBLOCK_SMELTERY
-#     amount: 10
-#     required:
-#       # For Slimefun: the Slimefun item ID the multiblock produces
-#       - MAGNET
-#   objective-command:
-#     - '[player] sf open_guide'
+#     - type: SLIMEFUN_MULTIBLOCK_SMELTERY
+#       amount: 10
+#       required:
+#         # For Slimefun: the Slimefun item ID the multiblock produces
+#         - MAGNET
+#       display: 'Craft 10 Magnets'
+#       desc:
+#         - 'Use the Slimefun Smeltery to'
+#         - 'smelt ores into Magnets.'
+#       command:
+#         - '[console] sf open_guide %player%'
 #   reward-display:
 #     - '&f5x &6Bronze Ingot'
 #   reward-command:
@@ -245,16 +287,22 @@ BECOME_A_SAMURAI:
 #     skullvalue: ''
 #     display: '&6Greater Sword'
 #     desc:
-#       - '&7Trade and get a Steel Greatsword.'
+#       - '&7Go into /warp blacksmith and'
+#       - '&7craft the Greater Sword.'
 #   objective:
 #     # MMOItems station trade: tracks trades at MMOItems crafting stations.
 #     # Required format: TYPE|ID (the MMOItems item type and ID separated by |)
-#     type: MMOITEMS_STATIONS_TRADE
-#     amount: 1
-#     required:
-#       - GREATSWORD|STEEL_GREATSWORD
-#   objective-command:
-#     - '[player] warp blacksmith'
+#     - type: MMOITEMS_STATIONS_TRADE
+#       amount: 1
+#       required:
+#         - GREATSWORD|STEEL_GREATSWORD
+#       display: 'Craft the Steel Greatsword'
+#       desc:
+#         - 'Go to the /warp blacksmith then'
+#         - 'find blacksmith station and craft'
+#         - 'the Steel Greatsword.'
+#       command:
+#         - '[player] warp blacksmith'
 #   reward-display:
 #     - '&f5x &bSteel Ingot'
 #   reward-command:

@@ -69,7 +69,7 @@ public class SQLiteManager implements DatabaseManager {
             stmt.execute("CREATE TABLE IF NOT EXISTS spcontentquests_player_quests (" +
                     "uuid VARCHAR(36) NOT NULL, " +
                     "quest_id VARCHAR(64) NOT NULL, " +
-                    "points INT DEFAULT 0, " +
+                    "objectives_data TEXT DEFAULT '', " +
                     "completed BOOLEAN DEFAULT 0, " +
                     "claimed BOOLEAN DEFAULT 0, " +
                     "PRIMARY KEY (uuid, quest_id), " +
@@ -77,7 +77,7 @@ public class SQLiteManager implements DatabaseManager {
                     ");");
                     
             try {
-                stmt.execute("ALTER TABLE spcontentquests_player_quests ADD COLUMN claimed BOOLEAN DEFAULT 0");
+                stmt.execute("ALTER TABLE spcontentquests_player_quests ADD COLUMN objectives_data TEXT DEFAULT ''");
             } catch (SQLException ignored) {
                 // Column already exists
             }
