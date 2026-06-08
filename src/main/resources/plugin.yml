@@ -1,7 +1,7 @@
 name: SpContentQuests
 author: DetraisMC
 description: Plugin inspired by mod FTB Quests to make player have a straight goal in server
-version: 1.0
+version: 1.0.0
 main: me.detraismc.spcontentquests.SpContentQuests
 api-version: 1.21
 softdepend: [MythicMobs, Slimefun, MMOItems, ItemsAdder, PlaceholderAPI]
