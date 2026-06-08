@@ -138,6 +138,7 @@ BE_A_BAKER:
   #   PICKUP_ITEM            - Pick up an item
   #   CONSUME                - Eat/drink an item
   #   SMELT                  - Smelt an item in a furnace
+  #   SMELT_CUSTOM           - Smelt items with custom names/lore (matched by display name)
   #   ENCHANT                - Enchant an item
   #   FISHING                - Catch a fish
   #   THROW                  - Throw a projectile (ender pearl, egg, etc.)
