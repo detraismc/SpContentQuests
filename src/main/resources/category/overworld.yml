@@ -236,8 +236,8 @@ item-custom:
     amount: 1
     name: '<#58D057>Introduction'
     lore:
-      - '&7Back to Blacksmith'
-      - '&7Menu.'
+      - '&7Introduction Quests'
+      - '&7to get you started.'
       - ''
       - '&f➥ Click'
     commands:
@@ -253,8 +253,8 @@ item-custom:
     amount: 1
     name: '<#89E7CC>Overworld'
     lore:
-      - '&7Back to Blacksmith'
-      - '&7Menu.'
+      - '&7Overworld Quests'
+      - '&7for your adventures.'
       - ''
       - '&f➥ Click'
     commands: []
