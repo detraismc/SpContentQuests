@@ -472,26 +472,27 @@ public class MenuManager {
         ItemStack item = new ItemStack(mat, section.getInt("amount", 1));
         ItemMeta meta = item.getItemMeta();
         
-        if (meta != null) {
-            if (section.contains("name") || section.contains("display")) {
-                meta.displayName(format(section.getString("name", section.getString("display", ""))));
-            }
-            if (section.contains("lore")) {
-                List<Component> lore = new ArrayList<>();
-                for (String line : section.getStringList("lore")) {
-                    lore.add(format(line));
+            if (meta != null) {
+                if (section.contains("name") || section.contains("display")) {
+                    meta.displayName(format(section.getString("name", section.getString("display", ""))));
                 }
-                meta.lore(lore);
+                if (section.contains("lore")) {
+                    List<Component> lore = new ArrayList<>();
+                    for (String line : section.getStringList("lore")) {
+                        lore.add(format(line));
+                    }
+                    meta.lore(lore);
+                }
+                if (section.contains("modeldata") || section.contains("model")) {
+                    meta.setCustomModelData(section.getInt("modeldata", section.getInt("model", 0)));
+                }
+                meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+                if (section.getBoolean("enchanted", false)) {
+                    meta.addEnchant(Enchantment.UNBREAKING, 1, false);
+                    meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+                }
+                item.setItemMeta(meta);
             }
-            if (section.contains("modeldata") || section.contains("model")) {
-                meta.setCustomModelData(section.getInt("modeldata", section.getInt("model", 0)));
-            }
-            if (section.getBoolean("enchanted", false)) {
-                meta.addEnchant(Enchantment.UNBREAKING, 1, false);
-                meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-            }
-            item.setItemMeta(meta);
-        }
         
         return item;
     }

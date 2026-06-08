@@ -324,8 +324,8 @@ BECOME_A_SAMURAI:
 #         - MAGNET
 #       display: 'Craft 10 Magnets'
 #       desc:
-#         - 'Use the Slimefun Smeltery to'
-#         - 'smelt ores into Magnets.'
+#         - '&7Use the Slimefun Smeltery to'
+#         - '&7smelt ores into Magnets.'
 #       command:
 #         - '[console] sf open_guide %player%'
 #   reward-display:
@@ -354,9 +354,9 @@ BECOME_A_SAMURAI:
 #         - GREATSWORD|STEEL_GREATSWORD
 #       display: 'Craft the Steel Greatsword'
 #       desc:
-#         - 'Go to the /warp blacksmith then'
-#         - 'find blacksmith station and craft'
-#         - 'the Steel Greatsword.'
+#         - '&7Go to the /warp blacksmith then'
+#         - '&7find blacksmith station and craft'
+#         - '&7the Steel Greatsword.'
 #       command:
 #         - '[player] warp blacksmith'
 #       icon:
