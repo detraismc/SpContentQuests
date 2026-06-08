@@ -9,7 +9,7 @@ commands:
   spcontentquests:
     description: SpContentQuests main command
     usage: /<command>
-    aliases: [contentquests, contentquest, cquests, cquest]
+    aliases: [contentquests, contentquest, cquests, cquest, spcq, cq]
   questbook:
     description: Get the Quest Book
     usage: /<command>

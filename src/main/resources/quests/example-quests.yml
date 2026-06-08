@@ -169,8 +169,8 @@ BE_A_BAKER:
         - BREAD
       display: 'Craft 10 Breads'  # Text shown in the GUI's objective section
       desc:
-        - 'Craft bread using wheat'
-        - 'in a crafting table.'
+        - '&7Craft bread using wheat'
+        - '&7in a crafting table.'
       command:
         - '[player] recipe bread'
         - '[redirect]' # when the player close the recipe gui, it will back to open the quest objective gui
@@ -242,9 +242,6 @@ LEGENDARY_SWORD:
         - '&7didnt do anything, just a example.'
       command:
         - '[player] recipe nightsword'
-
-  objective-command:
-    - '[console] recipe bread %player%'
 
   reward-display:
     - '&f3x Iron Ingot'

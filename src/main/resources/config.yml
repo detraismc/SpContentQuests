@@ -120,6 +120,9 @@ messages:
 # ---------------------------------------------------------------
 
 quest-book:
+  # Command aliases for /questbook (requires restart to apply)
+  command-aliases: [quest, quests]
+
   # Whether the quest book system is enabled
   enable: true
 

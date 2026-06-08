@@ -22,6 +22,7 @@ import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.entity.EntityTameEvent;
 import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.inventory.FurnaceExtractEvent;
+import org.bukkit.event.inventory.FurnaceSmeltEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerFishEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
@@ -29,13 +30,16 @@ import org.bukkit.event.player.PlayerShearEntityEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public class ObjectiveListener implements Listener {
     private final SpContentQuests plugin;
     private final Set<Location> playerPlacedBlocks = new HashSet<>();
+    private final Map<Location, ItemStack> furnaceSmeltCache = new HashMap<>();
 
     public ObjectiveListener(SpContentQuests plugin) {
         this.plugin = plugin;
@@ -186,8 +190,18 @@ public class ObjectiveListener implements Listener {
     }
 
     @EventHandler(ignoreCancelled = true)
+    public void onFurnaceSmelt(FurnaceSmeltEvent event) {
+        furnaceSmeltCache.put(event.getBlock().getLocation(), event.getResult());
+    }
+
+    @EventHandler(ignoreCancelled = true)
     public void onSmeltExtract(FurnaceExtractEvent event) {
-        addProgress(event.getPlayer(), "SMELT", event.getItemType().name(), event.getItemAmount());
+        ItemStack result = furnaceSmeltCache.remove(event.getBlock().getLocation());
+        if (result != null && isCustomItem(result)) {
+            addProgress(event.getPlayer(), "SMELT_CUSTOM", getCustomItemMatch(result), event.getItemAmount());
+        } else {
+            addProgress(event.getPlayer(), "SMELT", event.getItemType().name(), event.getItemAmount());
+        }
     }
 
     @EventHandler(ignoreCancelled = true)

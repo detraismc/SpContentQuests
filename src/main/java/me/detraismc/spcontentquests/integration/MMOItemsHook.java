@@ -6,10 +6,13 @@ import me.detraismc.spcontentquests.models.PlayerQuestData;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
 import java.lang.reflect.Method;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class MMOItemsHook {
 
@@ -150,8 +153,7 @@ public class MMOItemsHook {
     private static void registerCraftItem(SpContentQuests plugin) {
         Class<?> eventClass = null;
         String[] paths = {
-            "net.Indyuce.mmoitems.api.event.CraftMMOItemEvent",
-            "io.lumine.mmoitems.api.event.CraftMMOItemEvent"
+            "io.lumine.mythic.lib.api.crafting.event.MythicCraftItemEvent"
         };
         for (String path : paths) {
             try {
@@ -161,71 +163,136 @@ public class MMOItemsHook {
         }
         if (eventClass == null) return;
 
-        Method getPlayerData = findMethod(eventClass, "getPlayerData");
-        if (getPlayerData == null) return;
+        Method getTrigger = findMethod(eventClass, "getTrigger");
+        if (getTrigger == null) return;
 
-        Method getResult = findMethod(eventClass, "getResult");
-        if (getResult == null) return;
+        Method getCache = findMethod(eventClass, "getCache");
+        if (getCache == null) return;
 
         final Class<?> resolvedEvent = eventClass;
-        final Method resolvedGetPlayerData = getPlayerData;
-        final Method resolvedGetResult = getResult;
+        final Method resolvedGetTrigger = getTrigger;
+        final Method resolvedGetCache = getCache;
 
         Listener listener = new Listener() {};
         plugin.getServer().getPluginManager().registerEvent(
             (Class) resolvedEvent, listener, EventPriority.NORMAL,
-            (l, rawEvent) -> handleCraftItem(plugin, resolvedEvent, resolvedGetPlayerData, resolvedGetResult, rawEvent),
+            (l, rawEvent) -> handleCraftItem(plugin, resolvedEvent, resolvedGetTrigger, resolvedGetCache, rawEvent),
             plugin
         );
     }
 
-    private static void handleCraftItem(SpContentQuests plugin, Class<?> eventClass, Method getPlayerData,
-                                         Method getResult, Object rawEvent) {
+    private static void handleCraftItem(SpContentQuests plugin, Class<?> eventClass, Method getTrigger,
+                                         Method getCache, Object rawEvent) {
         try {
             if (!eventClass.isInstance(rawEvent)) return;
             Object event = eventClass.cast(rawEvent);
 
-            Object resultObj = getResult.invoke(event);
-            if (!(resultObj instanceof ItemStack result)) return;
-            if (result.getType().isAir()) return;
+            Object triggerObj = getTrigger.invoke(event);
+            if (!(triggerObj instanceof InventoryClickEvent triggerEvent)) return;
+            if (!(triggerEvent.getWhoClicked() instanceof Player player)) return;
 
-            Object playerDataObj = getPlayerData.invoke(event);
-            Method getPlayerMethod = playerDataObj.getClass().getMethod("getPlayer");
-            Object playerObj = getPlayerMethod.invoke(playerDataObj);
-            if (!(playerObj instanceof Player player)) return;
+            boolean isShiftClick = triggerEvent.isShiftClick();
 
-            String mmoId = extractMMOItemId(result);
+            if (isShiftClick) {
+                Object cacheObj = getCache.invoke(event);
+                if (cacheObj == null) return;
+
+                int times = 1;
+                try {
+                    Method getTimes = cacheObj.getClass().getMethod("getTimes");
+                    Object timesObj = getTimes.invoke(cacheObj);
+                    if (timesObj instanceof Number n) times = n.intValue();
+                } catch (NoSuchMethodException ignored) {}
+
+                Map<Integer, Integer> beforeAmounts = new HashMap<>();
+                for (int i = 0; i < 36; i++) {
+                    ItemStack item = player.getInventory().getItem(i);
+                    beforeAmounts.put(i, (item == null || item.getType().isAir()) ? 0 : item.getAmount());
+                }
+
+                final int finalTimes = times;
+                final Player finalPlayer = player;
+                plugin.getServer().getScheduler().runTaskLater(plugin, () ->
+                    processShiftCraft(plugin, finalPlayer, beforeAmounts, finalTimes), 1L);
+            } else {
+                final Player finalPlayer = player;
+                plugin.getServer().getScheduler().runTaskLater(plugin, () ->
+                    processNormalCraft(plugin, finalPlayer), 1L);
+            }
+        } catch (Exception ignored) {}
+    }
+
+    private static void processNormalCraft(SpContentQuests plugin, Player player) {
+        try {
+            ItemStack cursorItem = player.getItemOnCursor();
+            if (cursorItem == null || cursorItem.getType().isAir()) return;
+
+            String mmoId = extractMMOItemId(cursorItem);
             if (mmoId == null) return;
 
-            final String resolvedRequired = mmoId;
-
-            plugin.getQuestManager().getAllQuests().forEach(q -> {
-                PlayerQuestData data = plugin.getPlayerDataManager()
-                        .getOrCreateQuestData(player.getUniqueId(), q.getId());
-                if (data.isCompleted()) return;
-
-                List<Objective> objectives = q.getObjectives();
-                boolean progressed = false;
-
-                for (int i = 0; i < objectives.size(); i++) {
-                    Objective obj = objectives.get(i);
-                    if (!"MMOITEMS_CRAFT".equalsIgnoreCase(obj.getType())) continue;
-                    if (obj.getRequired() != null && !obj.getRequired().isEmpty()
-                            && obj.getRequired().stream().noneMatch(r -> matchesRequired(r, resolvedRequired)))
-                        continue;
-
-                    int current = data.getObjectiveProgress(i);
-                    int max = obj.getAmount();
-                    data.setObjectiveProgress(i, Math.min(current + result.getAmount(), max));
-                    progressed = true;
-                }
-
-                if (progressed && q.isCompleted(data.getObjectivesProgress())) {
-                    data.setCompleted(true);
-                    plugin.playQuestComplete(player, q);
-                }
-            });
+            processCraftProgress(plugin, player, mmoId, cursorItem.getAmount());
         } catch (Exception ignored) {}
+    }
+
+    private static void processShiftCraft(SpContentQuests plugin, Player player,
+                                           Map<Integer, Integer> beforeAmounts, int times) {
+        try {
+            ItemStack craftedSample = null;
+            int totalYield = 0;
+
+            for (int i = 0; i < 36; i++) {
+                ItemStack itemAfter = player.getInventory().getItem(i);
+                int amountAfter = (itemAfter == null || itemAfter.getType().isAir()) ? 0 : itemAfter.getAmount();
+                int beforeAmount = beforeAmounts.getOrDefault(i, 0);
+
+                if (amountAfter > beforeAmount) {
+                    int diff = amountAfter - beforeAmount;
+                    totalYield += diff;
+                    if (craftedSample == null) {
+                        craftedSample = itemAfter.clone();
+                        craftedSample.setAmount(1);
+                    }
+                }
+            }
+
+            if (totalYield > 0 && craftedSample != null) {
+                String mmoId = extractMMOItemId(craftedSample);
+                if (mmoId == null) return;
+
+                processCraftProgress(plugin, player, mmoId, totalYield);
+            }
+        } catch (Exception ignored) {}
+    }
+
+    private static void processCraftProgress(SpContentQuests plugin, Player player, String mmoId, int amount) {
+        final String resolvedRequired = mmoId;
+
+        plugin.getQuestManager().getAllQuests().forEach(q -> {
+            PlayerQuestData data = plugin.getPlayerDataManager()
+                    .getOrCreateQuestData(player.getUniqueId(), q.getId());
+            if (data.isCompleted()) return;
+
+            List<Objective> objectives = q.getObjectives();
+            boolean progressed = false;
+
+            for (int i = 0; i < objectives.size(); i++) {
+                Objective obj = objectives.get(i);
+                if (!"MMOITEMS_CRAFT".equalsIgnoreCase(obj.getType())) continue;
+                if (obj.getRequired() != null && !obj.getRequired().isEmpty()
+                        && obj.getRequired().stream().noneMatch(r -> matchesRequired(r, resolvedRequired)))
+                    continue;
+
+                int current = data.getObjectiveProgress(i);
+                int max = obj.getAmount();
+                data.setObjectiveProgress(i, Math.min(current + amount, max));
+                progressed = true;
+            }
+
+            if (progressed && q.isCompleted(data.getObjectivesProgress())) {
+                data.setCompleted(true);
+                plugin.playQuestComplete(player, q);
+            }
+        });
     }
 
     private static void registerConsumable(SpContentQuests plugin) {

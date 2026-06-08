@@ -156,10 +156,12 @@ public class MenuManager {
                                 } else if (line.contains("<objective>")) {
                                     for (int oi = 0; oi < quest.getObjectives().size(); oi++) {
                                         Objective obj = quest.getObjectives().get(oi);
-                                        boolean objComplete = data.getObjectiveProgress(oi) >= obj.getAmount();
+                                        boolean questCompleted = data.isCompleted() || data.isClaimed();
+                                        boolean objComplete = questCompleted || data.getObjectiveProgress(oi) >= obj.getAmount();
+                                        int displayValue = questCompleted ? obj.getAmount() : data.getObjectiveProgress(oi);
                                         String fmt = objComplete ? completeFormat : ongoingFormat;
                                         fmt = fmt.replace("<objective-display>", obj.getDisplay());
-                                        fmt = fmt.replace("<objective-value>", String.valueOf(data.getObjectiveProgress(oi)));
+                                        fmt = fmt.replace("<objective-value>", String.valueOf(displayValue));
                                         fmt = fmt.replace("<objective-max-value>", String.valueOf(obj.getAmount()));
                                         lore.add(format(fmt));
                                     }
@@ -169,7 +171,8 @@ public class MenuManager {
                                     }
                                 } else {
                                     int totalMax = quest.getObjectives().stream().mapToInt(Objective::getAmount).sum();
-                                    line = line.replace("<objective-value>", String.valueOf(data.getPoints()));
+                                    int displayPoints = (data.isCompleted() || data.isClaimed()) ? totalMax : data.getPoints();
+                                    line = line.replace("<objective-value>", String.valueOf(displayPoints));
                                     line = line.replace("<objective-max-value>", String.valueOf(totalMax));
                                     line = line.replace("<reward>", quest.getConfig().getStringList("reward-display").isEmpty() ? "" : String.join(", ", quest.getConfig().getStringList("reward-display")));
                                     lore.add(format(line));
@@ -227,10 +230,12 @@ public class MenuManager {
                                 } else if (line.contains("<objective>")) {
                                     for (int oi = 0; oi < quest.getObjectives().size(); oi++) {
                                         Objective obj = quest.getObjectives().get(oi);
-                                        boolean objComplete = data.getObjectiveProgress(oi) >= obj.getAmount();
+                                        boolean questCompleted = data.isCompleted() || data.isClaimed();
+                                        boolean objComplete = questCompleted || data.getObjectiveProgress(oi) >= obj.getAmount();
+                                        int displayValue = questCompleted ? obj.getAmount() : data.getObjectiveProgress(oi);
                                         String fmt = objComplete ? completeFormat : ongoingFormat;
                                         fmt = fmt.replace("<objective-display>", obj.getDisplay());
-                                        fmt = fmt.replace("<objective-value>", String.valueOf(data.getObjectiveProgress(oi)));
+                                        fmt = fmt.replace("<objective-value>", String.valueOf(displayValue));
                                         fmt = fmt.replace("<objective-max-value>", String.valueOf(obj.getAmount()));
                                         lore.add(format(fmt));
                                     }
@@ -240,7 +245,8 @@ public class MenuManager {
                                     }
                                 } else {
                                     int totalMax = quest.getObjectives().stream().mapToInt(Objective::getAmount).sum();
-                                    line = line.replace("<objective-value>", String.valueOf(data.getPoints()));
+                                    int displayPoints = (data.isCompleted() || data.isClaimed()) ? totalMax : data.getPoints();
+                                    line = line.replace("<objective-value>", String.valueOf(displayPoints));
                                     line = line.replace("<objective-max-value>", String.valueOf(totalMax));
                                     line = line.replace("<reward>", quest.getConfig().getStringList("reward-display").isEmpty() ? "" : String.join(", ", quest.getConfig().getStringList("reward-display")));
                                     lore.add(format(line));
@@ -346,7 +352,7 @@ public class MenuManager {
             int slot = targetSlots.get(i);
             if (slot < 0 || slot >= inv.getSize()) continue;
 
-            boolean isComplete = data.getObjectiveProgress(i) >= obj.getAmount();
+            boolean isComplete = data.isCompleted() || data.isClaimed() || data.getObjectiveProgress(i) >= obj.getAmount();
             String stateKey = isComplete ? "complete" : "ongoing";
             ConfigurationSection itemSection = objCfg.getConfigurationSection("objective-item." + stateKey);
             if (itemSection == null) continue;
@@ -380,7 +386,8 @@ public class MenuManager {
                 if (itemSection.contains("lore")) {
                     for (String line : itemSection.getStringList("lore")) {
                         line = line.replace("<objective-display>", obj.getDisplay());
-                        line = line.replace("<objective-value>", String.valueOf(data.getObjectiveProgress(i)));
+                        int displayValue = (data.isCompleted() || data.isClaimed()) ? obj.getAmount() : data.getObjectiveProgress(i);
+                        line = line.replace("<objective-value>", String.valueOf(displayValue));
                         line = line.replace("<objective-max-value>", String.valueOf(obj.getAmount()));
                         if (line.contains("<objective-desc>") && obj.getDesc() != null) {
                             for (String descLine : obj.getDesc()) {

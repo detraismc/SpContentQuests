@@ -22,6 +22,7 @@ import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.command.CommandMap;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -112,6 +113,16 @@ public class SpContentQuests extends JavaPlugin {
         QuestBookCommand questBookCommand = new QuestBookCommand(this);
         getCommand("questbook").setExecutor(questBookCommand);
         getCommand("questbook").setTabCompleter(questBookCommand);
+
+        // Register configurable aliases for /questbook
+        List<String> questAliases = getConfig().getStringList("quest-book.command-aliases");
+        if (!questAliases.isEmpty()) {
+            CommandMap commandMap = Bukkit.getServer().getCommandMap();
+            org.bukkit.command.Command questbook = getCommand("questbook");
+            for (String alias : questAliases) {
+                commandMap.register(alias, "spcontentquests", questbook);
+            }
+        }
 
    }
 
