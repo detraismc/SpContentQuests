@@ -94,6 +94,18 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
+            <groupId>com.github.Slimefun</groupId>
+            <artifactId>Slimefun4</artifactId>
+            <version>RC-37</version>
+            <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>io.github.baked-libs</groupId>
+                    <artifactId>dough</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
             <groupId>com.zaxxer</groupId>
             <artifactId>HikariCP</artifactId>
             <version>5.1.0</version>
@@ -116,12 +128,6 @@
             <groupId>net.Indyuce</groupId>
             <artifactId>MMOItems-API</artifactId>
             <version>6.9.5-SNAPSHOT</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.github.slimefun</groupId>
-            <artifactId>Slimefun4</artifactId>
-            <version>RC-27</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

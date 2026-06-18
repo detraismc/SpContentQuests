@@ -148,7 +148,7 @@ BE_A_BAKER:
   #   SHEAR                  - Shear a sheep
   #   MYTHICMOBS_KILL        - Kill a MythicMobs mob (requires MythicMobs)
   #   MMOITEMS_STATIONS_TRADE - Trade at MMOItems station (required: TYPE|ID)
-  #   MMOITEMS_CRAFT         - Craft an MMOItems item (deprecated event)
+  #   MMOITEMS_CRAFT         - Craft an MMOItems item (required: TYPE|ID)
   #   MMOITEMS_CONSUME       - Consume an MMOItems item (required: TYPE|ID)
   #   MMOITEMS_APPLY_GEMSTONE - Apply a gem stone (required: TYPE|ID)
   #   MMOITEMS_APPLY_UPGRADE  - Apply an upgrade item (required: TYPE|ID)
@@ -158,7 +158,11 @@ BE_A_BAKER:
   #   SLIMEFUN_MULTIBLOCK_{ID}- Use a Slimefun multiblock (e.g. ENHANCED_CRAFTING_TABLE)
   #   SLIMEFUN_ANCIENT_ALTAR  - Use the Slimefun Ancient Altar
   #   ITEMSADDER_BREAK_BLOCK  - Break an ItemsAdder custom block (required: namespaced ID)
+  #                             Example: - 'morebricks:andesite_bricks'
+  #                             You can use command /iablock when viewing the itemsadder blocks to get namespace ID
   #   ITEMSADDER_PLACE_BLOCK  - Place an ItemsAdder custom block (required: namespaced ID)
+  #                             Example: - 'morebricks:andesite_bricks'
+  #                             You can use command /iablock when viewing the itemsadder blocks to get namespace ID
   # ---------------------------------------------------------------
   objective:
     - type: CRAFT

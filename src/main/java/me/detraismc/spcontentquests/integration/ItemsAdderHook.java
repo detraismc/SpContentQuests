@@ -1,135 +1,76 @@
 package me.detraismc.spcontentquests.integration;
 
+import dev.lone.itemsadder.api.Events.CustomBlockBreakEvent;
+import dev.lone.itemsadder.api.Events.CustomBlockPlaceEvent;
 import me.detraismc.spcontentquests.SpContentQuests;
 import me.detraismc.spcontentquests.models.Objective;
 import me.detraismc.spcontentquests.models.PlayerQuestData;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventPriority;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
-import java.lang.reflect.Method;
+import java.util.List;
 
 public class ItemsAdderHook {
 
-    private static final String PKG = "dev.lone.itemsadder.api.Events";
-
     public static void register(SpContentQuests plugin) {
-        if (!isAvailable()) return;
-
-        registerEvent(plugin, "CustomBlockBreakEvent", "ITEMSADDER_BREAK_BLOCK");
-        registerEvent(plugin, "CustomBlockPlaceEvent", "ITEMSADDER_PLACE_BLOCK");
-        plugin.getLogger().info("ItemsAdder integration enabled!");
-    }
-
-    private static boolean isAvailable() {
         try {
-            Class.forName("dev.lone.itemsadder.api.ItemsAdder");
-            return true;
-        } catch (ClassNotFoundException e) {
-            return false;
+            plugin.getServer().getPluginManager().registerEvents(new ItemsAdderListener(plugin), plugin);
+            plugin.getLogger().info("ItemsAdder integration enabled!");
+        } catch (Throwable e) {
+            plugin.getLogger().warning("Failed to enable ItemsAdder integration: " + e.getMessage());
         }
     }
 
-    private static void registerEvent(SpContentQuests plugin, String eventName, String objectiveType) {
-        Class<?> eventClass;
-        try {
-            eventClass = Class.forName(PKG + "." + eventName);
-        } catch (ClassNotFoundException e) {
-            return;
+    private static class ItemsAdderListener implements Listener {
+        private final SpContentQuests plugin;
+
+        ItemsAdderListener(SpContentQuests plugin) {
+            this.plugin = plugin;
         }
 
-        Method getPlayer = findMethod(eventClass, "getPlayer", "getBukkitPlayer");
-        if (getPlayer == null) return;
+        @EventHandler
+        public void onCustomBlockBreak(CustomBlockBreakEvent event) {
+            handleBlockEvent(event.getPlayer(), event.getNamespacedID(), "ITEMSADDER_BREAK_BLOCK");
+        }
 
-        Method getNamespacedID = findMethod(eventClass, "getNamespacedID");
-        Method getCustomBlock = getNamespacedID != null ? null : findMethod(eventClass, "getCustomBlock");
-        if (getNamespacedID == null && getCustomBlock == null) return;
+        @EventHandler
+        public void onCustomBlockPlace(CustomBlockPlaceEvent event) {
+            handleBlockEvent(event.getPlayer(), event.getNamespacedID(), "ITEMSADDER_PLACE_BLOCK");
+        }
 
-        final Class<?> resolvedEvent = eventClass;
-        final Method resolvedPlayer = getPlayer;
-        final Method resolvedGetNamespacedID = getNamespacedID;
-        final Method resolvedGetCustomBlock = getCustomBlock;
-        final String resolvedType = objectiveType;
-
-        Listener listener = new Listener() {};
-        plugin.getServer().getPluginManager().registerEvent(
-            (Class) resolvedEvent, listener, EventPriority.NORMAL,
-            (l, rawEvent) -> handleBlockEvent(plugin, resolvedEvent, resolvedPlayer, resolvedGetNamespacedID, resolvedGetCustomBlock, resolvedType, rawEvent),
-            plugin
-        );
-    }
-
-    private static void handleBlockEvent(SpContentQuests plugin, Class<?> eventClass, Method getPlayer,
-                                          Method getNamespacedID, Method getCustomBlock, String objectiveType, Object rawEvent) {
-        try {
-            if (!eventClass.isInstance(rawEvent)) return;
-            Object event = eventClass.cast(rawEvent);
-
-            Object playerObj = getPlayer.invoke(event);
-            if (!(playerObj instanceof Player player)) return;
-
-            String blockId = null;
-
-            if (getNamespacedID != null) {
-                Object idObj = getNamespacedID.invoke(event);
-                if (idObj != null) {
-                    blockId = idObj instanceof String s ? s : idObj.toString();
-                }
-            }
-
-            if (blockId == null && getCustomBlock != null) {
-                Object customBlock = getCustomBlock.invoke(event);
-                if (customBlock != null) {
-                    Method getNS = customBlock.getClass().getMethod("getNamespacedID");
-                    Object idObj = getNS.invoke(customBlock);
-                    if (idObj != null) {
-                        blockId = idObj instanceof String s ? s : idObj.toString();
-                    }
-                }
-            }
-
+        private void handleBlockEvent(Player player, String blockId, String objectiveType) {
             if (blockId == null || blockId.isEmpty()) return;
 
-            final String resolvedRequired = blockId;
-
             plugin.getQuestManager().getAllQuests().forEach(q -> {
-                    PlayerQuestData data = plugin.getPlayerDataManager()
-                        .getOrCreateQuestData(player.getUniqueId(), q.getId());
-                    if (data.isCompleted()) return;
-                    java.util.List<Objective> objectives = q.getObjectives();
-                    boolean progressed = false;
-                    for (int i = 0; i < objectives.size(); i++) {
-                        Objective obj = objectives.get(i);
-                        if (!objectiveType.equalsIgnoreCase(obj.getType())) continue;
-                        if (obj.getRequired() != null && !obj.getRequired().isEmpty()
-                                && obj.getRequired().stream().noneMatch(r -> matchesRequired(r, resolvedRequired)))
-                            continue;
-                        int current = data.getObjectiveProgress(i);
-                        int max = obj.getAmount();
-                        data.setObjectiveProgress(i, Math.min(current + 1, max));
-                        progressed = true;
-                    }
-                    if (progressed && q.isCompleted(data.getObjectivesProgress())) {
-                        data.setCompleted(true);
-                        plugin.playQuestComplete(player, q);
-                    }
-                });
-        } catch (Exception ignored) {}
-    }
-
-    private static boolean matchesRequired(String required, String value) {
-        if (required.regionMatches(true, 0, "CONTAINS:", 0, 9)) {
-            return value.toLowerCase().contains(required.substring(9).toLowerCase());
+                PlayerQuestData data = plugin.getPlayerDataManager()
+                    .getOrCreateQuestData(player.getUniqueId(), q.getId());
+                if (data.isCompleted()) return;
+                List<Objective> objectives = q.getObjectives();
+                boolean progressed = false;
+                for (int i = 0; i < objectives.size(); i++) {
+                    Objective obj = objectives.get(i);
+                    if (!objectiveType.equalsIgnoreCase(obj.getType())) continue;
+                    if (obj.getRequired() != null && !obj.getRequired().isEmpty()
+                            && obj.getRequired().stream().noneMatch(r -> matchesRequired(r, blockId)))
+                        continue;
+                    int current = data.getObjectiveProgress(i);
+                    int max = obj.getAmount();
+                    data.setObjectiveProgress(i, Math.min(current + 1, max));
+                    progressed = true;
+                }
+                if (progressed && q.isCompleted(data.getObjectivesProgress())) {
+                    data.setCompleted(true);
+                    plugin.playQuestComplete(player, q);
+                }
+            });
         }
-        return required.equalsIgnoreCase(value);
-    }
 
-    private static Method findMethod(Class<?> clazz, String... names) {
-        for (String name : names) {
-            try {
-                return clazz.getMethod(name);
-            } catch (NoSuchMethodException ignored) {}
+        private static boolean matchesRequired(String required, String value) {
+            if (required.regionMatches(true, 0, "CONTAINS:", 0, 9)) {
+                return value.toLowerCase().contains(required.substring(9).toLowerCase());
+            }
+            return required.equalsIgnoreCase(value);
         }
-        return null;
     }
 }
