@@ -93,7 +93,7 @@ public class SpContentQuestsCommand implements CommandExecutor, TabCompleter {
             return true;
         }
 
-        if (args.length < 4) {
+        if (args.length < 5) {
             sender.sendMessage(plugin.msg("usage-objective"));
             return true;
         }
@@ -111,7 +111,22 @@ public class SpContentQuestsCommand implements CommandExecutor, TabCompleter {
             return true;
         }
 
-        Player target = Bukkit.getPlayer(args[3]);
+        int objectiveId;
+        try {
+            objectiveId = Integer.parseInt(args[3]);
+        } catch (NumberFormatException e) {
+            sender.sendMessage(plugin.msg("invalid-amount"));
+            return true;
+        }
+
+        if (objectiveId < 1 || objectiveId > quest.getObjectives().size()) {
+            sender.sendMessage(plugin.msg("objective-not-found"));
+            return true;
+        }
+
+        int index = objectiveId - 1;
+
+        Player target = Bukkit.getPlayer(args[4]);
         if (target == null) {
             sender.sendMessage(plugin.msg("player-not-found"));
             return true;
@@ -119,7 +134,7 @@ public class SpContentQuestsCommand implements CommandExecutor, TabCompleter {
 
         int amount;
         try {
-            amount = args.length >= 5 ? Integer.parseInt(args[4]) : 1;
+            amount = args.length >= 6 ? Integer.parseInt(args[5]) : 1;
         } catch (NumberFormatException e) {
             sender.sendMessage(plugin.msg("invalid-amount"));
             return true;
@@ -135,10 +150,10 @@ public class SpContentQuestsCommand implements CommandExecutor, TabCompleter {
         switch (action) {
             case "add": {
                 if (!data.isCompleted()) {
-                    int current = data.getObjectiveProgress(0);
-                    int max = quest.getObjectives().get(0).getAmount();
+                    int current = data.getObjectiveProgress(index);
+                    int max = quest.getObjectives().get(index).getAmount();
                     int newPoints = Math.min(current + amount, max);
-                    data.setObjectiveProgress(0, newPoints);
+                    data.setObjectiveProgress(index, newPoints);
                     if (quest.isCompleted(data.getObjectivesProgress())) {
                         data.setCompleted(true);
                         plugin.playQuestComplete(target, quest);
@@ -149,9 +164,9 @@ public class SpContentQuestsCommand implements CommandExecutor, TabCompleter {
                 break;
             }
             case "subtract": {
-                int current = data.getObjectiveProgress(0);
+                int current = data.getObjectiveProgress(index);
                 int newPoints = Math.max(current - amount, 0);
-                data.setObjectiveProgress(0, newPoints);
+                data.setObjectiveProgress(index, newPoints);
                 if (data.isCompleted() && !quest.isCompleted(data.getObjectivesProgress())) {
                     data.setCompleted(false);
                 }
@@ -160,11 +175,11 @@ public class SpContentQuestsCommand implements CommandExecutor, TabCompleter {
                 break;
             }
             case "set": {
-                int max = quest.getObjectives().get(0).getAmount();
+                int max = quest.getObjectives().get(index).getAmount();
                 if (amount > max) {
                     amount = max;
                 }
-                data.setObjectiveProgress(0, amount);
+                data.setObjectiveProgress(index, amount);
                 if (quest.isCompleted(data.getObjectivesProgress())) {
                     data.setCompleted(true);
                     plugin.playQuestComplete(target, quest);
@@ -418,12 +433,26 @@ public class SpContentQuestsCommand implements CommandExecutor, TabCompleter {
             }
         } else if (args.length == 4) {
             String sub = args[0].toLowerCase();
-            if (sub.equals("objective") || sub.equals("quest")) {
+            if (sub.equals("objective")) {
+                Quest quest = plugin.getQuestManager().getQuest(args[2]);
+                if (quest != null) {
+                    for (int i = 1; i <= quest.getObjectives().size(); i++) {
+                        completions.add(String.valueOf(i));
+                    }
+                }
+            } else if (sub.equals("quest")) {
                 for (Player p : Bukkit.getOnlinePlayers()) {
                     completions.add(p.getName());
                 }
             }
         } else if (args.length == 5) {
+            String sub = args[0].toLowerCase();
+            if (sub.equals("objective")) {
+                for (Player p : Bukkit.getOnlinePlayers()) {
+                    completions.add(p.getName());
+                }
+            }
+        } else if (args.length == 6) {
             String sub = args[0].toLowerCase();
             if (sub.equals("objective")) {
                 completions.add("1");
